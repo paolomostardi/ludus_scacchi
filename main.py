@@ -7,6 +7,7 @@ def get_coordinate_from_click_location(coordinate, board_size):
     square_size = board_size/8
     x = int(coordinate[0]/square_size)
     y = int(coordinate[1]/square_size)
+    y = 7 - y
     return x, y
 
 
@@ -48,20 +49,27 @@ def square_to_coordinate_piece(square: int, height: int):
 
 
 def render_background(screen, board_size):
+    black = (181, 136, 99)
+    white = (244, 220, 180)
     height, width = board_size
     square_side = height // 8
     for i in range(64):
         x, y = square_to_coordinate_board(i, height)
-        color = (181, 136, 99) if (i // 8 + i) % 2 == 0 else (244, 220, 180)
+        color = white if (i // 8 + i) % 2 == 0 else black
         pygame.draw.rect(screen, color, (x - square_side // 2, y - square_side // 2, square_side, square_side))
 
 
 def render_piece(square, piece, screen):
+    # true is white color and false is black color
     if piece.color:
         image = pygame.image.load("pieces/white/" + piece.symbol() + ".png")
     else:
         image = pygame.image.load("pieces/black/" + piece.symbol() + ".png")
+
     x, y = square_to_coordinate_piece(square, 700)
+    square_size = 700 / 8
+    y = 700 - square_size - y
+
     image = resize_image(image, 700/8)
     screen.blit(image, (x, y))
 
@@ -102,6 +110,7 @@ def main():
                     piece_clicked = None
                 else:
                     piece_clicked = click_a_piece(event.pos, board_size)
+
         screen.fill((200, 200, 200))
         render_board(screen, board)
         pygame.display.update()
