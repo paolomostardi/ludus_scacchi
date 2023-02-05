@@ -3,6 +3,88 @@ import chess
 import pygame
 
 
+def render_promotion_choice(square_to_promote, board_size, screen):
+
+    grey = (200, 200, 200)
+    x, y = get_coordinate_from_click_location(square_to_promote,board_size)
+    square_side = board_size/8
+
+    y = 7 - y
+    x *= square_side
+    y *= square_side
+    if y == 0:  # white pieces
+        pygame.draw.rect(screen, grey, (x, y, square_side, square_side * 4))
+        x, y = get_coordinate_from_click_location(square_to_promote, board_size)
+        square_to_promote = chess.square(x, y)
+        queen = chess.Piece(5, True)
+        knight = chess.Piece(2, True)
+        rook = chess.Piece(4, True)
+        bishop = chess.Piece(3, True)
+
+        render_piece(square_to_promote - 8 * 0, queen, screen)
+        render_piece(square_to_promote - 8 * 1, knight, screen)
+        render_piece(square_to_promote - 8 * 2, rook, screen)
+        render_piece(square_to_promote - 8 * 3, bishop, screen)
+    else:
+        pygame.draw.rect(screen, grey, (x, y - square_side * 3, square_side, square_side * 4))
+        x, y = get_coordinate_from_click_location(square_to_promote, board_size)
+        square_to_promote = chess.square(x, y)
+        queen = chess.Piece(5, False)
+        knight = chess.Piece(2, False)
+        rook = chess.Piece(4, False)
+        bishop = chess.Piece(3, False)
+
+        render_piece(square_to_promote + 8 * 0, queen, screen)
+        render_piece(square_to_promote + 8 * 1, knight, screen)
+        render_piece(square_to_promote + 8 * 2, rook, screen)
+        render_piece(square_to_promote + 8 * 3, bishop, screen)
+    return
+
+
+def click_promotion(position_of_click, position_of_square_to_promote, board_size):
+    x, y = get_coordinate_from_click_location(position_of_click, board_size)
+    choice_of_promotion = chess.square(x, y)
+    x, y = get_coordinate_from_click_location(position_of_square_to_promote, board_size)
+    square_to_promote = chess.square(x, y)
+    choice_of_promotion = abs(choice_of_promotion - square_to_promote) / 8
+
+    if choice_of_promotion == 0:  # queen
+        choice_of_promotion = 5
+
+    elif choice_of_promotion == 1:  # knight
+        choice_of_promotion = 2
+
+    elif choice_of_promotion == 2:  # rook
+        choice_of_promotion = 4
+
+    elif choice_of_promotion == 3:  # bishop
+        choice_of_promotion = 3
+
+    return choice_of_promotion
+
+
+def make_promotion(first_move, second_move, board_size, choice_of_promotion, chess_board):
+    x, y = get_coordinate_from_click_location(first_move, board_size)
+    first_move = chess.square(x, y)
+    x, y = get_coordinate_from_click_location(second_move, board_size)
+    second_move = chess.square(x, y)
+    print('the first move is ', first_move, second_move)
+    move = chess.Move(first_move, second_move,choice_of_promotion)
+    chess_board.push(move)
+    return chess_board
+
+
+def make_a_promotion(first_square, second_square, chess_board):
+    piece_to_promote = chess_board.piece_at(first_square)
+    if piece_to_promote.symbol() == 'P' or piece_to_promote.symbol() == 'p':
+        move = None
+        display_promotion = True
+    else:
+        move = chess.Move(first_square, second_square)
+        display_promotion = False
+    return move, display_promotion
+
+
 def get_coordinate_from_click_location(coordinate, board_size):
     square_size = board_size/8
     x = int(coordinate[0]/square_size)
@@ -20,12 +102,20 @@ def click_a_piece(coordinate, board_size):
 def make_a_move(first_square, coordinate, board_size, chess_board):
     x, y = get_coordinate_from_click_location(coordinate, board_size)
     second_square = chess.square(x, y)
-    move = chess.Move(first_square, second_square)
+    if chess.square_rank(first_square) == 6 and chess.square_rank(second_square) == 7:
+        move, display_promotion = make_a_promotion(first_square, second_square, chess_board)
+    elif chess.square_rank(first_square) == 1 and chess.square_rank(second_square) == 0:
+        print('sdfasdfsdf')
+        move, display_promotion = make_a_promotion(first_square, second_square, chess_board)
+    else:
+        move = chess.Move(first_square, second_square)
+        display_promotion = False
     if move in chess_board.legal_moves:
         chess_board.push(move)
     print('------------')
     print(chess_board)
-    return chess_board
+    print(chess.square_rank(first_square), chess.square_rank(second_square))
+    return chess_board, display_promotion
 
 
 def resize_image(image, square_side):
@@ -48,9 +138,7 @@ def square_to_coordinate_piece(square: int, height: int):
     return x, y
 
 
-def render_background(screen, board_size):
-    black = (181, 136, 99)
-    white = (244, 220, 180)
+def render_background(screen, board_size, black, white):
     height, width = board_size
     square_side = height // 8
     for i in range(64):
@@ -74,10 +162,10 @@ def render_piece(square, piece, screen):
     screen.blit(image, (x, y))
 
 
-def render_board(screen, board):
+def render_board(screen, board, black=(181, 136, 99), white=(244, 220, 180)):
 
     result = board.piece_map()
-    render_background(screen, (700, 700))
+    render_background(screen, (700, 700), black, white)
     for square, piece in result.items():
         render_piece(square, piece, screen)
 
@@ -86,11 +174,13 @@ def render_board(screen, board):
 
 def main():
     piece_clicked = None
-    WIDTH = 1000
-    HEIGHT = 800
+    WIDTH = 696
+    HEIGHT = 696
     board_size = 700
     framerate = 15
     running = True
+    display_promotion = False
+    position = 1
     board = chess.Board()
 
     pygame.init()
@@ -101,18 +191,29 @@ def main():
     while running:
 
         for event in pygame.event.get():
-        
+
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if piece_clicked:
-                    board = make_a_move(piece_clicked, event.pos, board_size, board)
+                if display_promotion:
+                    choice_of_promotion = click_promotion(event.pos, position, board_size)
+                    board = make_promotion(square_clicked, position, board_size, choice_of_promotion, board)
+                    display_promotion = False
+
+                elif piece_clicked:
+                    board, display_promotion = make_a_move(piece_clicked, event.pos, board_size, board)
+                    position = event.pos
                     piece_clicked = None
+
                 else:
+                    print('piece got clicked')
                     piece_clicked = click_a_piece(event.pos, board_size)
+                    square_clicked = event.pos
 
         screen.fill((200, 200, 200))
         render_board(screen, board)
+        if display_promotion:
+            render_promotion_choice(position, board_size, screen)
         pygame.display.update()
         clock.tick(framerate)
 
