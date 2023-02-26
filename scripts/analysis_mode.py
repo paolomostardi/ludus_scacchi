@@ -6,16 +6,19 @@ import chess
 class AnalysisMode(RenderChess):
 
     def on_click(self, event):
-        if self.first_square:
+        if self.first_square is None:
+            self.get_first_click(event)
+            print('first click')
+        else:
             self.push_move_after_second_click(event)
-        self.get_first_click(event)
-
+            print('second click')
 
 
 def main():
+
     WIDTH = 1000
     HEIGHT = 800
-    board_size = 500
+    board_size = 800
 
     running = True
 
@@ -35,9 +38,6 @@ def main():
                 board.on_click(event.pos)
         screen.fill((200, 200, 200))
         board.render_board()
-        if board.display_promotion:
-            board.render_promotion_choice()
-
         pygame.display.update()
         clock.tick(framerate)
 

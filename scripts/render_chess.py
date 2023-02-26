@@ -49,14 +49,19 @@ class RenderChess:
         if first_square is None:
             return chess_board
 
-        if self.is_current_move_a_promotion():
+        if self.display_promotion:
+            self.get_choice_of_promotion_from_click(click_location)
+            self.push_promotion_to_board()
+
+        elif self.is_current_move_a_promotion():
             return chess_board
 
         move = chess.Move(first_square, second_square)
         if move in self.chess_board.legal_moves:
             chess_board.push(move)
             self.first_square = None
-
+        else :
+            self.first_square = None
         return chess_board
 
     # send the actual promotion move to the logical representation of the board
@@ -66,9 +71,14 @@ class RenderChess:
         first_square = self.first_square
         chess_board = self.chess_board
         second_square = self.second_square
-        move = chess.Move(first_square, second_square, choice_of_promotion)
-        chess_board.push(move)
+        if choice_of_promotion == -1:
+            self.reset_board_event_state()
+            return
 
+        move = chess.Move(first_square, second_square, choice_of_promotion)
+        print(move)
+        chess_board.push(move)
+        self.reset_board_event_state()
         return chess_board
 
     # returns the choice of the promotion (queen knight rook bishop) from a click,
@@ -85,6 +95,7 @@ class RenderChess:
         choice_of_promotion = helper.get_choice_of_promotion_from_square_selected(square_selected)
 
         self.choice_of_promotion = choice_of_promotion
+
         return choice_of_promotion
 
     # renders all the pieces that can be chosen for promotion in sequence from a given square
@@ -121,9 +132,8 @@ class RenderChess:
         white = True
         black = False
 
-        x, y = helper.square_to_coordinate_piece(second_square, board_size)
+        x, y = helper.square_number_to_coordinate(second_square)
         square_side = board_size / 8
-        print(x,y,'helooo this is the value ')
         y = 7 - y
         x *= square_side
         y *= square_side
@@ -182,6 +192,14 @@ class RenderChess:
 
         for square, piece in result.items():
             self.render_piece(square, piece)
+
+        if self.first_square:
+            self.render_move_suggestion_from_square()
+
+        if self.display_promotion:
+            self.render_promotion_choice()
+
+
         return
 
     def choice_of_promotion_is_valid(self):
@@ -220,4 +238,7 @@ class RenderChess:
     def set_board(self, chess_board):
         self.chess_board = chess_board
 
-
+    def reset_board_event_state(self):
+        self.choice_of_promotion = -1
+        self.first_square = None
+        self.display_promotion = False

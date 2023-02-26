@@ -63,3 +63,5 @@ def get_choice_of_promotion_from_square_selected(square_number):
 def square_number_to_coordinate(square_number):
     x = square_number % 8
     y = square_number // 8
+
+    return x, y
