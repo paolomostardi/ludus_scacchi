@@ -20,7 +20,29 @@ class RenderChess:
         self.display_promotion = False
         self.choice_of_promotion = -1
 
-    # check whether the move played is a promotion ergo the piece that is making that move is a pawn
+    def get_choice_of_promotion_from_click(self, third_click):
+        second_square = self.second_square
+
+        board_size = self.board_size
+
+        square_to_promote = helper.get_square_from_click_location(third_click, board_size)
+        square_selected = abs(second_square - square_to_promote) / 8
+        choice_of_promotion = helper.get_choice_of_promotion_from_square_selected(square_selected)
+
+        self.choice_of_promotion = choice_of_promotion
+
+        return choice_of_promotion
+
+    def get_first_click(self, click):
+        board_size = self.board_size
+        self.first_square = helper.get_square_from_click_location(click, board_size)
+
+    def is_choice_of_promotion_valid(self):
+        choice_of_promotion = self.choice_of_promotion
+
+        if choice_of_promotion == -1:
+            return False
+        return
 
     def is_current_move_a_promotion(self):
         first_square = self.first_square
@@ -34,8 +56,6 @@ class RenderChess:
         else:
             self.display_promotion = False
             return False
-
-    # pushes the move to the board with a click location, assuming that there has been a click already recorded
 
     def push_move_after_second_click(self, click_location):
 
@@ -60,11 +80,9 @@ class RenderChess:
         if move in self.chess_board.legal_moves:
             chess_board.push(move)
             self.first_square = None
-        else :
+        else:
             self.first_square = None
         return chess_board
-
-    # send the actual promotion move to the logical representation of the board
 
     def push_promotion_to_board(self):
         choice_of_promotion = self.choice_of_promotion
@@ -80,25 +98,6 @@ class RenderChess:
         chess_board.push(move)
         self.reset_board_event_state()
         return chess_board
-
-    # returns the choice of the promotion (queen knight rook bishop) from a click,
-    # uses the first square clicked that is stored inside the class
-    # then subtract the square of choice from the clicked square to know which piece was selected
-
-    def get_choice_of_promotion_from_click(self, third_click):
-        second_square = self.second_square
-
-        board_size = self.board_size
-
-        square_to_promote = helper.get_square_from_click_location(third_click, board_size)
-        square_selected = abs(second_square - square_to_promote) / 8
-        choice_of_promotion = helper.get_choice_of_promotion_from_square_selected(square_selected)
-
-        self.choice_of_promotion = choice_of_promotion
-
-        return choice_of_promotion
-
-    # renders all the pieces that can be chosen for promotion in sequence from a given square
 
     def render_queen_knight_rook_bishop_for_promotion(self, color):
 
@@ -199,15 +198,6 @@ class RenderChess:
         if self.display_promotion:
             self.render_promotion_choice()
 
-
-        return
-
-    def choice_of_promotion_is_valid(self):
-        choice_of_promotion = self.choice_of_promotion
-
-        if choice_of_promotion == -1:
-            return False
-
         return
 
     def render_dot_in_given_square(self, square_to_render):
@@ -231,14 +221,10 @@ class RenderChess:
             self.render_dot_in_given_square(square)
         return
 
-    def get_first_click(self, click):
-        board_size = self.board_size
-        self.first_square = helper.get_square_from_click_location(click, board_size)
-
-    def set_board(self, chess_board):
-        self.chess_board = chess_board
-
     def reset_board_event_state(self):
         self.choice_of_promotion = -1
         self.first_square = None
         self.display_promotion = False
+
+    def set_chess_board(self, chess_board):
+        self.chess_board = chess_board

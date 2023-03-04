@@ -25,7 +25,7 @@ def main():
     clock = pygame.time.Clock()
     framerate = 15
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    board = AnalysisMode( board_size, screen)
+    board = AnalysisMode(board_size, screen)
 
     while running:
 
