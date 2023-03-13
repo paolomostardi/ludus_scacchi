@@ -165,6 +165,7 @@ class RenderChess:
         y = board_size - square_size - y
 
         image = helper.resize_image(image, board_size / 8)
+        a = image.get_size()
         screen.blit(image, (x, y))
 
     # render the background colors

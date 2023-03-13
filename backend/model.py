@@ -1,34 +1,14 @@
-import keras
-import tensorflow
-from keras.layers import Conv2D
-from keras.layers import Dense
+import tensorflow as tf
 
-def conv2D():
-    return Conv2D(10, (3, 3), activation='relu')
+# Set the logging verbosity level
+tf.get_logger().setLevel('INFO')
 
-
-def dense():
-    return Dense(100, 'relu')
+# Load the SavedModel
+model_dir = r"C:\Users\paolo\Downloads\my_model"
+options = tf.saved_model.LoadOptions(experimental_io_device='/job:localhost')
+model = tf.saved_model.load(model_dir, tags=["serve"], options=options)
 
 
-def softmax():
-    return Dense(10, 'softmax')
 
 
-def create_model():
-    model = keras.Sequential()
-    model.add(conv2D())
-    model.add(conv2D())
-    model.add(dense())
-    model.add(softmax())
-    return model
-
-
-def train_model(model_to_train):
-    model_to_train.summary()
-    return model_to_train
-
-
-model_1 = create_model()
-train_model(model_1)
 
