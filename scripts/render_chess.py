@@ -14,6 +14,8 @@ class RenderChess:
         self.black = (181, 136, 99)
         self.white = (244, 220, 180)
         self.light_grey = (200, 200, 200, 0)
+        self.dark_blue = (55, 55, 70)
+        self.dark_grey = (40, 40, 40)
 
         self.first_square = None
         self.second_square = None
