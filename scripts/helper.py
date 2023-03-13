@@ -1,6 +1,6 @@
 import chess
 import pygame
-
+import numpy
 
 def get_board_coordinate_from_click_location(click_location, board_size):
     square_size = board_size / 8
@@ -29,7 +29,8 @@ def get_choice_of_promotion_from_square_selected(square_number):
     return choice_of_promotion
 
 
-def get_square_from_click_location(click_location, board_size):
+def get_square_from_click_location(click_location, board_size, padding):
+    click_location = numpy.subtract(click_location, padding)
     x, y = get_board_coordinate_from_click_location(click_location, board_size)
     square = chess.square(x, y)
     return square

@@ -16,9 +16,9 @@ class AnalysisMode(RenderChess):
 
 def main():
 
-    WIDTH = 1000
+    WIDTH = 1200
     HEIGHT = 800
-    board_size = 800
+    board_size = 700
 
     running = True
 
@@ -26,7 +26,7 @@ def main():
     framerate = 15
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     board = AnalysisMode(board_size, screen)
-
+    board.set_board_padding((20,20))
     while running:
 
         for event in pygame.event.get():

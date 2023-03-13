@@ -1,6 +1,7 @@
 import chess
 import pygame
 import helper
+import numpy
 
 
 class RenderChess:
@@ -17,6 +18,8 @@ class RenderChess:
         self.first_square = None
         self.second_square = None
         self.square_clicked_bool = None
+        self.board_x_padding = None
+        self.board_y_padding = None
         self.display_promotion = False
         self.choice_of_promotion = -1
 
@@ -25,7 +28,7 @@ class RenderChess:
 
         board_size = self.board_size
 
-        square_to_promote = helper.get_square_from_click_location(third_click, board_size)
+        square_to_promote = helper.get_square_from_click_location(third_click, board_size, self.get_padding())
         square_selected = abs(second_square - square_to_promote) / 8
         choice_of_promotion = helper.get_choice_of_promotion_from_square_selected(square_selected)
 
@@ -35,7 +38,12 @@ class RenderChess:
 
     def get_first_click(self, click):
         board_size = self.board_size
-        self.first_square = helper.get_square_from_click_location(click, board_size)
+        self.first_square = helper.get_square_from_click_location(click, board_size, self.get_padding())
+
+    def get_padding(self):
+        x = self.board_x_padding
+        y = self.board_y_padding
+        return x, y
 
     def is_choice_of_promotion_valid(self):
         choice_of_promotion = self.choice_of_promotion
@@ -63,7 +71,7 @@ class RenderChess:
         chess_board = self.chess_board
         board_size = self.board_size
 
-        self.second_square = helper.get_square_from_click_location(click_location, board_size)
+        self.second_square = helper.get_square_from_click_location(click_location, board_size, self.get_padding())
         second_square = self.second_square
 
         if first_square is None:
@@ -138,9 +146,11 @@ class RenderChess:
         y *= square_side
 
         if y == 0:  # white pieces
+            x, y = numpy.add((x, y), self.get_padding())
             pygame.draw.rect(screen, light_grey, (x, y, square_side, square_side * 4))
             self.render_queen_knight_rook_bishop_for_promotion(white)
         else:
+            x, y = numpy.add((x, y), self.get_padding())
             pygame.draw.rect(screen, light_grey, (x, y - square_side * 3, square_side, square_side * 4))
             self.render_queen_knight_rook_bishop_for_promotion(black)
 
@@ -165,7 +175,8 @@ class RenderChess:
         y = board_size - square_size - y
 
         image = helper.resize_image(image, board_size / 8)
-        a = image.get_size()
+        x += self.board_x_padding
+        y += self.board_y_padding
         screen.blit(image, (x, y))
 
     # render the background colors
@@ -178,6 +189,8 @@ class RenderChess:
         square_side = height // 8
         for i in range(64):
             x, y = helper.square_to_coordinate_board(i, height)
+            x += self.board_x_padding
+            y += self.board_y_padding
             color = white if (i // 8 + i) % 2 == 0 else black
             pygame.draw.rect(screen, color, (x - square_side // 2, y - square_side // 2, square_side, square_side))
 
@@ -210,6 +223,7 @@ class RenderChess:
         x = square_to_render % 8 * square_size + square_size // 2
         y = (7 - square_to_render // 8) * square_size + square_size // 2
         dot_size = square_size // 7
+        x, y = numpy.add((x, y), self.get_padding())
         pygame.draw.circle(screen, transparent_light_green, (x, y), dot_size)
 
     def render_move_suggestion_from_square(self):
@@ -229,3 +243,7 @@ class RenderChess:
 
     def set_chess_board(self, chess_board):
         self.chess_board = chess_board
+
+    def set_board_padding(self, padding):
+        self.board_x_padding = padding[0]
+        self.board_y_padding = padding[1]
