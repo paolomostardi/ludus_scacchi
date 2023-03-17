@@ -1,5 +1,5 @@
 import pygame
-from scripts import analysis_mode
+from FrontEnd import analysis_mode
 
 
 class Button:
