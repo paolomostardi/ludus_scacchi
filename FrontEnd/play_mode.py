@@ -3,7 +3,7 @@ import pygame
 import chess
 
 
-class AnalysisMode(RenderChess):
+class PlayMode(RenderChess):
 
     def on_click(self, event):
         if self.first_square is None:

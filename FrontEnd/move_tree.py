@@ -1,9 +1,8 @@
-
 class MovesTree(object):
 
     def __init__(self, move='root', children=None):
-        self.move = move
         self.children = []
+        self.move = move
         if children is not None:
             for child in children:
                 self.add_child(child)
@@ -15,26 +14,9 @@ class MovesTree(object):
         assert isinstance(node, MovesTree)
         self.children.append(node)
 
-    def set_move(self, move):
-        self.move = move
-        return
-
-    def get_first_child(self):
-        if self.children:
-            return self.children[0]
-
-    def get_n_child(self, n):
-        return self.children[n]
-
-    def get_all_moves(self):
-        return
-
-    def push_move(self, move):
-        while self.children:
-            return self.children[0].push_move(move)
+    def add_child_to_n(self, n, move):
         move = MovesTree(move)
-        self.add_child(move)
-        return
+        self.go_to_depth(n).add_child(move)
 
     def get_all_first_child_moves(self):
         if self.get_first_child():
@@ -48,9 +30,15 @@ class MovesTree(object):
             moves_list.extend(self.get_first_child().get_all_first_list_child_moves())
         return moves_list
 
-    def add_child_to_n(self, n, move):
-        move = MovesTree(move)
-        self.go_to_depth(n).add_child(move)
+    def get_all_moves(self):
+        return
+
+    def get_first_child(self):
+        if self.children:
+            return self.children[0]
+
+    def get_n_child(self, n):
+        return self.children[n]
 
     def go_to_depth(self, depth):
         if depth == 0:
@@ -58,6 +46,17 @@ class MovesTree(object):
         if not self.children:
             return None
         return self.children[0].go_to_depth(depth - 1)
+
+    def push_move(self, move):
+        while self.children:
+            return self.children[0].push_move(move)
+        move = MovesTree(move)
+        self.add_child(move)
+        return
+
+    def set_move(self, move):
+        self.move = move
+        return
 
 
 def testing_move_tree():
@@ -68,13 +67,3 @@ def testing_move_tree():
     tree.add_child_to_n(2, 'f4')
 
     return tree
-
-
-move_tree = testing_move_tree()
-
-print(move_tree.get_all_first_child_moves())
-
-print(move_tree.get_all_first_list_child_moves())
-
-print(move_tree.go_to_depth(2).children[1])
-

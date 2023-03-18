@@ -36,6 +36,12 @@ def get_square_from_click_location(click_location, board_size, padding):
     return square
 
 
+def get_algebraic_move_from_uci(move, new_board):
+    algebraic_move = new_board.san(move)
+    new_board.push(move)
+    return algebraic_move
+
+
 def resize_image(image, square_side, size_difference=0.98):
     square_side_smaller = int(square_side * size_difference)
     return pygame.transform.smoothscale(image, (square_side_smaller, square_side_smaller))
