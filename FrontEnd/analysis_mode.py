@@ -9,8 +9,18 @@ class AnalysisMode(RenderChess):
 
     def __init__(self, board_size, screen):
         super().__init__(board_size, screen)
-        self.current_move = 0
+        self.current_move = [0]
+        self.current_depth = 0
+
         self.move_tree = MovesTree('')
+        self.current_branch = self.move_tree
+
+    # return the length of each branch in the tree or something
+    def get_total_ply_of_branch(self):
+        return self.current_branch.length_to_root(self.move_tree)
+
+    def get_current_ply(self):
+        return sum(self.current_move) + self.current_depth
 
     def on_click(self, event):
         if self.first_square is None:
@@ -22,16 +32,67 @@ class AnalysisMode(RenderChess):
 
     def push_move_after_second_click(self, click_location):
         super().push_move_after_second_click(click_location)
+        print('--- PUSHING THE MOVE ---')
         try:
-            if self.move_tree.move == '' :
+            if self.move_tree.move == '':
                 self.move_tree.move = (self.chess_board.peek())
-                self.current_move += 1
-            elif self.chess_board.peek() != self.move_tree.get_all_first_list_child_moves()[-1]:
-                self.move_tree.push_move((self.chess_board.peek()))
-                self.current_move += 1
-        except IndexError:
+                self.current_move[self.current_depth] += 1
+                return
+
+            current_move = self.chess_board.peek()
+            if self.current_move[self.current_depth] - 1 >= 0:
+                current_tree_move = self.current_branch.go_to_depth(self.current_move[self.current_depth] - 1)
+            elif self.current_depth > 0:  # the lord is upon us
+                print('this is it ')
+                current_tree_move = self.current_branch.go_to_depth(0)
+            else:
+                return
+            all_child_moves = current_tree_move.get_all_child_moves()
+
+            if current_move in all_child_moves:
+                print('___ Move already stored ___ ')
+                index = all_child_moves.index(current_move)
+                print('Old branch: ', self.current_branch)
+                if index == 0:
+                    self.current_move[self.current_depth] += 1
+                else:
+                    self.current_branch = self.current_branch.go_to_depth(self.current_move[self.current_depth])
+
+            elif current_move != self.current_branch.get_all_first_list_child_moves()[self.current_move[self.current_depth] - 1]:
+                if self.get_current_ply() < self.get_total_ply_of_branch():
+                    print('___ Creating a new branch ___')
+                    print(self.get_current_ply(), self.get_total_ply_of_branch())
+                    print('old set of moves', self.current_move)
+                    self.current_branch = self.current_branch.add_child_to_n(self.current_move[self.current_depth] - 1, self.chess_board.peek())
+                    self.current_move.append(0)
+                    self.current_depth += 1
+                    print('current set of moves', self.current_move)
+                else:
+                    print('___ Not creating a new branch ___')
+                    self.current_branch.push_move((self.chess_board.peek()))
+                    self.current_move[self.current_depth] += 1
+                    print('current set of moves', self.current_move)
+                    print(self.get_current_ply(), self.get_total_ply_of_branch())
+
+        except IndexError as error:
+            print('index ERROR', self.current_move)
+            print(error)
+            print(IndexError)
             return
-        print('tree :', self.move_tree.get_all_first_list_child_moves())
+        except AttributeError as error:
+            print(' ----------- AttributeError ----------- ')
+            print(error)
+            print('')
+            print('Current_tree_move index: ', self.current_move[self.current_depth] - 1)
+            print(self.current_branch.get_all_first_list_child_moves())
+            print(AttributeError)
+        except TypeError as error:
+            print('---- ---- TYPE ERROR  ---- ----')
+            print(error)
+            print(TypeError)
+
+        print('current branch:', self.current_branch.get_all_moves())
+        print('tree :', self.move_tree.get_all_moves())
 
     def render_move_stack(self):
         chess_board = self.chess_board
@@ -89,22 +150,32 @@ class AnalysisMode(RenderChess):
         screen.blit(text_surface, (x_of_move, y_of_move))
 
     def key_down(self):
-        if self.current_move > 0:
-            self.current_move -= 1
-            new_board = chess.Board()
-            for i in range(self.current_move):
-                new_board.push(self.move_tree.get_all_first_list_child_moves()[i])
-            self.chess_board = new_board
+        if self.current_move[self.current_depth] > 0:
+            print('--- Depth NOT being reduced --- ')
+            self.current_move[self.current_depth] -= 1
+            self.chess_board.pop()
+
+        elif self.current_move[self.current_depth] == 0 and self.current_depth > 0:
+            print('--- Depth being reduced --- ')
+            self.current_depth -= 1
+            n = self.current_move[self.current_depth]
+            self.current_branch = self.current_branch.get_n_parents(self.move_tree, n)[0]
+            self.chess_board.pop()
+
+        print('current depth :', self.current_depth)
+        print('current move :', self.current_move)
+        print('current branch :', self.current_branch.get_all_first_list_child_moves())
         return
 
     def key_up(self):
-        if self.current_move < len(self.move_tree.get_all_first_list_child_moves()):
-            self.current_move += 1
-            new_board = chess.Board()
-            for i in range(self.current_move):
-                new_board.push(self.move_tree.get_all_first_list_child_moves()[i])
-            self.chess_board = new_board
-        print(self.current_move)
+        if self.current_move[self.current_depth] < len(self.current_branch.get_all_first_list_child_moves()):
+            self.current_move[self.current_depth] += 1
+            n = self.current_move[self.current_depth]
+            move = self.current_branch.get_all_first_list_child_moves()[n - 1]
+            self.chess_board.push(move)
+        print('current depth :', self.current_depth)
+        print('current move :', self.current_move)
+        print('current branch :', self.current_branch.get_all_first_list_child_moves())
         return
 
     def render_gui(self):

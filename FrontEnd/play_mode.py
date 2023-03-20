@@ -1,9 +1,17 @@
+from FrontEnd import helper
 from render_chess import RenderChess
 import pygame
 import chess
+from move_tree import MovesTree
 
 
-class PlayMode(RenderChess):
+class AnalysisMode(RenderChess):
+
+    def __init__(self, board_size, screen):
+        super().__init__(board_size, screen)
+        self.current_move = 0
+        self.move_tree = MovesTree('')
+        self.current_branch = self.move_tree
 
     def on_click(self, event):
         if self.first_square is None:
@@ -12,6 +20,21 @@ class PlayMode(RenderChess):
         else:
             self.push_move_after_second_click(event)
             print('second click')
+
+    def push_move_after_second_click(self, click_location):
+        super().push_move_after_second_click(click_location)
+        try:
+            if self.move_tree.move == '':
+                self.move_tree.move = (self.chess_board.peek())
+                self.current_move += 1
+            elif self.chess_board.peek() != self.move_tree.get_all_first_list_child_moves()[-1]:
+                if len(self.move_tree.get_all_first_list_child_moves()):
+                    print('asdasd')
+                self.move_tree.push_move((self.chess_board.peek()))
+                self.current_move += 1
+        except IndexError:
+            return
+        print('tree :', self.move_tree.get_all_first_list_child_moves())
 
     def render_move_stack(self):
         chess_board = self.chess_board
@@ -64,12 +87,28 @@ class PlayMode(RenderChess):
         pygame.font.init()
         my_font = pygame.font.SysFont('Times new roman', 35)
 
-        algebraic_move = new_board.san(move)
-        new_board.push(move)
+        algebraic_move = helper.get_algebraic_move_from_uci(move, new_board)
         text_surface = my_font.render(str(algebraic_move), False, white)
         screen.blit(text_surface, (x_of_move, y_of_move))
 
+    def key_down(self):
+        if self.current_move > 0:
+            self.current_move -= 1
+            new_board = chess.Board()
+            for i in range(self.current_move):
+                new_board.push(self.move_tree.get_all_first_list_child_moves()[i])
+            self.chess_board = new_board
+        return
 
+    def key_up(self):
+        if self.current_move < len(self.move_tree.get_all_first_list_child_moves()):
+            self.current_move += 1
+            new_board = chess.Board()
+            for i in range(self.current_move):
+                new_board.push(self.move_tree.get_all_first_list_child_moves()[i])
+            self.chess_board = new_board
+        print(self.current_move)
+        return
 
     def render_gui(self):
         return
@@ -77,7 +116,6 @@ class PlayMode(RenderChess):
     def render_board(self):
         super().render_board()
         self.render_move_stack()
-
 
 
 def main():
@@ -93,15 +131,22 @@ def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     board = AnalysisMode(board_size, screen)
     board.set_board_padding((20, 50))
+
     while running:
 
         for event in pygame.event.get():
-
             if event.type == pygame.QUIT:
                 running = False
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 board.on_click(event.pos)
+
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    board.key_down()
+                elif event.key == pygame.K_UP:
+                    board.key_up()
+
         screen.fill((200, 200, 200))
         board.render_board()
         pygame.display.update()
