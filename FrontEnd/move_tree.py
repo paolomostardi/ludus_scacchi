@@ -106,6 +106,11 @@ class MovesTree(object):
             node = node.get_first_child()
         return node
 
+    def has_children(self):
+        if self.children:
+            return True
+        return False
+
     def count_to_root(self, parent_tree):
         node = self
         count = 0
@@ -168,4 +173,3 @@ def test():
     print('Getting a list of the N parent n:', n)
     print('list : ')
     print(nodes.get_n_parents(tree_, n))
-test()
