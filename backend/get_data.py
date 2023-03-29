@@ -1,6 +1,10 @@
+import io
+
 import pandas as pd
 import requests
-
+import os
+import chess
+import chess.pgn
 
 def get_users_with_most_games_in_dataset(df):
     df = df.drop_duplicates(subset=['game_id'])
@@ -66,3 +70,58 @@ def get_all_users_in_a_file(file):
             user_games = get_user_amount_of_games(line.strip())
             array.append((line, user_games))
     return array
+
+def get_pgn_games_from_username(username):
+    # Create a folder called pgn_games if it doesn't exist
+    if not os.path.exists('pgn_games'):
+        os.makedirs('pgn_games')
+
+    # Set the output filename and path
+    filename = os.path.join('pgn_games', f'pgn_games_{username}.csv')
+
+    # Set the API endpoint
+    url = f"https://lichess.org/api/games/user/{username}"
+
+    # Set the request headers and parameters
+    headers = {
+        "Accept": "application/x-ndjson"
+    }
+
+    params = {
+        "max": "1000",  # Number of games to fetch per request (max 1000)
+        "perfType": "rapid"
+    }
+
+    # Send the GET request and get the response
+    response = requests.get(url, headers=headers, params=params, stream=True)
+
+    # Open the output file for writing
+    with open(filename, "w") as outfile:
+        # Iterate over the response content and write each line to the output file
+        for line in response.iter_lines():
+            if line:
+                outfile.write(line.decode('utf-8') + "\n")
+
+    print(f"Games saved to {filename}")
+
+
+def get_chess_boards_from_pgn(pgn_string):
+    board = chess.Board()
+    bitboards = []
+    for move in chess.pgn.read_game(io.StringIO(pgn_string)).mainline_moves():
+        board.push(move)
+        bitboards.append(board.copy())
+
+    return bitboards
+
+pgn = "e4 e6 d4 d5 exd5 exd5" \
+      " c4 Bb4+ Nc3 Nf6 Nf3 O-O" \
+      " cxd5 Nxd5 Bd2 Nc6 Bc4 Re8+ Be2" \
+      " Bg4 O-O Nf6 a3 Bf8 Bg5 Bxf3 Bxf3" \
+      " Nxd4 Bxf6 Qxf6 Bxb7 Rab8 Bd5 Rxb2" \
+      " Qa4 Bd6 Qxe8+ Bf8 Ne4 Qf4 Ng5 Rb6" \
+      " Bxf7+ Qxf7 Qxf7+"
+
+a = get_chess_boards_from_pgn(pgn)
+print(a)
+

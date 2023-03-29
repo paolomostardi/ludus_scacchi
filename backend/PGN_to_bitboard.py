@@ -1,17 +1,24 @@
-import keras
 import chess
 import chess.engine
 import random
 import numpy
-from keras import Sequential
+import pandas as pd
+
+import get_data
+import os
+
 from keras import layers
+from keras import models
 from keras.layers import Conv2D
 from keras.layers import Dense
 
+import keras.callbacks as callbacks
+import keras.optimizers as optimizers
 
-def random_board(max_depth = 123 ):
+
+def random_board(max_depth=100):
     board = chess.Board()
-    depth = random.randrange(0,max_depth)
+    depth = random.randrange(0, max_depth)
 
     for _ in range(depth):
         all_moves = list(board.legal_moves)
@@ -31,14 +38,6 @@ def stockfish(board, depth):
     return score
 
 
-def create_basic_model():
-    model = Sequential()
-    model.add(Conv2D(10, (1, 1)))
-    model.add(Conv2D(10, (1, 1)))
-    model.add(Conv2D(10, (1, 1)))
-    model.add(Dense(100, 'relu'))
-
-
 squares_index = {
     'a': 0,
     'b': 1,
@@ -53,7 +52,7 @@ squares_index = {
 
 def square_to_index(square):
     letter = chess.square_name(square)
-    return 8 - int(letter[1], squares_index[letter[0]])
+    return 8 - int(letter[1]), squares_index[letter[0]]
 
 
 def split_dims(board):
@@ -67,6 +66,88 @@ def split_dims(board):
             idx = numpy.unravel_index(square, (8, 8))
             board3d[piece + 5][7 - idx[0]][idx[1]] = 1
 
+    aux = board.turn
+    board.turn = chess.WHITE
+    for move in board.legal_moves:
+        i, j = square_to_index(move.to_square)
+        board3d[12][i][j] = 1
+
+    board.turn = chess.BLACK
+    for move in board.legal_moves:
+        i, j = square_to_index(move.to_square)
+        board3d[13][i][j] = 1
+    board.turn = aux
+
+    return board3d
+
+
+def build_model(conv_size, conv_depth):
+    board3d = layers.Input(shape=(14, 8, 8))
+    x = board3d
+    for _ in range(conv_depth):
+        x = Conv2D(filters=conv_size, kernel_size= 3, padding= 'same', activation='relu')(x)
+    x = layers.Flatten()(x)
+    x = Dense(64, 'relu')(x)
+    x = Dense(1, 'sigmoid')(x)
+
+    return models.Model(inputs = board3d, outputs = x)
+
+
+def get_dataset():
+    container = numpy.load('dataset.npz')
+    b, v = container['b'], container['v']
+    v = numpy.asarray(v / abs(v).max() / 2 + 0.5, dtype=numpy.float32)
+    return b, v
+
+
+def test_functions():
+    random_boards = random_board(max_depth = 15)
+    print(random_boards)
+
+    _3d_board = split_dims(random_boards)
+
+    print(_3d_board)
+
+    model = build_model(32, 4)
+    model.summary()
 
 
 
+
+
+def generate_database():
+    filename = 'data/top_players.txt'
+    with open(filename) as f:
+        for line in f:
+            get_data.get_pgn_games_from_username(line.split()[1])
+
+
+def convert_files_to_df():
+    directory = 'pgn_games'
+    dfs = []
+    for filename in os.listdir(directory):
+        print(filename)
+        df = pd.read_json(os.path.join(directory, filename), lines=True)
+        dfs.append(df)
+    return dfs
+
+
+dfs = convert_files_to_df()
+
+print(dfs)
+i = 0
+j = 1
+
+a = []
+for df in dfs:
+    i = 0
+    for move in df['moves']:
+        if move:
+            a.append(get_data.get_chess_boards_from_pgn(move[1]))
+        i += 1
+
+        print('done ' + str(i) + ' '+ str(j))
+    j += 1
+bit_boards = []
+for position in a:
+    print(position)
