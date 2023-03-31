@@ -21,8 +21,6 @@ def save_players(top_100_players):
             f.write(str(player[1]) + ' ' + player[0])
 
 
-
-
 def order_users_by_most_games_in_api():
     return
 
@@ -71,13 +69,14 @@ def get_all_users_in_a_file(file):
             array.append((line, user_games))
     return array
 
+
 def get_pgn_games_from_username(username):
     # Create a folder called pgn_games if it doesn't exist
-    if not os.path.exists('pgn_games'):
-        os.makedirs('pgn_games')
+    if not os.path.exists('data/pgn_games'):
+        os.makedirs('data/pgn_games')
 
     # Set the output filename and path
-    filename = os.path.join('pgn_games', f'pgn_games_{username}.csv')
+    filename = os.path.join('data/pgn_games', f'pgn_games_{username}.csv')
 
     # Set the API endpoint
     url = f"https://lichess.org/api/games/user/{username}"
@@ -114,14 +113,6 @@ def get_chess_boards_from_pgn(pgn_string):
 
     return bitboards
 
-pgn = "e4 e6 d4 d5 exd5 exd5" \
-      " c4 Bb4+ Nc3 Nf6 Nf3 O-O" \
-      " cxd5 Nxd5 Bd2 Nc6 Bc4 Re8+ Be2" \
-      " Bg4 O-O Nf6 a3 Bf8 Bg5 Bxf3 Bxf3" \
-      " Nxd4 Bxf6 Qxf6 Bxb7 Rab8 Bd5 Rxb2" \
-      " Qa4 Bd6 Qxe8+ Bf8 Ne4 Qf4 Ng5 Rb6" \
-      " Bxf7+ Qxf7 Qxf7+"
 
-a = get_chess_boards_from_pgn(pgn)
-print(a)
+
 

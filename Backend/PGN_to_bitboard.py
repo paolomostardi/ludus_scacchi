@@ -112,9 +112,6 @@ def test_functions():
     model.summary()
 
 
-
-
-
 def generate_database():
     filename = 'data/top_players.txt'
     with open(filename) as f:
@@ -122,32 +119,56 @@ def generate_database():
             get_data.get_pgn_games_from_username(line.split()[1])
 
 
+def determine_user(filename):
+    parts = filename.split('_')
+    return parts[2].replace('.csv','')
+
+
 def convert_files_to_df():
-    directory = 'pgn_games'
+    directory = 'data/pgn_games'
     dfs = []
+    users = []
     for filename in os.listdir(directory):
         print(filename)
+        users.append(determine_user(filename))
         df = pd.read_json(os.path.join(directory, filename), lines=True)
         dfs.append(df)
+    return dfs, users
+
+
+def print_df_infos(df):
+    print('size = ' + str(df.size))
+
+
+# the df is structured like something
+def filter_moves_by_user(dfs, user):
+
     return dfs
 
 
-dfs = convert_files_to_df()
-
-print(dfs)
-i = 0
-j = 1
-
-a = []
-for df in dfs:
-    i = 0
+def df_to_bitboard_array(df):
+    bitboard_player = []
     for move in df['moves']:
         if move:
-            a.append(get_data.get_chess_boards_from_pgn(move[1]))
-        i += 1
+            game = get_data.get_chess_boards_from_pgn(move)
+            for position in game:
+                bitboard_player.append(split_dims(position))
+    return bitboard_player
 
-        print('done ' + str(i) + ' '+ str(j))
-    j += 1
-bit_boards = []
-for position in a:
-    print(position)
+
+def save_bitboard_player(bitboard_player, username):
+    filename = 'data/bit_boards/something.npy'
+    numpy.save(filename, bitboard_player)
+
+
+def generate_data():
+    dfs_users = convert_files_to_df()
+    for df_user in dfs_users:
+        df_user = filter_moves_by_user(dfs_users[0], dfs_users[1])
+
+    for df_user in dfs_users:
+        bitboard = df_to_bitboard_array(df_user[0])
+        save_bitboard_player(bitboard, df_user[1])
+
+
+generate_data()
