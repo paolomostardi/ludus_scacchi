@@ -1,41 +1,8 @@
-import chess
-import chess.engine
-import random
+from Backend import get_data
 import numpy
-import pandas as pd
-
-import get_data
 import os
-
-from keras import layers
-from keras import models
-from keras.layers import Conv2D
-from keras.layers import Dense
-
-import keras.callbacks as callbacks
-import keras.optimizers as optimizers
-
-
-def random_board(max_depth=100):
-    board = chess.Board()
-    depth = random.randrange(0, max_depth)
-
-    for _ in range(depth):
-        all_moves = list(board.legal_moves)
-        random_move = random.choice(all_moves)
-        board.push(random_move)
-
-        if board.is_game_over():
-            break
-
-    return board
-
-
-def stockfish(board, depth):
-    with chess.engine.SimpleEngine.popen_uci('/content/stockfish') as sf:
-        result = sf.analyse(board, chess.engine.Limit(depth=depth))
-        score = result['score'].white().score()
-    return score
+import chess
+import pandas as pd
 
 
 squares_index = {
@@ -81,37 +48,6 @@ def split_dims(board):
     return board3d
 
 
-def build_model(conv_size, conv_depth):
-    board3d = layers.Input(shape=(14, 8, 8))
-    x = board3d
-    for _ in range(conv_depth):
-        x = Conv2D(filters=conv_size, kernel_size= 3, padding= 'same', activation='relu')(x)
-    x = layers.Flatten()(x)
-    x = Dense(64, 'relu')(x)
-    x = Dense(1, 'sigmoid')(x)
-
-    return models.Model(inputs = board3d, outputs = x)
-
-
-def get_dataset():
-    container = numpy.load('dataset.npz')
-    b, v = container['b'], container['v']
-    v = numpy.asarray(v / abs(v).max() / 2 + 0.5, dtype=numpy.float32)
-    return b, v
-
-
-def test_functions():
-    random_boards = random_board(max_depth = 15)
-    print(random_boards)
-
-    _3d_board = split_dims(random_boards)
-
-    print(_3d_board)
-
-    model = build_model(32, 4)
-    model.summary()
-
-
 def generate_database():
     filename = 'data/top_players.txt'
     with open(filename) as f:
@@ -121,11 +57,17 @@ def generate_database():
 
 def determine_user(filename):
     parts = filename.split('_')
-    return parts[2].replace('.csv','')
+    return parts[2].replace('.csv', '')
 
 
+def print_df_infos(df):
+    print('size = ' + str(df.size))
+
+
+#
+# takes json and make it a pd df
 def convert_files_to_df():
-    directory = 'data/pgn_games'
+    directory = 'Backend/data/pgn_games'
     dfs = []
     users = []
     for filename in os.listdir(directory):
@@ -133,42 +75,87 @@ def convert_files_to_df():
         users.append(determine_user(filename))
         df = pd.read_json(os.path.join(directory, filename), lines=True)
         dfs.append(df)
+    print(' the users are ')
+    print(users)
     return dfs, users
 
 
-def print_df_infos(df):
-    print('size = ' + str(df.size))
+# dfs_user is tuple of list of dataframes and users name
+# this function takes the dfs and for each element of the list we change the element inside to a series of positions expressed
+# in python chess
+
+def convert_game_dfs_to_position_dfs(dfs_users):
+
+    dfs, users = dfs_users
+    dfs1 = []
+    print(' the users are ')
+    print(users)
+    for dfs_index, df in enumerate(dfs):
+        print('processing the df :')
+        print(df.head(1))
+        df1 = []
+        for index, game in enumerate(df['moves']):
+            if game:
+                try:
+                    white_player = df['players'][index]['white']['user']['name']
+                    df1.append((get_data.get_chess_boards_from_pgn(game), users[dfs_index] == white_player))
+                except KeyError:
+                    print('no user likely means there is an ai so i can just skip this game')
+        dfs1.append(df1)
+
+    dfs_users = dfs1, users
+    return dfs_users
 
 
-# the df is structured like something
-def filter_moves_by_user(dfs, user):
+def convert_to_moves_of_only_one_user(dfs_users):
+    dfs, users = dfs_users
+    df1 = []
+    for df in dfs:
 
-    return dfs
 
 
-def df_to_bitboard_array(df):
-    bitboard_player = []
-    for move in df['moves']:
-        if move:
-            game = get_data.get_chess_boards_from_pgn(move)
+    return dfs_users
+
+
+def convert_df_of_moves_to_bitboard_array(dfs_users):
+    dfs, users = dfs_users
+    dfs1 = []
+    print(' the users are ')
+    print(users)
+    for df in dfs:
+        print('starting a new df')
+        df1 = []
+        for game in df:
             for position in game:
-                bitboard_player.append(split_dims(position))
-    return bitboard_player
+                df1.append(split_dims(position))
+        dfs1.append(df1)
+    dfs_users = dfs1, users
+    return dfs_users
 
 
-def save_bitboard_player(bitboard_player, username):
-    filename = 'data/bit_boards/something.npy'
-    numpy.save(filename, bitboard_player)
+def save_bitboard_player(dfs_users):
+    for index, value in enumerate(dfs_users[0]):
+        filename = 'Backend/data/bit_boards/' + dfs_users[1][index] + '_bitboard.npy'
+        numpy.save(filename, value)
+        print('finished to save :')
+        print(filename)
 
 
 def generate_data():
+    print('getting the df')
     dfs_users = convert_files_to_df()
-    for df_user in dfs_users:
-        df_user = filter_moves_by_user(dfs_users[0], dfs_users[1])
+    print('converting the games to positions')
+    dfs_users = convert_game_dfs_to_position_dfs(dfs_users)
+    print('converting moves to only one user moves')
+    dfs_users = convert_to_moves_of_only_one_user(dfs_users)
+    print('converting moves to bit boards')
+    dfs_users = convert_df_of_moves_to_bitboard_array(dfs_users)
+    print('saving bitboards')
+    save_bitboard_player(dfs_users)
 
-    for df_user in dfs_users:
-        bitboard = df_to_bitboard_array(df_user[0])
-        save_bitboard_player(bitboard, df_user[1])
 
 
-generate_data()
+
+
+
+
