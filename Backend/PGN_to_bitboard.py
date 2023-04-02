@@ -3,7 +3,7 @@ import numpy
 import os
 import chess
 import pandas as pd
-
+import time
 
 squares_index = {
     'a': 0,
@@ -109,12 +109,43 @@ def convert_game_dfs_to_position_dfs(dfs_users):
 
 def convert_to_moves_of_only_one_user(dfs_users):
     dfs, users = dfs_users
-    df1 = []
+    dfs1 = []
+    y = []
     for df in dfs:
+        df1 = []
+        y1 = []
+        for game_white_tuple in df:
+            game = []
+            y_game = []
+            # the player is white
+            if game_white_tuple[1]:
 
+                board = chess.Board()
+                print('white player')
+                game.append(board)
+                for index, position in enumerate(game_white_tuple[0]):
+                    # when the index is odd then is black to move
+                    if index % 2:
+                        game.append(position)
+                    else:
+                        y_game.append(position)
 
+            # the player is black
+            else:
+                for index, position in enumerate(game_white_tuple[0]):
+                    if index % 2:
+                        y_game.append(position)
+                    else:
+                        game.append(position)
 
-    return dfs_users
+            df1.append(game)
+            y1.append(y_game)
+
+        dfs1.append(df1)
+        y.append(y1)
+
+    dfs_users = dfs1, users
+    return dfs_users, y
 
 
 def convert_df_of_moves_to_bitboard_array(dfs_users):
@@ -125,20 +156,21 @@ def convert_df_of_moves_to_bitboard_array(dfs_users):
     for df in dfs:
         print('starting a new df')
         df1 = []
-        for game in df:
-            for position in game:
-                df1.append(split_dims(position))
+        for position in df:
+            df1.append(split_dims(position))
         dfs1.append(df1)
     dfs_users = dfs1, users
     return dfs_users
 
 
-def save_bitboard_player(dfs_users):
+def save_bitboard_player(dfs_users, y):
     for index, value in enumerate(dfs_users[0]):
         filename = 'Backend/data/bit_boards/' + dfs_users[1][index] + '_bitboard.npy'
         numpy.save(filename, value)
         print('finished to save :')
         print(filename)
+        filename = 'Backend/data/bit_boards/' + dfs_users[1][index] + '_Y_bitboard.npy'
+        numpy.save(filename, y[index])
 
 
 def generate_data():
@@ -147,15 +179,49 @@ def generate_data():
     print('converting the games to positions')
     dfs_users = convert_game_dfs_to_position_dfs(dfs_users)
     print('converting moves to only one user moves')
-    dfs_users = convert_to_moves_of_only_one_user(dfs_users)
+    dfs_users, y = convert_to_moves_of_only_one_user(dfs_users)
     print('converting moves to bit boards')
     dfs_users = convert_df_of_moves_to_bitboard_array(dfs_users)
     print('saving bitboards')
-    save_bitboard_player(dfs_users)
+    save_bitboard_player(dfs_users, y)
 
 
+def test_y(x, y):
+    legal = 0
+    illegal = 0
+    number_out = 0
+    for index_game, game in enumerate(x):
 
+        for index_position, position in enumerate(game):
+            try:
+                board = position.copy()
+                board.push(y[index_game][index_position].peek())
+                legal += 1
+                print('legal --------------------------------------------------------------')
 
+            except AssertionError:
+                print('illegal move detected')
+                print('move is ')
+                print(y[index_game][index_position].peek())
 
+                print('board is ')
+                print(board.fen())
+
+                print(' y board is ')
+                print(y[index_game].fen())
+                illegal += 1
+
+                time.sleep(1)
+                print('index is : ')
+                print(index_game)
+
+            except IndexError:
+                print(' finish i guess ? ')
+                number_out +=1
+
+    print(legal)
+    print(illegal)
+    print(number_out)
+    return legal, illegal
 
 
