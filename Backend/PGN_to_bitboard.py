@@ -23,7 +23,7 @@ def square_to_index(square):
 
 
 def split_dims(board):
-    board3d = numpy.zeros((14, 8, 8), dtype= numpy.int8)
+    board3d = numpy.zeros((14, 8, 8), dtype=numpy.int8)
 
     for piece in chess.PIECE_TYPES:
         for square in board.pieces(piece, chess.WHITE):
@@ -46,6 +46,19 @@ def split_dims(board):
     board.turn = aux
 
     return board3d
+
+
+def move_to_matrix(move):
+    from_square = move.from_square
+    to_square = move.to_square
+
+    from_matrix = numpy.zeros((8, 8), dtype=numpy.uint8)
+    to_matrix = numpy.zeros((8, 8), dtype=numpy.uint8)
+
+    from_matrix[from_square // 8, from_square % 8] = 1
+    to_matrix[to_square // 8, to_square % 8] = 1
+
+    return from_matrix, to_matrix
 
 
 def generate_database():
@@ -128,6 +141,7 @@ def convert_to_moves_of_only_one_user(dfs_users):
                     if index % 2:
                         game.append(position)
                     else:
+
                         y_game.append(position)
 
             # the player is black
@@ -148,19 +162,24 @@ def convert_to_moves_of_only_one_user(dfs_users):
     return dfs_users, y
 
 
-def convert_df_of_moves_to_bitboard_array(dfs_users):
+def convert_df_of_moves_to_bitboard_array(dfs_users, y):
     dfs, users = dfs_users
     dfs1 = []
+    ys = []
     print(' the users are ')
     print(users)
-    for df in dfs:
-        print('starting a new df')
+    for df, user_y in enumerate(y):
+        y1 = []
         df1 = []
-        for position in df:
-            df1.append(split_dims(position))
+        for i_game, game in enumerate(user_y):
+            for i_position, position in enumerate(game):
+                y1.append(move_to_matrix(position.peek()))
+                g = split_dims(dfs[df][i_game][i_position])
+                df1.append(g)
+        ys.append(y1)
         dfs1.append(df1)
     dfs_users = dfs1, users
-    return dfs_users
+    return dfs_users, ys
 
 
 def save_bitboard_player(dfs_users, y):
@@ -181,7 +200,7 @@ def generate_data():
     print('converting moves to only one user moves')
     dfs_users, y = convert_to_moves_of_only_one_user(dfs_users)
     print('converting moves to bit boards')
-    dfs_users = convert_df_of_moves_to_bitboard_array(dfs_users)
+    dfs_users = convert_df_of_moves_to_bitboard_array(dfs_users, y)
     print('saving bitboards')
     save_bitboard_player(dfs_users, y)
 
