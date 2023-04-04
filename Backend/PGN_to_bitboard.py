@@ -1,3 +1,4 @@
+
 from Backend import get_data
 import numpy
 import os
@@ -200,7 +201,7 @@ def generate_data():
     print('converting moves to only one user moves')
     dfs_users, y = convert_to_moves_of_only_one_user(dfs_users)
     print('converting moves to bit boards')
-    dfs_users = convert_df_of_moves_to_bitboard_array(dfs_users, y)
+    dfs_users, y = convert_df_of_moves_to_bitboard_array(dfs_users, y)
     print('saving bitboards')
     save_bitboard_player(dfs_users, y)
 
