@@ -16,7 +16,7 @@ def get_users_with_most_games_in_dataset(df):
 
 def save_players(top_100_players):
     print(top_100_players)
-    with open('top_players.txt', 'w') as f:
+    with open('list_of_players.txt', 'w') as f:
         for player in top_100_players:
             f.write(str(player[1]) + ' ' + player[0])
 
@@ -70,13 +70,22 @@ def get_all_users_in_a_file(file):
     return array
 
 
+def get_only_all_username(file):
+    list_of_username = []
+    with open(file, 'r') as f:
+        for line in f:
+            parts = line.split()
+            list_of_username.append(parts[1])
+    return list_of_username
+
 def get_pgn_games_from_username(username):
     # Create a folder called pgn_games if it doesn't exist
-    if not os.path.exists('data/pgn_games'):
-        os.makedirs('data/pgn_games')
+    print('downloading the games of :', username)
+    if not os.path.exists('data/pgn_games_1700'):
+        os.makedirs('data/pgn_games_1700')
 
     # Set the output filename and path
-    filename = os.path.join('data/pgn_games', f'pgn_games_{username}.csv')
+    filename = os.path.join('data/pgn_games_1700', f'pgn_games_{username}.csv')
 
     # Set the API endpoint
     url = f"https://lichess.org/api/games/user/{username}"
@@ -87,19 +96,23 @@ def get_pgn_games_from_username(username):
     }
 
     params = {
-        "max": "1000",  # Number of games to fetch per request (max 1000)
-        "perfType": "rapid"
+        "max": "2000",  # Number of games to fetch per request (max 1000)
+        "perfType": ["rapid", 'blitz', 'classical'],
+        'clocks': True
     }
 
     # Send the GET request and get the response
     response = requests.get(url, headers=headers, params=params, stream=True)
-
+    i = 0
     # Open the output file for writing
     with open(filename, "w") as outfile:
         # Iterate over the response content and write each line to the output file
         for line in response.iter_lines():
             if line:
                 outfile.write(line.decode('utf-8') + "\n")
+                i += 1
+                if i % 500 == 0:
+                    print('500 games downloaded')
 
     print(f"Games saved to {filename}")
 
@@ -114,5 +127,17 @@ def get_chess_boards_from_pgn(pgn_string):
     return bitboards
 
 
+def get_games_from_all_users():
+
+    filepath = 'Backend/data/list_of_players.txt'
+    for user in get_only_all_username(filepath):
+        get_pgn_games_from_username(user)
 
 
+def get_1700():
+    users = ['WaywardQueer', 'AKUMARGMASTER2019', 'xXCroGamer91Xx', 'Joonaf', 'CyrCo', 'ZheniaFrolov', 'jelovme',
+             'nonAs', 'Sasj1', 'CrapCrusher', 'lexparker', 'jpk1489', 'davebb', 'MoRRo-13']
+    for user in users:
+        get_pgn_games_from_username(user)
+
+get_1700()

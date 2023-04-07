@@ -63,7 +63,7 @@ def move_to_matrix(move):
 
 
 def generate_database():
-    filename = 'data/top_players.txt'
+    filename = 'list_of_players.txt'
     with open(filename) as f:
         for line in f:
             get_data.get_pgn_games_from_username(line.split()[1])
@@ -80,15 +80,21 @@ def print_df_infos(df):
 
 #
 # takes json and make it a pd df
-def convert_files_to_df():
-    directory = 'Backend/data/pgn_games'
+def convert_files_to_df(directory=None, user_list = None):
+    if directory is None:
+        directory = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\data\pgn_games'
+    if user_list is None:
+        user_list = ['mumia50', 'CrapCrusher', 'Sfide_Mentali', 'DVRazor']
+
     dfs = []
     users = []
+
     for filename in os.listdir(directory):
-        print(filename)
-        users.append(determine_user(filename))
-        df = pd.read_json(os.path.join(directory, filename), lines=True)
-        dfs.append(df)
+        if determine_user(filename) in user_list:
+            print(filename)
+            users.append(determine_user(filename))
+            df = pd.read_json(os.path.join(directory, filename), lines=True)
+            dfs.append(df)
     print(' the users are ')
     print(users)
     return dfs, users
@@ -106,7 +112,7 @@ def convert_game_dfs_to_position_dfs(dfs_users):
     print(users)
     for dfs_index, df in enumerate(dfs):
         print('processing the df :')
-        print(df.head(1))
+        print(users[dfs_index])
         df1 = []
         for index, game in enumerate(df['moves']):
             if game:
@@ -245,3 +251,4 @@ def test_y(x, y):
     return legal, illegal
 
 
+generate_data()

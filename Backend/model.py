@@ -35,34 +35,20 @@ def LeNet(input_layer, kernel_size=(2, 2), pool_size=(2, 2), conv_size=64):
     return model
 
 
+def fit_le_net():
+
+    le_net = LeNet(input_shape)
+    le_net = compile_model(le_net)
+
+    username = 'CrapCrusher'
+
+    filename_x = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\bit_boards\CrapCrusher_bitboard.npy'
+    filename_y = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\bit_boards\CrapCrusher_Y_bitboard.npy'
+
+    y = numpy.load(filename_y)
+    x = numpy.load(filename_x)
+
+    le_net.fit(x, y, epochs=100, batch_size=32)
 
 
-le_net = LeNet(input_shape)
-le_net = compile_model(le_net)
-
-filename_y = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\bit_boards\fritella_Y_bitboard.npy'
-filename_x = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\bit_boards\fritella_bitboard.npy'
-
-y = numpy.load(filename_y)
-x = numpy.load(filename_x)
-
-le_net.fit(x, y, epochs=100, batch_size=32)
-
-
-filename_y = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\bit_boards\pollofritto_Y_bitboard.npy'
-filename_x = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\bit_boards\pollofritto_bitboard.npy'
-
-y = numpy.load(filename_y)
-x = numpy.load(filename_x)
-
-le_net.fit(x, y, epochs=100, batch_size=32)
-
-
-filename_y = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\bit_boards\meliniak_Y_bitboard.npy'
-filename_x = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\bit_boards\meliniak_bitboard.npy'
-
-y = numpy.load(filename_y)
-x = numpy.load(filename_x)
-
-le_net.fit(x, y, epochs=100, batch_size=32)
-
+fit_le_net()
