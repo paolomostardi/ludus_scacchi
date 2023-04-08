@@ -1,35 +1,66 @@
 import pandas
+import requests
+import json
+
+from Backend import lichess_user
 
 
-def get_users_with_most_games_in_dataset(df):
-    df = df.drop_duplicates(subset=['game_id'])
-    player_counts = pandas.concat([df['white_player'], df['black_player']]).value_counts()
-    top_100_players = player_counts.head(200).index.to_numpy()
+def open_json_file_pandas(json_filename):
 
-    return top_100_players
+    return pandas.read_json(json_filename)
 
 
-def save_players(top_100_players):
-    print(top_100_players)
-    with open('list_of_players.txt', 'w') as f:
-        for player in top_100_players:
-            f.write(str(player[1]) + ' ' + player[0])
+def search_users(dataframe, rating_desired=1700, rating_range=50, time_format='rapid'):
+    lower_bound = rating_desired - rating_range
+    upper_bound = rating_desired + rating_range
+    dataframe = dataframe['perfs']['time_format']
+    filtered_df = dataframe[(dataframe['rating'] >= lower_bound) & (dataframe['rating'] <= upper_bound)]
+    list_of_players = list(filtered_df['name'])
+
+    return set(list_of_players)
 
 
-def open_file_pandas():
+def get_user_info(username):
+    url = "https://lichess.org/api/user/" + username
+    response = requests.get(url)
+    response = response.json()
+    user = lichess_user.LichessUser(response)
+    return user
+
+
+def add_users_to_file(user_list, list_filename):
+    with open(list_filename, 'r+') as file:
+        data = file.read()
+        for user in user_list:
+            if user.username not in data:
+                file.write(user.username + ' ')
+                file.write(str(user.blitz_rating) + ' ')
+                file.write(str(user.rapid_rating) + ' ')
+                file.write(str(user.classical_rating) + ' ')
+                file.write(str(user.blitz_amount_of_games) + ' ')
+                file.write(str(user.rapid_amount_of_games) + ' ')
+                file.write(str(user.classical_amount_of_games) + ' ')
+                file.write(str(user.total_amount_of_games) + ' ')
+                file.write(str(user.total_slow_games) + '\n')
+    sort_users_by_rapid_rating(list_filename)
     return
 
 
+def sort_users_by_rapid_rating(list_filename):
+    with open(list_filename, 'r') as file:
+        # read the lines and convert them into LichessUser objects
+        lines = file.readlines()
+        users = []
+        for line in lines:
+            user_dict = json.loads(line)
+            user = lichess_user.LichessUser(user_dict)
+            if user.username is not None:
+                users.append(user)
 
+        # sort the users by their rapid rating
+        sorted_users = sorted(users, key=lambda user: user.rapid_rating, reverse=True)
 
-
-def search_users():
-    return
-
-
-def get_user_info():
-    return
-
-
-
-
+    # rewrite the file with the sorted users
+    with open(list_filename, 'w') as file:
+        for user in sorted_users:
+            file.write(json.dumps(vars(user)) + '\n')

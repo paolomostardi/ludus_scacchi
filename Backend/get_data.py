@@ -6,6 +6,7 @@ import os
 import chess
 import chess.pgn
 
+
 def get_users_with_most_games_in_dataset(df):
     df = df.drop_duplicates(subset=['game_id'])
     player_counts = pd.concat([df['white_player'], df['black_player']]).value_counts()
@@ -78,43 +79,8 @@ def get_only_all_username(file):
             list_of_username.append(parts[1])
     return list_of_username
 
-def get_pgn_games_from_username(username):
-    # Create a folder called pgn_games if it doesn't exist
-    print('downloading the games of :', username)
-    if not os.path.exists('data/pgn_games_1700'):
-        os.makedirs('data/pgn_games_1700')
 
-    # Set the output filename and path
-    filename = os.path.join('data/pgn_games_1700', f'pgn_games_{username}.csv')
 
-    # Set the API endpoint
-    url = f"https://lichess.org/api/games/user/{username}"
-
-    # Set the request headers and parameters
-    headers = {
-        "Accept": "application/x-ndjson"
-    }
-
-    params = {
-        "max": "2000",  # Number of games to fetch per request (max 1000)
-        "perfType": ["rapid", 'blitz', 'classical'],
-        'clocks': True
-    }
-
-    # Send the GET request and get the response
-    response = requests.get(url, headers=headers, params=params, stream=True)
-    i = 0
-    # Open the output file for writing
-    with open(filename, "w") as outfile:
-        # Iterate over the response content and write each line to the output file
-        for line in response.iter_lines():
-            if line:
-                outfile.write(line.decode('utf-8') + "\n")
-                i += 1
-                if i % 500 == 0:
-                    print('500 games downloaded')
-
-    print(f"Games saved to {filename}")
 
 
 def get_chess_boards_from_pgn(pgn_string):
