@@ -148,7 +148,7 @@ def from_bitboard_save_file(filepath, username, x_bitboard, y_bitboard):
 
 def generate_from_username(username, first_pgn_index):
 
-    user_rating = count.get_user_info(username).rapid_rating
+    user_rating = count.get_user_info(username).get_rating_range()
 
     filepath = 'Backend/data/pgn_games/pgn_games_' + user_rating + '/pgn_games_' + username + '.json'
     filepath_to_save = 'Backend/data/bit_boards/bit_boards_' + user_rating

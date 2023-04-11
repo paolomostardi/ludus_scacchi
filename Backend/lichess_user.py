@@ -59,4 +59,21 @@ class LichessUser:
             self.bitboard_games = json_file_row['bitboard_games']
             self.searched_games = json_file_row['searched_games']
 
+    def get_rating_range(self):
+        rating_range = self.rapid_rating % 100
+        if rating_range > 50:
+            rating_range = 100 - rating_range + self.rapid_rating
+        else:
+            rating_range = self.rapid_rating - rating_range
 
+        return rating_range
+
+
+def get_rating_range(rating):
+    rating_range = rating % 100
+    if rating_range > 50:
+        rating_range = 100 - rating_range + rating
+    else:
+        rating_range = rating - rating_range
+
+    return rating_range

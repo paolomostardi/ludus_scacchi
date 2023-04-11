@@ -6,10 +6,10 @@ from Backend import from_PGN_generate_bitboards as generate_bitboard
 
 
 class PipelineManager:
-    def __init__(self, user_file='Backend/data/user_record.json'):
+    def __init__(self, user_file='Backend/data/user_record.csv'):
 
         self.user_file = user_file
-        self.user_df = pandas.read_json(user_file)
+        self.user_df = pandas.read_csv(user_file)
 
         self.user_rating = 1700
         self.rating_range = 50
@@ -25,12 +25,12 @@ class PipelineManager:
             self.generate_bitboards(number_of_games)
 
         elif self.bitboard_left_to_generate() + self.pgn_left_to_download() >= number_of_games:
-            self.add_pgns(number_of_games - self.bitboard_left_to_generate())
+            self.add_pgn(number_of_games - self.bitboard_left_to_generate())
             self.generate_bitboards(number_of_games)
 
         else:
             self.add_users(number_of_games)
-            self.add_pgns(number_of_games - self.bitboard_left_to_generate())
+            self.add_pgn(number_of_games - self.bitboard_left_to_generate())
             self.generate_bitboards(number_of_games)
 
         return
@@ -62,7 +62,7 @@ class PipelineManager:
     def generate_bitboards(self, number_of_games):
 
         if self.bitboard_left_to_generate() - number_of_games <= 0:
-            self.add_pgns(number_of_games)
+            self.add_pgn(number_of_games)
 
         current_df = self.current_range_df
         users_left = (current_df['games_downloaded'] - current_df['bitboard_games'] >= 0)
@@ -73,10 +73,28 @@ class PipelineManager:
         while bit_boards_generated < number_of_games:
             user = users_with_bitboards_left_to_generate.iloc[index]
             bitboards_already_generated_for_user = user['bitboard_games']
+            total_pgn_available = user['games_downloaded']
             username = user['username']
             generate_bitboard.generate_from_username(username, bitboards_already_generated_for_user)
+            index += 1
+            bit_boards_generated += total_pgn_available - bitboards_already_generated_for_user
+            self.change_user_bitboard(user, total_pgn_available)
+        self.save_df()
 
-    def add_pgns(self, number_of_games):
+    def change_user_bitboard(self, user, bitboard_amount):
+        username = user['username']
+        self.user_df.loc[self.user_df['username'] == username, 'bitboard_games'] = bitboard_amount
+        return
+
+    def save_df(self):
+        self.user_df.to_csv(self.user_file)
+        return
+
+    def add_pgn(self, number_of_games):
+        if self.pgn_left_to_download() < number_of_games:
+            self.add_users(number_of_games)
+
+
         return
 
     def add_users(self, number_of_games):

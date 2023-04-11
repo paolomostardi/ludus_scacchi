@@ -64,3 +64,5 @@ def sort_users_by_rapid_rating(list_filename):
     with open(list_filename, 'w') as file:
         for user in sorted_users:
             file.write(json.dumps(vars(user)) + '\n')
+
+

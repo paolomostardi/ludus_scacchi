@@ -1,5 +1,5 @@
 import requests
-
+import os
 
 # Function to get user data from Lichess API
 def get_user_data(username):
@@ -31,6 +31,7 @@ def write_user_ratings(input_file, output_file):
             except KeyError:
                 print(username + 'is giving problems')
 
+
 def sort_file(reading_file,writing_file):
 
     with open(reading_file, 'r') as f:
@@ -48,3 +49,14 @@ def sort_file(reading_file,writing_file):
 input = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\top_players_by_rating.txt'
 output = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\top_players_by_rating.txt'
 sort_file(input,output)
+
+
+def rename_files_to_json(folder_path):
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".csv"):
+            old_filepath = os.path.join(folder_path, filename)
+            new_filename = os.path.splitext(filename)[0] + ".json"
+            new_filepath = os.path.join(folder_path, new_filename)
+            os.rename(old_filepath, new_filepath)
+
+
