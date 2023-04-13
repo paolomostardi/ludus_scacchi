@@ -66,3 +66,9 @@ def sort_users_by_rapid_rating(list_filename):
             file.write(json.dumps(vars(user)) + '\n')
 
 
+
+def from_amount_of_games_add_user_to_file(amount_of_game, user_file, pgn_folder):
+
+    user_dataframe = pandas.read_csv(user_file)
+    search_games = (user_dataframe['games_downloaded'] - user_dataframe['searched_games'] > 0)
+    games_left_to_search_dataframe = user_dataframe[search_games]

@@ -6,7 +6,7 @@ from Backend import from_PGN_generate_bitboards as generate_bitboard
 
 
 class PipelineManager:
-    def __init__(self, user_file='Backend/data/user_record.csv'):
+    def __init__(self, user_file='Backend/data/user_record.csv', pgn_folder_first_part='Backend/data/pgn_games'):
 
         self.user_file = user_file
         self.user_df = pandas.read_csv(user_file)
@@ -14,6 +14,7 @@ class PipelineManager:
         self.user_rating = 1700
         self.rating_range = 50
         self.current_range_df = self.get_list_of_users_by_current_rating()
+        self.pgn_folder_first_part = pgn_folder_first_part
 
         return
 
@@ -34,6 +35,9 @@ class PipelineManager:
             self.generate_bitboards(number_of_games)
 
         return
+
+    def get_pgn_folder(self):
+        return self.pgn_folder_first_part + str(self.user_rating) + '_pgn_games'
 
     def get_list_of_users_by_current_rating(self):
 
@@ -65,7 +69,7 @@ class PipelineManager:
             self.add_pgn(number_of_games)
 
         current_df = self.current_range_df
-        users_left = (current_df['games_downloaded'] - current_df['bitboard_games'] >= 0)
+        users_left = (current_df['games_downloaded'] - current_df['bitboard_games'] > 0)
         users_with_bitboards_left_to_generate = current_df[users_left]
 
         bit_boards_generated = 0
@@ -86,6 +90,11 @@ class PipelineManager:
         self.user_df.loc[self.user_df['username'] == username, 'bitboard_games'] = bitboard_amount
         return
 
+    def change_user_pgn(self, user, pgn_amount):
+        username = user['username']
+        self.user_df.loc[self.user_df['username'] == username, 'games_downloaded'] = pgn_amount
+        return
+
     def save_df(self):
         self.user_df.to_csv(self.user_file)
         return
@@ -94,10 +103,34 @@ class PipelineManager:
         if self.pgn_left_to_download() < number_of_games:
             self.add_users(number_of_games)
 
+        current_df = self.current_range_df
+        users_left = (current_df['total_amount_of_games'] - current_df['games_downloaded'] > 0)
+        users_with_games_left_to_download = current_df[users_left]
+
+        games_downloaded = 0
+        index = 0
+
+        while games_downloaded < number_of_games:
+
+            user = users_with_games_left_to_download.iloc[index]
+            games_already_downloaded = user['games_downloaded']
+            total_pgn_available = user['total_amount_of_games']
+            username = user['username']
+
+            games_in_pgn.get_pgn_games_from_username(username, self.get_pgn_folder())
+            index += 1
+            games_downloaded += total_pgn_available - games_already_downloaded
+            self.change_user_pgn(user, total_pgn_available)
+
+        self.save_df()
 
         return
 
     def add_users(self, number_of_games):
+
+        current_df = self.current_range_df
+        count_users.from_amount_of_games_add_user_to_file(number_of_games,self.user_file,self.get_pgn_folder())
+
         return
 
 
