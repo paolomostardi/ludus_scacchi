@@ -25,6 +25,7 @@ def get_pgn_games_from_username(username, folder, number_of_games=2000, performa
 
     response = requests.get(url, headers=headers, params=params, stream=True)
 
+
     with open(filename, "w") as outfile:
         for line in response.iter_lines():
             if line:

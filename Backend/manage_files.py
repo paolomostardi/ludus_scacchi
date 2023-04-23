@@ -1,5 +1,8 @@
 import requests
 import os
+import json
+import pandas as pd
+
 
 # Function to get user data from Lichess API
 def get_user_data(username):
@@ -45,12 +48,6 @@ def sort_file(reading_file,writing_file):
             f.write(' '.join(line) + '\n')
 
 
-
-input = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\top_players_by_rating.txt'
-output = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\top_players_by_rating.txt'
-sort_file(input,output)
-
-
 def rename_files_to_json(folder_path):
     for filename in os.listdir(folder_path):
         if filename.endswith(".csv"):
@@ -60,3 +57,18 @@ def rename_files_to_json(folder_path):
             os.rename(old_filepath, new_filepath)
 
 
+def merge_csvs_and_jsons(folder_path):
+    json_dfs = []
+    csv_dfs = []
+
+    for filename in os.listdir(folder_path):
+        filename = folder_path + '/' + filename
+        if filename.endswith(".json"):
+            json_df = pd.read_json(filename, lines=True)
+            json_dfs.append(json_df)
+        elif filename.endswith(".csv"):
+            csv_df = pd.read_csv(filename)
+            csv_dfs.append(csv_df)
+
+    merged_df = pd.concat(json_dfs + csv_dfs, axis=0, ignore_index=True)
+    return merged_df

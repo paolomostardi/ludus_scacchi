@@ -64,18 +64,22 @@ def get_chess_boards_from_pgn(pgn_string):
 
 
 def from_json_dataframe_create_list_of_chess_position(json_df, username):
+    print(' creating list of chess positions ')
+    print(json_df)
     list_of_position_and_is_white_player = []
     for index, game in enumerate(json_df['moves']):
-        if game:
-            try:
+        try:
+            if game:
                 white_player = json_df['players'][index]['white']['user']['name']
                 list_of_position_and_is_white_player.append((get_chess_boards_from_pgn(game), username == white_player))
-            except KeyError:
-                print('no user likely means there is an ai so i can just skip this game')
+        except Exception as e:
+            print('some error', e)
+
     return list_of_position_and_is_white_player
 
 
 def from_list_of_chess_position_split_x_and_y_for_bitboards(df):
+    print(' splitting x and y  ')
     list_of_x_position = []
     list_of_y_position = []
     for game_white_tuple in df:
@@ -113,6 +117,7 @@ def from_list_of_chess_position_split_x_and_y_for_bitboards(df):
 
 
 def from_list_of_x_and_y_position_create_bitboard(list_of_x_position, list_of_y_position):
+    print(' creating bitboards ')
     x_bitboard_list = []
     y_bitboard_list = []
 
@@ -128,6 +133,7 @@ def from_list_of_x_and_y_position_create_bitboard(list_of_x_position, list_of_y_
 
 
 def from_bitboard_save_file(filepath, username, x_bitboard, y_bitboard):
+    print(' saving bitboards files')
     x_filename = filepath + username + '_bitboard.npy'
     y_filename = filepath + username + '_Y_bitboard.npy'
 
@@ -137,8 +143,6 @@ def from_bitboard_save_file(filepath, username, x_bitboard, y_bitboard):
 
     except FileNotFoundError:
         print('no file found')
-
-    print(x_bitboard)
 
     numpy.save(x_filename, x_bitboard)
     numpy.save(y_filename, y_bitboard)
@@ -150,10 +154,30 @@ def generate_from_username(username, first_pgn_index):
 
     user_rating = count.get_user_info(username).get_rating_range()
 
-    filepath = 'Backend/data/pgn_games/pgn_games_' + user_rating + '/pgn_games_' + username + '.json'
-    filepath_to_save = 'Backend/data/bit_boards/bit_boards_' + user_rating
+    filepath = 'Backend/data/pgn_games/pgn_games_' + str(user_rating) + '/pgn_games_' + username + '.json'
+    filepath_to_save = 'Backend/data/bit_boards/bit_boards_' + str(user_rating) + '/'
 
     json_df = pandas.read_json(filepath, lines=True)
+    json_df = json_df.iloc[first_pgn_index:]
+
+    list_of_position = from_json_dataframe_create_list_of_chess_position(json_df, username)
+    x_list, y_list = from_list_of_chess_position_split_x_and_y_for_bitboards(list_of_position)
+
+    x_bitboard, y_bitboard = from_list_of_x_and_y_position_create_bitboard(x_list, y_list)
+    from_bitboard_save_file(filepath_to_save, username, x_bitboard, y_bitboard)
+
+    return
+
+
+def generate_from_filename(username, first_pgn_index = 0, filename = None):
+
+    user_rating = count.get_user_info(username).get_rating_range()
+
+    filepath = filename
+    filepath_to_save = 'Backend/data/bit_boards/bit_boards_' + str(user_rating) + '/'
+
+    json_df = pandas.read_json(filepath, lines = True)
+
     json_df = json_df.iloc[first_pgn_index:]
 
     list_of_position = from_json_dataframe_create_list_of_chess_position(json_df, username)

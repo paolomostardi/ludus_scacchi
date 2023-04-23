@@ -13,25 +13,33 @@ class PipelineManager:
 
         self.user_rating = 1700
         self.rating_range = 50
-        self.current_range_df = self.get_list_of_users_by_current_rating()
+        self.current_range_df = self.get_df_of_users_by_current_rating()
         self.pgn_folder_first_part = pgn_folder_first_part
 
         return
 
     # add bitboards to the current rating range folder
     def add_data(self, number_of_games=2000):
-        self.current_range_df = self.get_list_of_users_by_current_rating()
+
+        print(' adding', str(number_of_games), 'games')
+        self.current_range_df = self.get_df_of_users_by_current_rating()
 
         if self.bitboard_left_to_generate() >= number_of_games:
+            print('converting to bitboards')
             self.generate_bitboards(number_of_games)
 
         elif self.bitboard_left_to_generate() + self.pgn_left_to_download() >= number_of_games:
+            print('first downloading some games and then converting to bitboards')
             self.add_pgn(number_of_games - self.bitboard_left_to_generate())
+            print('now converting to bitboards')
             self.generate_bitboards(number_of_games)
 
         else:
+            print('first searching for more users')
             self.add_users(number_of_games)
+            print('downloading some games')
             self.add_pgn(number_of_games - self.bitboard_left_to_generate())
+            print('generating some bitboards')
             self.generate_bitboards(number_of_games)
 
         return
@@ -39,13 +47,13 @@ class PipelineManager:
     def get_pgn_folder(self):
         return self.pgn_folder_first_part + str(self.user_rating) + '_pgn_games'
 
-    def get_list_of_users_by_current_rating(self):
+    def get_df_of_users_by_current_rating(self):
 
         lower_bound = self.user_rating - self.rating_range
         upper_bound = self.user_rating + self.rating_range
         df = self.user_df
 
-        df = df[(df['rating'] >= lower_bound) & (df['rating'] <= upper_bound)]
+        df = df[(df['rapid_rating'] >= lower_bound) & (df['rapid_rating'] <= upper_bound)]
 
         self.current_range_df = df
 
@@ -55,13 +63,13 @@ class PipelineManager:
         amount_of_games_downloaded = self.current_range_df['games_downloaded']
         amount_of_bitboard_games = self.current_range_df['bitboard_games']
         bitboard_left = amount_of_games_downloaded - amount_of_bitboard_games
-        return bitboard_left
+        return bitboard_left.sum()
 
     def pgn_left_to_download(self):
         amount_of_games_downloaded = self.current_range_df['games_downloaded']
         total_amount_of_games = self.current_range_df['total_amount_of_games']
         pgn_left = total_amount_of_games - amount_of_games_downloaded
-        return pgn_left
+        return pgn_left.sum()
 
     def generate_bitboards(self, number_of_games):
 
@@ -97,6 +105,7 @@ class PipelineManager:
 
     def save_df(self):
         self.user_df.to_csv(self.user_file)
+        print('saving at :', self.user_file)
         return
 
     def add_pgn(self, number_of_games):
@@ -129,10 +138,19 @@ class PipelineManager:
     def add_users(self, number_of_games):
 
         current_df = self.current_range_df
-        count_users.from_amount_of_games_add_user_to_file(number_of_games,self.user_file,self.get_pgn_folder())
+        count_users.from_amount_of_games_add_user_to_file(number_of_games, self.user_file, self.get_pgn_folder())
 
         return
-
 
     def set_user_rating_and_range(self, user_rating, rating_range):
+        self.user_rating = user_rating
+        self.rating_range = rating_range
+
         return
+
+    def add_user_from_username(self, username):
+        user = count_users.get_user_info(username)
+        user = vars(user)
+        self.user_df = self.user_df.append(user, ignore_index=True)
+        self.save_df()
+

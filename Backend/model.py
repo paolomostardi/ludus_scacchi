@@ -51,4 +51,22 @@ def fit_le_net():
     le_net.fit(x, y, epochs=100, batch_size=32)
 
 
-fit_le_net()
+def experimental_model(input_layer, kernel_size=(1, 1), pool_size=(2, 2), conv_size=64):
+
+    X = Conv2D(filters=conv_size, kernel_size=kernel_size, padding='valid', activation='relu')(input_layer)
+    X = Conv2D(filters=conv_size, kernel_size=kernel_size, padding='valid', activation='relu')(X)
+    X = Conv2D(filters=conv_size, kernel_size=kernel_size, padding='valid', activation='relu')(X)
+    X = Conv2D(filters=conv_size, kernel_size=kernel_size, padding='valid', activation='relu')(X)
+    X = Conv2D(filters=conv_size, kernel_size=kernel_size, padding='valid', activation='relu')(X)
+    X = Conv2D(filters=conv_size, kernel_size=kernel_size, padding='valid', activation='relu')(X)
+
+    X = Flatten()(X)
+    X = Dense(64, 'relu')(X)
+    X = Dense(64, 'relu')(X)
+    from_output_layer = Dense(2*8*8, activation='softmax')(X)
+
+    from_output_layer = Reshape((2, 8, 8))(from_output_layer)
+
+    model = Model(inputs=input_layer, outputs=[from_output_layer])
+
+    return model
