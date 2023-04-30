@@ -12,7 +12,6 @@ from keras.layers import Flatten
 input_shape = Input(shape=(14, 8, 8))
 
 
-# comment
 def compile_model(model):
     opt = SGD(lr=0.01, momentum=0.9)
     model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])

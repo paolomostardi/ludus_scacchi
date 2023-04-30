@@ -2,6 +2,8 @@ import requests
 import os
 import json
 import pandas as pd
+from Backend import from_PGN_generate_bitboards as bitboards
+import numpy as np
 
 
 # Function to get user data from Lichess API
@@ -72,3 +74,44 @@ def merge_csvs_and_jsons(folder_path):
 
     merged_df = pd.concat(json_dfs + csv_dfs, axis=0, ignore_index=True)
     return merged_df
+
+
+def call_function_for_each_file(function, folder):
+
+    for file_path in os.listdir(folder):
+        dir_path, filename = os.path.split(file_path)
+        username = filename.split("_")[2].split(".")[0]
+        print(' LOADING THE FILE FOR ', username)
+        bitboards.generate_from_username(username, 0)
+
+
+def call_function_for_each_element_in_list(list):
+
+    black_list = ['Joonaf', 'CrapCrusher', 'jpk1489', 'davebb', 'CyrCo', 'AKUMARGMASTER2019', 'jelovme', 'evgen417']
+
+    for username in list:
+        if username in black_list:
+            print('NOT FOR THIS ONE')
+        else:
+            print(' LOADING THE FILE FOR ', username)
+            bitboards.generate_from_username(username, 0)
+
+
+def concatenate_files(dir_path):
+    X = []
+    Y = []
+
+    for file in os.listdir(dir_path):
+        if file.endswith('Y_bitboard.npy'):
+            print('''aaaa''')
+        else:
+            x_data = np.load(os.path.join(dir_path, file))
+            y_file = file.split('_bitboard.npy')[0] + '_Y_bitboard.npy'
+            y_data = np.load(os.path.join(dir_path, y_file))
+
+            X.append(x_data)
+            Y.append(y_data)
+
+    return np.concatenate(X), np.concatenate(Y)
+
+
