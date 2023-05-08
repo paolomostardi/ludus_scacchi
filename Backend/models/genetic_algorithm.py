@@ -65,7 +65,7 @@ for i in range(population_size):
 
 # Evolve the population for several generations
 for generation in range(num_generations):
-    # Evaluate the fitness of each model in the population
+    # Evaluate the fitness of each 1_model in the population
     scores = []
     for model in population:
         score = fitness(model, X_val, y_val)
