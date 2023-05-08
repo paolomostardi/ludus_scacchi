@@ -246,3 +246,9 @@ def test_y(x, y):
 
 generate_data()
 
+def oo(b,shapes):
+    list_shapes_oderded = shapes
+    second_elements = [t[1] for t in shapes]
+    for index,element in enumerate(b):
+        index2 = second_elements.index(element[1])
+        list_shapes_oderded[index] = shapes[index2]
