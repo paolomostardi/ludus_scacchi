@@ -82,20 +82,19 @@ def from_list_of_chess_position_split_x_and_y_for_bitboards(df):
     print(' splitting x and y  ')
     list_of_x_position = []
     list_of_y_position = []
-    list_of_white_player = []
     for game_white_tuple in df:
         game = []
         y_game = []
+
         # the player is white
         if game_white_tuple[1]:
 
             board = chess.Board()
-            game.append(board)
+            game.append((board, True))
             for index, position in enumerate(game_white_tuple[0]):
                 # when the index is odd then is black to move
                 if index % 2:
-                    game.append(position)
-                    list_of_white_player.append(1)
+                    game.append((position, True))
 
                 else:
                     y_game.append(position)
@@ -106,36 +105,37 @@ def from_list_of_chess_position_split_x_and_y_for_bitboards(df):
                 if index % 2:
                     y_game.append(position)
                 else:
-                    list_of_white_player.append(0)
-                    game.append(position)
+                    game.append((position, False))
 
         if len(game) > len(y_game):
-            print('reducing size ----- ')
+            print('reducing size ----- for a for an amount of : ', str(len(game) - len(y_game)) )
             game = game[:len(y_game)]
         elif len(y_game) > len(game):
-            print('reducing size ----- ')
+            print('reducing size ----- for Y for an amount of : ', str(len(game) - len(y_game)) )
             y_game = y_game[:len(game)]
 
         list_of_x_position.extend(game)
         list_of_y_position.extend(y_game)
 
-    return list_of_x_position, list_of_y_position, list_of_white_player
+    return list_of_x_position, list_of_y_position
 
 
 def from_list_of_x_and_y_position_create_bitboard(list_of_x_position, list_of_y_position):
     print(' creating bitboards ')
     x_bitboard_list = []
     y_bitboard_list = []
-
+    list_of_white_player = []
     for x_position in list_of_x_position:
-        x = from_chess_board_create_bit_boards(x_position)
+        x = from_chess_board_create_bit_boards(x_position[0])
+        list_of_white_player.append(x_position[1])
         x_bitboard_list.append(x)
 
     for y_position in list_of_y_position:
         y = from_chess_move_create_bitboard(y_position.peek())
         y_bitboard_list.append(y)
 
-    return x_bitboard_list, y_bitboard_list
+    print('here is the length of x',len(x_bitboard_list), len(list_of_white_player))
+    return x_bitboard_list, y_bitboard_list, list_of_white_player
 
 
 def from_bitboard_save_file(filepath, username, x_bitboard, y_bitboard, list_of_white):
@@ -163,9 +163,9 @@ def generate_from_username(username, first_pgn_index):
     json_df = json_df.iloc[first_pgn_index:]
 
     list_of_position = from_json_dataframe_create_list_of_chess_position(json_df, username)
-    x_list, y_list, list_of_white = from_list_of_chess_position_split_x_and_y_for_bitboards(list_of_position)
+    x_list, y_list = from_list_of_chess_position_split_x_and_y_for_bitboards(list_of_position)
 
-    x_bitboard, y_bitboard = from_list_of_x_and_y_position_create_bitboard(x_list, y_list)
+    x_bitboard, y_bitboard, list_of_white = from_list_of_x_and_y_position_create_bitboard(x_list, y_list)
     from_bitboard_save_file(filepath_to_save, username, x_bitboard, y_bitboard, list_of_white)
 
     return
@@ -178,14 +178,14 @@ def generate_from_filename(username, first_pgn_index = 0, filename = None, numbe
     filepath = filename
     filepath_to_save = 'Backend/data/bit_boards/bit_boards_' + str(user_rating) + '/'
 
-    json_df = pandas.read_json(filepath, lines = True)
+    json_df = pandas.read_json(filepath, lines=True)
 
     json_df = json_df.iloc[first_pgn_index:]
 
     list_of_position = from_json_dataframe_create_list_of_chess_position(json_df, username)
-    x_list, y_list, list_of_white = from_list_of_chess_position_split_x_and_y_for_bitboards(list_of_position)
+    x_list, y_list = from_list_of_chess_position_split_x_and_y_for_bitboards(list_of_position)
 
-    x_bitboard, y_bitboard = from_list_of_x_and_y_position_create_bitboard(x_list, y_list)
-    from_bitboard_save_file(filepath_to_save, username+str(number), x_bitboard, y_bitboard, list_of_white)
+    x_bitboard, y_bitboard, list_of_white = from_list_of_x_and_y_position_create_bitboard(x_list, y_list)
+    from_bitboard_save_file(filepath_to_save, username+'_'+str(number), x_bitboard, y_bitboard, list_of_white)
 
     return

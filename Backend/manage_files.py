@@ -83,7 +83,7 @@ def call_function_for_each_file(function, folder, usernames):
         username = filename.split("_")[2].split(".")[0]
         print(' LOADING THE FILE FOR ', username)
         file_path = folder + '\\' + filename
-        bitboards.generate_from_filename(usernames[i], 0, file_path)
+        bitboards.generate_from_filename(usernames[i], 0, file_path, i)
         i += 1
 
 
@@ -151,7 +151,6 @@ def split_dataframes(dataframes, filenames):
 
     return split_dataframes, usernames
 
-
 def bitboard_to_board(bitboard):
     board = chess.Board()
 
@@ -187,16 +186,21 @@ def bitboard_to_move(bitboard):
         if bitboard2[index]:
             move2 = index
 
+    start_square = chess.square_name(chess.square(move1[1], move1[0]))
+    end_square = chess.square_name(chess.square(move2[1], move2[0]))
 
-    return
+    # create move object
+    move = chess.Move.from_uci(start_square + end_square)
+    return move
 
+# comment
 
 def go_on():
     df = read_json_files(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\pgn_games\pgn_games_1700')
     usernames = ['AKUMARGMASTER2019', 'CrapCrusher', 'CyrCo', 'davebb', 'evgen417', 'jelovme', 'Joonaf', 'jpk1489', 'Kl_Men', 'l0l0l0l0l0', 'lexparker', 'MilanLukic', 'nonAs', 'ojukillo', 'Sasj1', 'shadowman54', 'Sobir_55', 'viktor_lalka', 'WaywardQueer', 'xXCroGamer91Xx', 'ZheniaFrolov']
     split_df, usernames_split = split_dataframes(df, usernames)
     for i, dff in enumerate(split_df):
-        dff.to_json(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\pgn_games\split_pgns\\' + 'split_n_' + str(i) + '.json')
+        dff.to_json(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\pgn_games\split_pgns\\' + 'split_n_' + str(i) + '.json', lines =True,orient = 'records' )
     path = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\Backend\data\pgn_games\split_pgns'
     call_function_for_each_file('', path, usernames_split)
     return usernames_split

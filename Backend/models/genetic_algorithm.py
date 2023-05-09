@@ -12,8 +12,6 @@ mutation_rate = 0.1
 filter_range = (16, 64)
 kernel_range = (1, 5)
 dense_range = (32, 128)
-
-
 # Define the fitness function
 
 def fitness(model, X, y):
