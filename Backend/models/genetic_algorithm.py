@@ -39,7 +39,7 @@ def crossover(model1, model2):
     # Select a random layer to crossover
     layer_idx = random.randint(0, len(model1.layers) - 1)
 
-    # Swap the layers between the two models
+    # Swap the layers between the two fit_models
     for i in range(layer_idx, len(model1.layers)):
         model1.layers[i], model2.layers[i] = model2.layers[i], model1.layers[i]
 
@@ -69,7 +69,7 @@ for generation in range(num_generations):
         score = fitness(model, X_val, y_val)
         scores.append(score)
 
-    # Select the best models for reproduction
+    # Select the best fit_models for reproduction
     elite_idx = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:int(population_size * 0.2)]
     elite = [population[i] for i in elite_idx]
 
