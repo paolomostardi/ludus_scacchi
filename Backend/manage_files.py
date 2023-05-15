@@ -186,8 +186,10 @@ def bitboard_to_move(bitboard):
         if bitboard2[index]:
             move2 = index
 
-    start_square = chess.square_name(chess.square(move1[1], move1[0]))
-    end_square = chess.square_name(chess.square(move2[1], move2[0]))
+    start_square = chess.square_name(chess.square(move1[1],7 - move1[0]))
+    end_square = chess.square_name(chess.square(move2[1],7 - move2[0]))
+
+    print(start_square, end_square)
 
     # create move object
     move = chess.Move.from_uci(start_square + end_square)
