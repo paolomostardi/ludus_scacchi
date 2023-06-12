@@ -1,8 +1,9 @@
 from FrontEnd import helper
-from render_chess import RenderChess
+from FrontEnd.render_chess import RenderChess
 import pygame
 import chess
-from move_tree import MovesTree
+import chess.engine
+from FrontEnd.move_tree import MovesTree
 
 
 class AnalysisMode(RenderChess):
@@ -12,6 +13,10 @@ class AnalysisMode(RenderChess):
         self.current_move = 0
         self.move_tree = MovesTree('')
         self.current_branch = self.move_tree
+        self.best_move = None
+        engine_path = r"C:\Users\paolo\OneDrive\Desktop\Final_project\engines\leela_chess\lc0.exe"
+        engine = chess.engine.SimpleEngine.popen_uci(engine_path)
+        self.engine = engine
 
     def on_click(self, event):
         if self.first_square is None:
@@ -23,6 +28,14 @@ class AnalysisMode(RenderChess):
 
     def push_move_after_second_click(self, click_location):
         super().push_move_after_second_click(click_location)
+        self.render_board()
+        pygame.display.update()
+
+        self.best_move = self.engine.play(self.chess_board, chess.engine.Limit(time=0.01))
+        self.chess_board.push(self.best_move.move)
+        clock = pygame.time.Clock()
+        clock.tick(1)
+
         try:
             if self.move_tree.move == '':
                 self.move_tree.move = (self.chess_board.peek())

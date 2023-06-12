@@ -15,20 +15,22 @@ x3 = (3, 3)
 
 def add_conv_block(X, filter = None, kernel_size = None):
     if filter is None:
-        first_filter, second_filter, third_filter = 256, 256, 128
+        first_filter, second_filter, third_filter,fourth_filter = 256, 256, 128,128
     else:
-        first_filter, second_filter, third_filter = filter
+        first_filter, second_filter, third_filter,fourth_filter = filter
 
     if kernel_size is None:
         first_kernel = x3
         second_kernel = x3
         third_kernel = x1
+        fourth_kernel = x1
 
     else:
-        first_kernel, second_kernel, third_kernel = filter
+        first_kernel, second_kernel, third_kernel, fourth_kernel = filter
 
     X = Conv2D(first_filter, kernel_size=first_kernel, strides=(1, 1), padding='valid', activation='relu')(X)
     X = Conv2D(second_filter, kernel_size=second_kernel, strides=(1, 1), padding='valid', activation='relu')(X)
+    X = Conv2D(third_filter, kernel_size=third_kernel, strides=(1, 1), padding='valid', activation='relu')(X)
     X = Conv2D(third_filter, kernel_size=third_kernel, strides=(1, 1), padding='valid', activation='relu')(X)
 
     X = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='valid')(X)

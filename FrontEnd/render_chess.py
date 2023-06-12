@@ -1,6 +1,6 @@
 import chess
 import pygame
-import helper
+from FrontEnd import helper
 import numpy
 
 
@@ -167,9 +167,9 @@ class RenderChess:
 
         # true is white color and false is black color
         if piece.color:
-            image = pygame.image.load("pieces/white/" + piece.symbol() + ".png")
+            image = pygame.image.load("Frontend/pieces/white/" + piece.symbol() + ".png")
         else:
-            image = pygame.image.load("pieces/black/" + piece.symbol() + ".png")
+            image = pygame.image.load("Frontend/pieces/black/" + piece.symbol() + ".png")
 
         x, y = helper.square_to_coordinate_piece(square, board_size)
         square_size = board_size / 8

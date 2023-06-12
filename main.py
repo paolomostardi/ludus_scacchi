@@ -45,12 +45,14 @@ def main():
     background_grey = (185, 180, 180)
     pygame.init()
 
-    window_size = (700, 700)
+    window_size = (800, 800)
     screen = pygame.display.set_mode(window_size)
     screen.fill(background_grey)
 
     button_width = 300
     button_height = 100
+
+
 
     button_x = (window_size[0] - button_width) // 2
     button_y = (window_size[1] - button_height) // 10

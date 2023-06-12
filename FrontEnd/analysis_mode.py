@@ -1,8 +1,10 @@
 from FrontEnd import helper
-from render_chess import RenderChess
+from FrontEnd.render_chess import RenderChess
 import pygame
 import chess
-from move_tree import MovesTree
+from FrontEnd.move_tree import MovesTree
+import chess.engine
+
 
 
 class AnalysisMode(RenderChess):
@@ -14,6 +16,7 @@ class AnalysisMode(RenderChess):
 
         self.move_tree = MovesTree('root')
         self.current_branch = self.move_tree
+        self.best_move = None
 
     # return the length of each branch in the tree or something
     def get_total_ply_of_branch(self):
@@ -38,6 +41,11 @@ class AnalysisMode(RenderChess):
     def push_move_after_second_click(self, click_location):
         super().push_move_after_second_click(click_location)
         print('--- PUSHING THE MOVE ---')
+        engine_path = r"C:\Users\paolo\OneDrive\Desktop\Final_project\engines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe"
+        engine = chess.engine.SimpleEngine.popen_uci(engine_path)
+
+        self.best_move = engine.play(self.chess_board, chess.engine.Limit(time=0.01))
+
         try:
             # adding the first move
             # depth is always at least 1 unless there are no moves on the board
@@ -114,6 +122,8 @@ class AnalysisMode(RenderChess):
         print('current set of moves', self.current_move)
         print('current branch:', self.current_branch.get_all_moves())
         print('tree :', self.move_tree.get_all_moves())
+
+
 
     def render_move_stack(self):
         chess_board = self.chess_board
@@ -194,6 +204,11 @@ class AnalysisMode(RenderChess):
         print('current depth :', self.current_depth)
         print('current move :', self.current_move)
         print('current branch :', self.current_branch.get_all_first_list_child_moves())
+
+        engine_path = r"C:\Users\paolo\OneDrive\Desktop\Final_project\engines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe"
+        engine = chess.engine.SimpleEngine.popen_uci(engine_path)
+        self.best_move = engine.play(self.chess_board, chess.engine.Limit(time=0.01))
+
         return
 
     def key_up(self):
@@ -219,6 +234,11 @@ class AnalysisMode(RenderChess):
         print('current depth :', self.current_depth)
         print('current move :', self.current_move)
         print('current branch :', self.current_branch.get_all_first_list_child_moves())
+
+        engine_path = r"C:\Users\paolo\OneDrive\Desktop\Final_project\engines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe"
+        engine = chess.engine.SimpleEngine.popen_uci(engine_path)
+        self.best_move = engine.play(self.chess_board, chess.engine.Limit(time=0.01))
+
         return
 
     def render_gui(self):
@@ -241,7 +261,13 @@ def main():
     framerate = 15
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     board = AnalysisMode(board_size, screen)
-    board.set_board_padding((20, 50))
+    board.set_board_padding((20, 85))
+
+    engine_path = r"C:\Users\paolo\OneDrive\Desktop\Final_project\engines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe"
+
+    engine = chess.engine.SimpleEngine.popen_uci(engine_path)
+
+
 
     while running:
 
@@ -260,6 +286,14 @@ def main():
 
         screen.fill((200, 200, 200))
         board.render_board()
+        rectangle = (20,20, 100, 50)
+        pygame.draw.rect(screen, board.dark_blue, rectangle)
+        if board.best_move:
+            pygame.font.init()
+            my_font = pygame.font.SysFont('Times new roman', 35)
+            text_surface = my_font.render(str(board.best_move.move), False, board.white)
+            screen.blit(text_surface, (rectangle[0], rectangle[1]))
+
         pygame.display.update()
         clock.tick(framerate)
 
