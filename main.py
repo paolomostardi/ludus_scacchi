@@ -103,6 +103,3 @@ def main():
         pygame.display.update()
         clock.tick(16)
     pygame.quit()
-
-
-main()

@@ -6,17 +6,16 @@ from FrontEnd.move_tree import MovesTree
 import chess.engine
 
 
-
 class AnalysisMode(RenderChess):
 
     def __init__(self, board_size, screen):
         super().__init__(board_size, screen)
-        self.current_move = [0]
-        self.current_depth = 0
+        self.current_move = [0]  # an array that keep track of all the moves.
+        self.current_depth = 0  # how many subbranches the tree has to go through
 
-        self.move_tree = MovesTree('root')
-        self.current_branch = self.move_tree
-        self.best_move = None
+        self.move_tree = MovesTree('root')  # a tree that represent all the moves played
+        self.current_branch = self.move_tree  # the branch that is currently displayed
+        self.best_move = None  # the move suggested by the engine
 
     # return the length of each branch in the tree or something
     def get_total_ply_of_branch(self):
@@ -40,6 +39,7 @@ class AnalysisMode(RenderChess):
 
     def push_move_after_second_click(self, click_location):
         super().push_move_after_second_click(click_location)
+
         print('--- PUSHING THE MOVE ---')
         engine_path = r"C:\Users\paolo\OneDrive\Desktop\Final_project\engines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe"
         engine = chess.engine.SimpleEngine.popen_uci(engine_path)
@@ -49,7 +49,8 @@ class AnalysisMode(RenderChess):
         try:
             # adding the first move
             # depth is always at least 1 unless there are no moves on the board
-
+            # if there are no moves on the tree moves but the board has a move, a legal move has been played therefore we
+            # add this move to the main line
             if not self.move_tree.children and self.chess_board.move_stack:
 
                 self.current_branch = self.current_branch.add_child_to_n(0, self.chess_board.peek())
@@ -61,7 +62,7 @@ class AnalysisMode(RenderChess):
 
             chess_board_peek = self.chess_board.peek()
 
-            # I don't get this
+            # If my current move is not a negative number (in which case would that happen? )
             if self.current_move[self.current_depth] >= 0:
                 current_tree_move = self.current_branch.go_to_depth(self.current_move[self.current_depth])
 
@@ -70,6 +71,7 @@ class AnalysisMode(RenderChess):
                 print('this is it ')
                 current_tree_move = self.current_branch.go_to_depth(0)
             else:
+                print('something happened that was not supposed to happen')
                 return
             all_child_moves = current_tree_move.get_all_child_moves()
 
@@ -81,10 +83,10 @@ class AnalysisMode(RenderChess):
 
                 index = all_child_moves.index(chess_board_peek)
 
-                # if the move is the first child than it just moves than just slides through the mainline
+                # if the move is the first child than it just slides through the mainline
                 if index == 0:
                     self.current_move[self.current_depth] += 1
-                # otherwise it switches the branch to the sub-branch that is stored about that move
+                # otherwise it switches the current branch to the sub-branch that is stored about that move
                 else:
                     self.current_branch = self.current_branch.go_to_depth(self.current_move[self.current_depth])
 
@@ -119,11 +121,7 @@ class AnalysisMode(RenderChess):
             print('---- ---- TYPE ERROR  ---- ----')
             print(error)
             print(TypeError)
-        print('current set of moves', self.current_move)
-        print('current branch:', self.current_branch.get_all_moves())
-        print('tree :', self.move_tree.get_all_moves())
-
-
+        self.print_status()
 
     def render_move_stack(self):
         chess_board = self.chess_board
@@ -201,9 +199,7 @@ class AnalysisMode(RenderChess):
             self.current_branch = self.current_branch.get_n_parents(self.move_tree, n)[0]
             self.chess_board.pop()
 
-        print('current depth :', self.current_depth)
-        print('current move :', self.current_move)
-        print('current branch :', self.current_branch.get_all_first_list_child_moves())
+        self.print_status()
 
         engine_path = r"C:\Users\paolo\OneDrive\Desktop\Final_project\engines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe"
         engine = chess.engine.SimpleEngine.popen_uci(engine_path)
@@ -231,9 +227,8 @@ class AnalysisMode(RenderChess):
 
         else:
             print('not doing the up')
-        print('current depth :', self.current_depth)
-        print('current move :', self.current_move)
-        print('current branch :', self.current_branch.get_all_first_list_child_moves())
+
+        self.print_status()
 
         engine_path = r"C:\Users\paolo\OneDrive\Desktop\Final_project\engines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe"
         engine = chess.engine.SimpleEngine.popen_uci(engine_path)
@@ -297,4 +292,3 @@ def main():
         pygame.display.update()
         clock.tick(framerate)
 
-main()

@@ -164,5 +164,3 @@ def main():
         board.render_board()
         pygame.display.update()
         clock.tick(framerate)
-
-main()
