@@ -2,6 +2,14 @@ import chess
 import pygame
 import numpy
 
+def from_square_get_click_location(square ,board_size , padding):
+    x, y = square_number_to_coordinate(square)
+    square_side = board_size / 8
+    x = x * square_side + padding[0]
+    y = y * square_side + padding[1]
+    return int(x), int(y)
+
+
 def get_board_coordinate_from_click_location(click_location, board_size):
     square_size = board_size / 8
     x = int(click_location[0] / square_size)
