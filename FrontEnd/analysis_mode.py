@@ -16,6 +16,7 @@ class AnalysisMode(RenderChess):
         self.move_tree = MovesTree('root')  # a tree that represent all the moves played
         self.current_branch = self.move_tree  # the branch that is currently displayed
         self.best_move = None  # the move suggested by the engine
+        self.last_move = None
 
     # return the length of each branch in the tree or something
     def get_total_ply_of_branch(self):
@@ -23,6 +24,9 @@ class AnalysisMode(RenderChess):
 
     def get_current_ply(self):
         return sum(self.current_move) + self.current_depth
+
+    def get_current_tree_move(self):
+        return self.current_branch.go_to_depth(self.current_move[self.current_depth])
 
     def on_click(self, event):
         if self.first_square is None:
@@ -47,6 +51,16 @@ class AnalysisMode(RenderChess):
         self.best_move = engine.play(self.chess_board, chess.engine.Limit(time=0.01))
 
         try:
+            if self.chess_board.peek() == self.last_move:
+                print(' EMPTY MOVE NOT RECORDED')
+                return
+
+            self.last_move = self.chess_board.peek()
+
+        except IndexError as e:
+            print('empty list and stuff')
+
+        try:
             # adding the first move
             # depth is always at least 1 unless there are no moves on the board
             # if there are no moves on the tree moves but the board has a move, a legal move has been played therefore we
@@ -58,15 +72,18 @@ class AnalysisMode(RenderChess):
                 self.current_move.append(0)
 
                 self.print_status()
+
+                print('-----  Initializing the tree moves and stuff -------  ')
+
                 return
 
             chess_board_peek = self.chess_board.peek()
 
-            # If my current move is not a negative number (in which case would that happen? )
+            # If my current move is not a negative number (which should never happen)
             if self.current_move[self.current_depth] >= 0:
-                current_tree_move = self.current_branch.go_to_depth(self.current_move[self.current_depth])
+                current_tree_move = self.get_current_tree_move()
 
-            # I don't fully get this either
+            # assigns local variable to the current branch
             elif self.current_depth > 0:
                 print('this is it ')
                 current_tree_move = self.current_branch.go_to_depth(0)
@@ -103,6 +120,7 @@ class AnalysisMode(RenderChess):
                     print('___ Not creating a new branch ___')
                     self.current_branch.push_move((self.chess_board.peek()))
                     self.current_move[self.current_depth] += 1
+                    print(' current ply  and total ply of branch ')
                     print(self.get_current_ply(), self.get_total_ply_of_branch())
 
         except IndexError as error:
@@ -213,9 +231,11 @@ class AnalysisMode(RenderChess):
         print('old depth :', self.current_depth)
         print('old move :', self.current_move)
         print('old branch :', self.current_branch.get_all_first_list_child_moves())
-        if self.current_depth == 0 and all_first_child:
+        if self.current_depth == 0 and all_first_child != ['root']:
+            print(all_first_child)
             self.current_depth = 1
             self.current_branch = self.move_tree.children[0]
+
             self.chess_board.push(all_first_child[1])
             return
 
