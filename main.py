@@ -103,3 +103,6 @@ def main():
         pygame.display.update()
         clock.tick(16)
     pygame.quit()
+
+
+analysis_mode.main()

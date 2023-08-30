@@ -291,6 +291,8 @@ def main():
                 running = False
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                print('CLICK EVENT COORDINATE ')
+                print(event.pos)
                 board.on_click(event.pos)
 
             elif event.type == pygame.KEYDOWN:
