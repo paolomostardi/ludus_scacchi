@@ -30,11 +30,11 @@ class AnalysisMode(RenderChess):
 
     def on_click(self, event):
         if self.first_square is None:
-            self.get_first_click(event)
             print('first click')
+            self.get_first_click(event)
         else:
-            self.push_move_after_second_click(event)
             print('second click')
+            self.push_move_after_second_click(event)
 
     def print_status(self):
         print('current set of moves', self.current_move)

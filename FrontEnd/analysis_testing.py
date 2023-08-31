@@ -3,6 +3,7 @@ import pygame
 import helper
 import chess
 
+
 def assert_value(current_branch, current_depth, current_move, analysis_board):
 
     if current_branch != analysis_board.current_branch:
@@ -18,18 +19,23 @@ def assert_value(current_branch, current_depth, current_move, analysis_board):
 
 """
 
-    63, 62, 61, 60, 59, 58, 57, 56,
-    55, 54, 53, 52, 51, 50, 49, 48,
-    47, 46, 45, 44, 43, 42, 41, 40,
-    39, 38, 37, 36, 35, 34, 33, 32,
-    31, 30, 29, 28, 27, 26, 25, 24,
-    23, 22, 21, 20, 19, 18, 17, 16,
-    15, 14, 13, 12, 11, 10,  9,  8,
-     7,  6,  5,  4,  3,  2,  1,  0  
-   
+56 57 58 59 60 61 62 63
+48 49 50 51 52 53 54 55
+40 41 42 43 44 45 46 47
+32 33 34 35 36 37 38 39
+24 25 26 27 28 29 30 31
+16 17 18 19 20 21 22 23
+8  9  10 11 12 13 14 15 
+0  1  2  3  4  5  6  7    
 
 """
 
+
+def make_click_move(square, square2, board):
+    print('NEW MOVE TO MAKE NOW ---------------------------------------------------------------------')
+
+    board.on_click(square)
+    board.on_click(square2)
 
 
 def main():
@@ -42,29 +48,31 @@ def main():
     analysis_board = analysis_mode.AnalysisMode(board_size, screen)
     analysis_board.set_board_padding(padding)
 
-    analysis_board.on_click((0, 0))
-    analysis_board.on_click((0, 0))
+    e2, e4 = (406, 649), (409, 475)
 
-    analysis_board.on_click((0, 0))
-    analysis_board.on_click((0, 0))
+    e7, e5 = (405, 218), (409, 384)
 
-    e2 = chess.E2
-    click_e2 = helper.from_square_get_click_location(e2, board_size, padding)
+    g1, f3 = (581, 723), (498, 556)
 
-    e4 = chess.E4
-    click_e4 = helper.from_square_get_click_location(e4, board_size, padding)
+    b8, c6 = (159, 133), (235, 300)
 
-    analysis_board.on_click(click_e2)
-    analysis_board.on_click(click_e4)
+    f1, b5 = (510, 736), (162, 396)
 
-    print(click_e2)
-    print(click_e4)
+    a7, a6 = (62, 231), (70, 304)
 
-    print(analysis_board.current_branch)
-    print(analysis_board.current_depth)
-    print(analysis_board.current_move)
+    b5, c6 = (152, 406), (248, 308)
 
-    analysis_mode.main()
+    make_click_move(e2, e4, analysis_board)
+
+    make_click_move(e7, e5, analysis_board)
+
+    make_click_move(g1, f3, analysis_board)
+
+    make_click_move(b8, c6, analysis_board)  # nc6
+    make_click_move(f1, b5, analysis_board)  # Bb4
+    make_click_move(a7, a6, analysis_board)  # a6
+    make_click_move(b5, c6, analysis_board)  # Bxc6
+
     return
 
 main()
