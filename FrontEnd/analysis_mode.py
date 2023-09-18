@@ -53,6 +53,7 @@ class AnalysisMode(RenderChess):
         try:
             if self.chess_board.peek() == self.last_move:
                 print(' EMPTY MOVE NOT RECORDED')
+
                 return
 
             self.last_move = self.chess_board.peek()
@@ -197,7 +198,8 @@ class AnalysisMode(RenderChess):
         screen.blit(text_surface, (x_of_move, y_of_move))
 
     def key_down(self):
-        if self.current_depth == 0:
+        if self.chess_board is chess.Board():
+            print(self.chess_board)
             print('The element is root')
             return
         elif self.current_move[self.current_depth] > 0:

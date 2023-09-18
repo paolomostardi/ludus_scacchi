@@ -52,8 +52,6 @@ def main():
     button_width = 300
     button_height = 100
 
-
-
     button_x = (window_size[0] - button_width) // 2
     button_y = (window_size[1] - button_height) // 10
 

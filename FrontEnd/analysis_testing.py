@@ -32,7 +32,7 @@ def assert_value(current_branch, current_depth, current_move, analysis_board):
 
 
 def make_click_move(square, square2, board):
-    print('NEW MOVE TO MAKE NOW ---------------------------------------------------------------------')
+    print('-------------------------- NEW MOVE TO MAKE NOW ----------------------------')
 
     board.on_click(square)
     board.on_click(square2)
@@ -49,29 +49,23 @@ def main():
     analysis_board.set_board_padding(padding)
 
     e2, e4 = (406, 649), (409, 475)
-
     e7, e5 = (405, 218), (409, 384)
-
     g1, f3 = (581, 723), (498, 556)
-
     b8, c6 = (159, 133), (235, 300)
-
     f1, b5 = (510, 736), (162, 396)
-
     a7, a6 = (62, 231), (70, 304)
 
-    b5, c6 = (152, 406), (248, 308)
-
-    make_click_move(e2, e4, analysis_board)
-
-    make_click_move(e7, e5, analysis_board)
-
-    make_click_move(g1, f3, analysis_board)
-
-    make_click_move(b8, c6, analysis_board)  # nc6
+    make_click_move(e2, e4, analysis_board)  # e4
+    make_click_move(e7, e5, analysis_board)  # e5
+    make_click_move(g1, f3, analysis_board)  # Nf3
+    make_click_move(b8, c6, analysis_board)  # Nc6
     make_click_move(f1, b5, analysis_board)  # Bb4
     make_click_move(a7, a6, analysis_board)  # a6
-    make_click_move(b5, c6, analysis_board)  # Bxc6
+
+    print('------------ RESULTS --------------')
+    print(analysis_board.current_branch.get_all_moves())
+    print(analysis_board.current_depth)
+    print(analysis_board.current_move)
 
     return
 
