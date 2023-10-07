@@ -20,6 +20,13 @@ class MovesTree(object):
         self.go_to_depth(n).add_child(move)
         return move
 
+    def find_child_given_move(self, move):
+        list_of_child = self.get_all_child()
+        for child in list_of_child:
+            if move == child.move:
+                return child
+        return False
+
     def get_all_first_child_moves(self):
         if self.get_first_child():
             return self.move + ',' + self.get_first_child().get_all_first_child_moves()
@@ -64,6 +71,12 @@ class MovesTree(object):
         list_of_moves = self.get_n_parents_reverse(root_tree, n)
         list_of_moves.reverse()
         return list_of_moves
+
+    def get_all_child(self):
+        moves_list = []
+        for child in self.children:
+            moves_list.append(child)
+        return moves_list
 
     def get_all_child_moves(self):
         moves_list = []
