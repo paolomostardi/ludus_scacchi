@@ -10,12 +10,18 @@ class AnalysisLogic:
 
         self.move_tree = MovesTree('root')  # a tree that represent all the moves played
         self.current_branch = self.move_tree  # the branch that is currently displayed
-        self.current_board = chess.Board()
 
         self.last_move = None
 
     def get_current_move_from_tree(self):
         return self.current_branch.go_to_depth(self.current_move[self.current_depth])
+
+    def get_current_board(self):
+        current_node = self.get_current_move_from_tree()
+        if current_node.move == 'root':
+            return chess.Board()
+        board = chess.Board(current_node.move)
+        return board
 
     def is_this_node_a_children_of_the_current_move(self, node):
 
@@ -39,6 +45,11 @@ class AnalysisLogic:
         else:
             return False
 
+    def is_current_move_zero(self):
+        if self.current_move[self.current_depth] == 0:
+            return True
+        return False
+
     def does_current_move_have_children(self):
         current_move = self.get_current_move_from_tree()
         if current_move.get_all_child_moves() == []:
@@ -54,32 +65,58 @@ class AnalysisLogic:
     def increase_current_move(self):
         self.current_move[self.current_depth] += 1
 
-    def increase_current_move_depth(self):
+    def decrease_current_move(self):
+        self.current_move[self.current_depth] -= 1
+
+    def increase_current_move_depth(self, node):
+        print('increasing depth')
+        current_node = self.get_current_move_from_tree()
         self.current_depth += 1
         self.current_move.append(0)
+        # find the child of the branch and make it the current branch
+        current_node = current_node.find_child_given_move(node)
+        print(current_node)
+        if current_node:
+            self.current_branch = current_node
+        else:
+            self.add_child_to_current_line(node)
+            self.increase_current_move_depth(node)
+
+    def decrease_current_move_depth(self):
+        # todo make this
+        self.current_branch =
+        return
 
     def add_correct_move(self, move):
 
-        self.current_board.push(move)
-        current_board = self.current_board.fen()
+        current_board = self.get_current_board()
+        current_board.push(move)
+        current_board = current_board.fen()
 
         if self.is_this_node_a_children_of_the_current_move(current_board):
             if self.is_this_in_the_main_line(current_board):
                 self.key_up()
             else:  # node is children but not the main line
-                self.increase_current_move_depth()
+                self.increase_current_move_depth(current_board)
         else:  # move has not been played before
             if self.does_current_move_have_children():
                 self.add_child_to_current_line(current_board)
-                self.increase_current_move_depth()
-            else:  # move does not have any children so we can just extend the line
+                self.increase_current_move_depth(current_board)
+            else:  # move does not have any children, so we can just extend the line
                 self.add_child_to_current_line(current_board)
                 self.increase_current_move()
         return
 
     def key_up(self):
-
+        if self.get_current_move_from_tree().has_children():
+            self.increase_current_move()
         return
 
     def key_down(self):
+
+        if self.get_current_move_from_tree().move != 'root':
+            if self.is_current_move_zero():
+                self.decrease_current_move_depth()
+            else:
+                self.decrease_current_move()
         return
