@@ -32,16 +32,18 @@ def assert_value(current_branch, current_depth, current_move, analysis_board):
 
 
 def make_click_move(square, square2, board):
-    print('-------------------------- NEW MOVE TO MAKE NOW ----------------------------')
+    print('-------------------------- MAKING MOVE ----------------------------')
+    print(chess.square_name(square), chess.square_name(square2))
+
     move = chess.Move(square, square2)
     board.add_correct_move(move)
 
 
-def press_down(board):
+def key_down(board):
     board.key_down()
 
 
-def press_up(board):
+def key_up(board):
     board.key_up()
 
 
@@ -89,26 +91,26 @@ def test_2_ruy_lopez_with_some_up_and_down():
     f1, b5 = chess.F1, chess.B5
     a7, a6 = chess.A7, chess.A6
 
-    press_up(analysis_board)
-    press_down(analysis_board)
-    press_down(analysis_board)
+    key_up(analysis_board)
+    key_down(analysis_board)
+    key_down(analysis_board)
 
     make_click_move(e2, e4, analysis_board)  # e4
-    press_down(analysis_board)
-    press_down(analysis_board)
+    key_down(analysis_board)
+    key_down(analysis_board)
 
-    assert analysis_board.current_move == [0], 'not the right number'
+    assert analysis_board.current_move == [0], 'not the right number got ' + str(analysis_board.current_move)
     assert analysis_board.current_depth == 0, 'not the right depth'
 
-    press_up(analysis_board)
+    key_up(analysis_board)
 
-    assert analysis_board.current_move == [1], 'not the right number'
+    assert analysis_board.current_move == [1], 'not the right number got ' + str(analysis_board.current_move)
     assert analysis_board.current_depth == 0, 'not the right depth'
 
     make_click_move(e7, e5, analysis_board)  # e5
     make_click_move(g1, f3, analysis_board)  # Nf3
 
-    assert analysis_board.current_move == [3], 'not the right number'
+    assert analysis_board.current_move == [3], 'not the right number got ' + str(analysis_board.current_move)
     assert analysis_board.current_depth == 0, 'not the right depth'
 
     make_click_move(b8, c6, analysis_board)  # Nc6
@@ -120,11 +122,68 @@ def test_2_ruy_lopez_with_some_up_and_down():
     print(analysis_board.current_depth)
     print(analysis_board.current_move)
 
-    assert analysis_board.current_move == [6], 'not the right number'
+    assert analysis_board.current_move == [6], 'not the right number got ' + str(analysis_board.current_move)
     assert analysis_board.current_depth == 0, 'not the right depth'
 
 
-test_1_basic_ruy_lopez()
+def test_3_ruy_lopez_and_kings_gambit():
+
+    analysis_board = analysis_logic.AnalysisLogic()
+
+    e2, e4 = chess.E2, chess.E4
+    e7, e5 = chess.E7, chess.E5
+    g1, f3 = chess.G1, chess.F3
+    b8, c6 = chess.B8, chess.C6
+    f1, b5 = chess.F1, chess.B5
+    a7, a6 = chess.A7, chess.A6
+
+    f2, f4 = chess.F2, chess.F4
+    e5, f4 = chess.E5, chess.F4
+    g1, f3 = chess.G1, chess.F3
+    g7, g5 = chess.G7, chess.G5
+
+    make_click_move(e2, e4, analysis_board)  # e4
+    make_click_move(e7, e5, analysis_board)  # e5
+    make_click_move(g1, f3, analysis_board)  # Nf3
+    make_click_move(b8, c6, analysis_board)  # Nc6
+    make_click_move(f1, b5, analysis_board)  # Bb4
+    make_click_move(a7, a6, analysis_board)  # a6
+
+    print('------------ RESULTS --------------')
+
+    print(analysis_board.current_branch.get_all_moves())
+    print(analysis_board.current_depth)
+    print(analysis_board.current_move)
+
+    assert analysis_board.current_move == [6], 'not the right number got ' + str(analysis_board.current_move)
+    assert analysis_board.current_depth == 0, 'not the right depth'
+
+    key_down(analysis_board)
+    key_down(analysis_board)
+    key_down(analysis_board)
+    key_down(analysis_board)
+
+    print('printing the current board')
+    print(analysis_board.get_current_board())
+
+    make_click_move(f2, f4, analysis_board)
+
+    make_click_move(e5, f4, analysis_board)
+    make_click_move(g1, f3, analysis_board)
+    make_click_move(g7, g5, analysis_board)
+
+    print(analysis_board.get_current_board())
+
+    assert analysis_board.current_move == [2, 3], 'not the right number got ' + str(analysis_board.current_move)
+    assert analysis_board.current_depth == 1, 'not the right depth'
+
+    key_down(analysis_board)
+    key_down(analysis_board)
+    key_down(analysis_board)
+    key_down(analysis_board)
+
+    print(analysis_board.current_move)
+    print(analysis_board.get_current_board())
 
 test_2_ruy_lopez_with_some_up_and_down()
-
+test_3_ruy_lopez_and_kings_gambit()
