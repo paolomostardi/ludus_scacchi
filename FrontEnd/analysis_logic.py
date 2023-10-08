@@ -58,7 +58,7 @@ class AnalysisLogic:
 
     def add_child_to_current_line(self, node):
         current_move = self.get_current_move_from_tree()
-        node = MovesTree(node)
+        node = MovesTree(node, parent=current_move)
         current_move.add_child(node)
         return
 
@@ -69,7 +69,6 @@ class AnalysisLogic:
         self.current_move[self.current_depth] -= 1
 
     def increase_current_move_depth(self, node):
-        print('increasing depth')
         current_node = self.get_current_move_from_tree()
         self.current_depth += 1
         self.current_move.append(0)
@@ -83,8 +82,13 @@ class AnalysisLogic:
             self.increase_current_move_depth(node)
 
     def decrease_current_move_depth(self):
-        # todo make this
-        self.current_branch =
+        node = self.get_current_move_from_tree()
+        if self.current_depth == 0:
+            return
+        self.current_depth -= 1
+        for i in range(self.current_move[self.current_depth] + 1):
+            node = node.parent
+        self.current_branch = node
         return
 
     def add_correct_move(self, move):

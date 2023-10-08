@@ -69,11 +69,6 @@ def test_1_basic_ruy_lopez():
     make_click_move(f1, b5, analysis_board)  # Bb4
     make_click_move(a7, a6, analysis_board)  # a6
 
-    print('------------ RESULTS --------------')
-    print(analysis_board.current_branch.get_all_moves())
-    print(analysis_board.current_depth)
-    print(analysis_board.current_move)
-
     assert analysis_board.current_move == [6], 'not the right number'
     assert analysis_board.current_depth == 0, 'not the right depth'
 
@@ -81,6 +76,11 @@ def test_1_basic_ruy_lopez():
 
 
 def test_2_ruy_lopez_with_some_up_and_down():
+    print()
+    print()
+    print('Executing test number 2, ruy lopez position with up and down inputs ')
+    print()
+    print()
 
     analysis_board = analysis_logic.AnalysisLogic()
 
@@ -117,29 +117,34 @@ def test_2_ruy_lopez_with_some_up_and_down():
     make_click_move(f1, b5, analysis_board)  # Bb4
     make_click_move(a7, a6, analysis_board)  # a6
 
-    print('------------ RESULTS --------------')
-    print(analysis_board.current_branch.get_all_moves())
-    print(analysis_board.current_depth)
-    print(analysis_board.current_move)
-
     assert analysis_board.current_move == [6], 'not the right number got ' + str(analysis_board.current_move)
     assert analysis_board.current_depth == 0, 'not the right depth'
 
 
 def test_3_ruy_lopez_and_kings_gambit():
 
+    print()
+    print()
+    print('Executing test number 3, ruy lopez position with kings gambit as a sub-variation ')
+    print('including some up and down key input to test the effectiveness of the sub-variation')
+    print()
+    print()
     analysis_board = analysis_logic.AnalysisLogic()
+
+    kings_pawn_fen = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2'
+    kings_gambit_accepted_fen = 'rnbqkbnr/pppp1ppp/8/8/4Pp2/8/PPPP2PP/RNBQKBNR w KQkq - 0 3'
+    ruy_lopez_fen = 'r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3'
 
     e2, e4 = chess.E2, chess.E4
     e7, e5 = chess.E7, chess.E5
-    g1, f3 = chess.G1, chess.F3
+    g1, f3 = chess.G1, chess.H3
     b8, c6 = chess.B8, chess.C6
     f1, b5 = chess.F1, chess.B5
     a7, a6 = chess.A7, chess.A6
 
     f2, f4 = chess.F2, chess.F4
     e5, f4 = chess.E5, chess.F4
-    g1, f3 = chess.G1, chess.F3
+    g1, f3 = chess.G1, chess.H3
     g7, g5 = chess.G7, chess.G5
 
     make_click_move(e2, e4, analysis_board)  # e4
@@ -149,12 +154,6 @@ def test_3_ruy_lopez_and_kings_gambit():
     make_click_move(f1, b5, analysis_board)  # Bb4
     make_click_move(a7, a6, analysis_board)  # a6
 
-    print('------------ RESULTS --------------')
-
-    print(analysis_board.current_branch.get_all_moves())
-    print(analysis_board.current_depth)
-    print(analysis_board.current_move)
-
     assert analysis_board.current_move == [6], 'not the right number got ' + str(analysis_board.current_move)
     assert analysis_board.current_depth == 0, 'not the right depth'
 
@@ -163,27 +162,25 @@ def test_3_ruy_lopez_and_kings_gambit():
     key_down(analysis_board)
     key_down(analysis_board)
 
-    print('printing the current board')
-    print(analysis_board.get_current_board())
-
     make_click_move(f2, f4, analysis_board)
-
     make_click_move(e5, f4, analysis_board)
     make_click_move(g1, f3, analysis_board)
     make_click_move(g7, g5, analysis_board)
-
-    print(analysis_board.get_current_board())
 
     assert analysis_board.current_move == [2, 3], 'not the right number got ' + str(analysis_board.current_move)
     assert analysis_board.current_depth == 1, 'not the right depth'
 
     key_down(analysis_board)
     key_down(analysis_board)
+
+    assert analysis_board.get_current_board().fen() == kings_gambit_accepted_fen, 'not the right fen '
+
     key_down(analysis_board)
     key_down(analysis_board)
 
-    print(analysis_board.current_move)
-    print(analysis_board.get_current_board())
+    assert analysis_board.current_depth == 0, 'not the right depth'
+    assert analysis_board.get_current_board().fen() == kings_pawn_fen, 'not the right fen '
+
 
 test_2_ruy_lopez_with_some_up_and_down()
 test_3_ruy_lopez_and_kings_gambit()

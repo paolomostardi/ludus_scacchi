@@ -1,8 +1,9 @@
 class MovesTree(object):
 
-    def __init__(self, move='root', children=None):
+    def __init__(self, move='root', children=None, parent=None):
         self.children = []
         self.move = move
+        self.parent = parent
         if children is not None:
             for child in children:
                 self.add_child(child)
