@@ -74,7 +74,6 @@ class AnalysisLogic:
         self.current_move.append(0)
         # find the child of the branch and make it the current branch
         current_node = current_node.find_child_given_move(node)
-        print(current_node)
         if current_node:
             self.current_branch = current_node
         else:
@@ -111,16 +110,23 @@ class AnalysisLogic:
                 self.increase_current_move()
         return
 
+    def add_move(self, move):
+        chess_board = self.get_current_board()
+        if move in chess_board.legal_moves:
+            self.add_correct_move(move)
+        print(move)
+        print(chess_board)
+
     def key_up(self):
         if self.get_current_move_from_tree().has_children():
             self.increase_current_move()
         return
 
     def key_down(self):
-
         if self.get_current_move_from_tree().move != 'root':
             if self.is_current_move_zero():
                 self.decrease_current_move_depth()
             else:
                 self.decrease_current_move()
+        print(self.get_current_board())
         return
