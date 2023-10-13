@@ -18,9 +18,9 @@ class AnalysisLogic:
 
     def get_current_board(self):
         current_node = self.get_current_move_from_tree()
-        if current_node.move == 'root':
+        if current_node.position == 'root':
             return chess.Board()
-        board = chess.Board(current_node.move)
+        board = chess.Board(current_node.position)
         return board
 
     def is_this_node_a_children_of_the_current_move(self, node):
@@ -114,8 +114,6 @@ class AnalysisLogic:
         chess_board = self.get_current_board()
         if move in chess_board.legal_moves:
             self.add_correct_move(move)
-        print(move)
-        print(chess_board)
 
     def key_up(self):
         if self.get_current_move_from_tree().has_children():
@@ -123,10 +121,9 @@ class AnalysisLogic:
         return
 
     def key_down(self):
-        if self.get_current_move_from_tree().move != 'root':
+        if self.get_current_move_from_tree().position != 'root':
             if self.is_current_move_zero():
                 self.decrease_current_move_depth()
             else:
                 self.decrease_current_move()
-        print(self.get_current_board())
         return

@@ -50,6 +50,8 @@ def get_square_from_click_location(click_location, board_size, padding):
 
 
 def get_algebraic_move_from_uci(move, new_board):
+    print('hello')
+    print(move)
     algebraic_move = new_board.san(move)
     new_board.push(move)
     return algebraic_move

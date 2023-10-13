@@ -52,6 +52,7 @@ def add_dense_part(X, input_shape):
 
     return model
 
+
 def block_1(input_layer):
 
     X = Conv2D(256, kernel_size=x3, strides=(1, 1), padding='valid', activation='relu')(input_layer)
@@ -62,23 +63,9 @@ def block_1(input_layer):
     return X
 
 
-
-
 def final_model():
     input_shape = (14, 8, 8)
     input_layer = Input(shape=input_shape)
-
-    X = block_1(input_layer)
-    X = ZeroPadding2D(padding=(3, 3))(X)
-
-    X = block_1(input_layer)
-    X = ZeroPadding2D(padding=(3, 3))(X)
-
-    X = block_1(input_layer)
-    X = ZeroPadding2D(padding=(3, 3))(X)
-
-    X = block_1(input_layer)
-    X = ZeroPadding2D(padding=(3, 3))(X)
 
     X = block_1(input_layer)
     X = ZeroPadding2D(padding=(3, 3))(X)
