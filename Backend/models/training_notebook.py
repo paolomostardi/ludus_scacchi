@@ -152,13 +152,11 @@ x_fit = [x[f_i:s_i],  white[f_i:s_i]]
 y_fit = y[f_i:s_i]
 
 
-x_test = [x[s_i:t_i],white[s_i:t_i]]
+x_test = [x[s_i:t_i], white[s_i:t_i]]
 y_test = y[s_i:t_i]
 
-
-
-fit = (x_fit,y_fit)
-test = (x_test,y_test)
+fit = (x_fit, y_fit)
+test = (x_test, y_test)
 
 for i in range(5):
     model_to_fit.fit(fit[0][0],fit[1],batch_size=128,epochs = 3)

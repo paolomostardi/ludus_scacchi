@@ -1,6 +1,5 @@
 
-
-class LichessUser:
+ class LichessUser:
     def __init__(self, json_response=None, json_file_row=None):
         self.username = None
         if json_response:
