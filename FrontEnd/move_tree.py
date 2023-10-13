@@ -1,41 +1,42 @@
 class MovesTree(object):
 
-    def __init__(self, move='root', children=None, parent=None):
+    def __init__(self, position ='root', children=None, parent=None):
         self.children = []
-        self.move = move
+        self.position = position
+
         self.parent = parent
         if children is not None:
             for child in children:
                 self.add_child(child)
 
     def __repr__(self):
-        return self.move
+        return self.position
 
     def add_child(self, node):
         assert isinstance(node, MovesTree)
         self.children.append(node)
 
-    def add_child_to_n(self, n, move):
-        move = MovesTree(move)
+    def add_child_to_n(self, n, position):
+        position = MovesTree(position)
 
-        self.go_to_depth(n).add_child(move)
-        return move
+        self.go_to_depth(n).add_child(position)
+        return position
 
-    def find_child_given_move(self, move):
+    def find_child_given_move(self, position):
         list_of_child = self.get_all_child()
         for child in list_of_child:
-            if move == child.move:
+            if position == child.position:
                 return child
         return False
 
     def get_all_first_child_moves(self):
         if self.get_first_child():
-            return self.move + ',' + self.get_first_child().get_all_first_child_moves()
+            return self.position + ',' + self.get_first_child().get_all_first_child_moves()
         else:
-            return self.move
+            return self.position
 
     def get_all_first_list_child_moves(self):
-        moves_list = [self.move]
+        moves_list = [self.position]
         if self.get_first_child():
             moves_list.extend(self.get_first_child().get_all_first_list_child_moves())
         return moves_list
@@ -43,11 +44,11 @@ class MovesTree(object):
     def get_all_moves(self, parent_move=None):
         result = []
         if parent_move:
-            result.append(str(parent_move) + " -> " + str(self.move))
+            result.append(str(parent_move) + " -> " + str(self.position))
         else:
-            result.append(self.move)
+            result.append(self.position)
         for child in self.children:
-            result.extend(child.get_all_moves(self.move))
+            result.extend(child.get_all_moves(self.position))
         return result
 
     def get_first_child(self):
@@ -82,7 +83,7 @@ class MovesTree(object):
     def get_all_child_moves(self):
         moves_list = []
         for child in self.children:
-            moves_list.append(child.move)
+            moves_list.append(child.position)
         return moves_list
 
     def go_to_depth(self, depth):
@@ -92,15 +93,15 @@ class MovesTree(object):
             return None
         return self.children[0].go_to_depth(depth - 1)
 
-    def push_move(self, move):
+    def push_move(self, position):
         while self.children:
-            return self.children[0].push_move(move)
-        move = MovesTree(move)
-        self.add_child(move)
+            return self.children[0].push_move(position)
+        position = MovesTree(position)
+        self.add_child(position)
         return
 
-    def set_move(self, move):
-        self.move = move
+    def set_move(self, position):
+        self.position = position
         return
 
     def find_parent(self, move_tree, child):
@@ -130,7 +131,7 @@ class MovesTree(object):
         count = 0
         if node is None:
             return
-        while node.move != '':
+        while node.position != '':
 
             count += 1
             node = self.find_parent(parent_tree, node)
@@ -170,13 +171,13 @@ def test():
     tree_, node_ = testing_move_tree()
     print('Get all the moves')
     print(tree_.get_all_moves())
-    print('Find parent of the node:', node_.move)
+    print('Find parent of the node:', node_.position)
     print(tree_.find_parent(tree_, node_))
 
     nodes = node_.find_last_first_child()
     print('This tree: ', node_.get_all_first_list_child_moves(), 'Has as a last child :', nodes)
 
-    print('The parent of the node ', nodes.move, ' is :')
+    print('The parent of the node ', nodes.position, ' is :')
     print(nodes.find_parent(node_, nodes))
 
     print('---- The count to root is : ----- ')

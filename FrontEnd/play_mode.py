@@ -37,8 +37,8 @@ class AnalysisMode(RenderChess):
         clock.tick(1)
 
         try:
-            if self.move_tree.move == '':
-                self.move_tree.move = (self.chess_board.peek())
+            if self.move_tree.position == '':
+                self.move_tree.position = (self.chess_board.peek())
                 self.current_move += 1
             elif self.chess_board.peek() != self.move_tree.get_all_first_list_child_moves()[-1]:
                 if len(self.move_tree.get_all_first_list_child_moves()):
