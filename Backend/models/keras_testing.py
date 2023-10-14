@@ -1,38 +1,35 @@
+
 import numpy as np
+
 from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
-from keras.utils import to_categorical
+from keras.layers import Conv2D, Flatten, Dense
 
-# Generate random data and labels for demonstration
-# You should replace this with your actual data
-num_samples = 1000
-image_size = (32, 32, 3)  # Adjust the size based on your actual data
+# Define the input shape
+input_shape = (14, 8, 8)
 
-# Generate random images with values between 0 and 1
-data = np.random.rand(num_samples, *image_size)
-
-# Generate random labels as integers (e.g., for a binary classification task)
-labels = np.random.randint(2, size=num_samples)
-
-# Convert labels to one-hot encoding
-labels = to_categorical(labels, num_classes=2)
-
-# Create a simple CNN model
+# Create a Sequential model
 model = Sequential()
-model.add(Conv2D(32, (3, 3), activation='relu', input_shape=image_size))
-model.add(MaxPooling2D((2, 2)))
-model.add(Conv2D(64, (3, 3), activation='relu'))
-model.add(MaxPooling2D((2, 2)))
-model.add(Conv2D(64, (3, 3), activation='relu'))
+
+# Add a convolutional layer with 16 filters, each of size (3, 3) and 'valid' padding
+model.add(Conv2D(16, (3, 3), activation='relu', input_shape=input_shape))
+model.add(Conv2D(32, (3, 3), activation='relu'))
+
+# Add a flattening layer to transform the 3D output into a 1D vector
 model.add(Flatten())
-model.add(Dense(64, activation='relu'))
-model.add(Dense(2, activation='softmax'))  # 2 classes in this example
 
-# Compile the model
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+# Add a dense layer with 16 units and 'relu' activation
+model.add(Dense(16, activation='relu'))
 
-# Train the model
-model.fit(data, labels, epochs=10, batch_size=32)
+# Add the output layer with 4 units (flattened to (4,)) and appropriate activation function
+model.add(Dense(4, activation='softmax'))
 
-# You can save the model for future use if needed
-# model.save('my_cnn_model.h5')
+# Compile the model with a suitable loss function and optimizer for your specific task
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+# Print a summary of the model's architecture
+model.summary()
+
+x = np.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\x.npy')
+y = np.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\asdad.npy')
+
+model.fit(x, y)
