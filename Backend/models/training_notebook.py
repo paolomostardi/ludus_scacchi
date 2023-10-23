@@ -13,6 +13,7 @@ from keras.layers import Activation
 
 print('LIBRARIES LOADED')
 
+
 def test_resnet():
     x1 = (1, 1)
     x3 = (3, 3)
