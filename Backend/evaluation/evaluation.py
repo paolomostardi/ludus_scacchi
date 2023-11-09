@@ -3,7 +3,7 @@ import chess
 import chess.engine
 import chess.pgn
 import numpy
-
+from keras.models import load_model
 
 def test_engine_on_dataset(engine_path, dataset_path, amount_of_testing_sets, starting_point = 0):
 
@@ -43,4 +43,10 @@ def check_validity_of_dataset(dataset_path, amount_of_testing_sets):
         board.push(y)
 
     return accuracy
+
+
+
+
+
+
 
