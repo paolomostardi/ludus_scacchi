@@ -1,9 +1,8 @@
 import pandas
 import requests
 import json
-import lichess_user
+from Backend.pipeline import lichess_user
 
-from Backend import lichess_user
 
 
 def open_json_file_pandas(json_filename):

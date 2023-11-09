@@ -4,7 +4,7 @@ import chess
 import io
 import chess.pgn
 
-from Backend import count_users_with_most_games_from_lichess_api as count
+from Backend.pipeline import count_users_with_most_games_from_lichess_api as count
 
 
 def number_of_square_to_bitboard_index(square):
