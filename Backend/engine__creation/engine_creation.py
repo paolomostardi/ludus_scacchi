@@ -47,3 +47,37 @@ def return_best_legal_piece(board: chess.Board, model: models.Model):
             return piece
 
 
+# 12  has  6,4 index 
+# 13 - 6,3  
+# 11 - 6,5
+
+
+def transorm_index_to_matrix(index: int):
+    matrix = np.zeros((1,8,8))
+    x = 7 - index % 8
+    y = 7 - index // 8
+
+    print(x,y)
+
+    matrix[0][y][x] = 1
+
+    return matrix
+
+def return_top_squares_given_square_and_board(fen: str, model: models.Model, square: chess.square):
+    board = chess.Board(fen)
+    x = gen.from_chess_board_create_bit_boards(board)
+   
+
+    matrix = transorm_index_to_matrix(square)
+    x = np.concatenate((x, matrix), axis=0)
+    x = x.reshape(1, 15, 8, 8)
+    prediction = model.predict(x)
+
+    sorted_indices = np.argsort(prediction[0])[::-1]
+    sorted_percentages = prediction[0][sorted_indices] * 100
+
+    return sorted_indices, sorted_percentages
+
+def return_square_to_move(fen : str, model: models.Model, square: chess.square):
+    return_top_squares_given_square_and_board(fen,model,square)
+
