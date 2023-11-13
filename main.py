@@ -1,5 +1,8 @@
 import pygame
 from FrontEnd import analysis_mode
+from FrontEnd import play_mode
+import random
+
 
 
 class Button:
@@ -103,4 +106,4 @@ def main():
     pygame.quit()
 
 
-analysis_mode.main()
+play_mode.main()

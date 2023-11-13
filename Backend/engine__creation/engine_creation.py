@@ -105,14 +105,16 @@ def legal_move_given_square(board : chess.Board, from_square, to_square):
             print(board)
             board.push(move)
             print(board)
-            return True       
+            return True, move       
 
 
 def find_most_likely_legal_move(board, from_square, list_squares):
 
     for to_square in list_squares:
-        if legal_move_given_square(board, from_square, to_square):
-            return to_square 
+        answer = legal_move_given_square(board, from_square, to_square)
+        if answer:
+            if answer[0]:
+                return answer[1] 
 
 
 def return_square_to_move(fen : str, model: models.Model, square: chess.square):

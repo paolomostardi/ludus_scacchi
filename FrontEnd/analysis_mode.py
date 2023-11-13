@@ -63,19 +63,22 @@ def main():
     while running:
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 print('CLICK EVENT COORDINATE ')
                 print(event.pos)
                 board.on_click(event.pos)
 
+            if event.type == pygame.QUIT:
+                    running = False
+
             elif event.type == pygame.KEYDOWN:
+                
                 if event.key == pygame.K_DOWN:
                     board.key_down()
                 elif event.key == pygame.K_UP:
                     board.key_up()
+
+
 
         screen.fill((200, 200, 200))
         board.render_board()
@@ -84,3 +87,7 @@ def main():
         pygame.display.update()
         clock.tick(framerate)
 
+
+                
+    pygame.quit() 
+    return 
