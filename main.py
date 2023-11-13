@@ -105,5 +105,12 @@ def main():
         clock.tick(16)
     pygame.quit()
 
+color = play_mode.color_choice()
+if color is None:
+    print('random color')
+if color is True:
+    print('white color')
+if color is False:
+    print('black color')
 
-play_mode.main()
+play_mode.main(color)
