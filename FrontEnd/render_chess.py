@@ -177,7 +177,7 @@ class RenderChess:
         y = board_size - square_size - y
 
         image = helper.resize_image(image, board_size / 8)
-        x += self.board_x_padding
+        x += self.board_x_padding 
         y += self.board_y_padding
         screen.blit(image, (x, y))
 

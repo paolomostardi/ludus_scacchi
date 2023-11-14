@@ -1,6 +1,8 @@
 from FrontEnd import helper
 from FrontEnd.render_chess import RenderChess
 from FrontEnd.analysis_logic import AnalysisLogic
+from FrontEnd.button import Button
+
 import pygame
 import chess
 from keras import models
@@ -24,10 +26,13 @@ class PlayMode(RenderChess):
             self.color = random.choice([True,False])
         else:
             self.color = color
-        if self.color:
+
+        if not self.color:
             move = engine.engine(self.chess_board.fen(),self.resnet,self.vgg)
             self.logic_board.add_move(move)
             self.chess_board.push(move)
+
+        
 
     def generate_move(self):
         try:
@@ -39,19 +44,25 @@ class PlayMode(RenderChess):
     def on_click(self, event):
         if self.first_square is None:
             self.get_first_click(event)
+            return True 
         else:
-            self.push_move_after_second_click(event)
+            return self.push_move_after_second_click(event)
 
     def push_move_after_second_click(self, click_location):
         super().push_move_after_second_click(click_location)
         move = self.generate_move()
         self.logic_board.add_move(move)
-        move = engine.engine(self.chess_board.fen(),self.resnet,self.vgg)
-        print(move)
-        if self.chess_board.turn == self.color:
+        if self.chess_board.is_game_over():
+            return False
+        
+        if self.chess_board.turn is not self.color:
+            move = engine.engine(self.chess_board.fen(),self.resnet,self.vgg)
             self.logic_board.add_move(move)
             self.chess_board.push(move)
-
+            if self.chess_board.is_game_over():
+                return False 
+        return True 
+    
     def key_up(self):
         self.logic_board.key_up()
         self.chess_board = self.logic_board.get_current_board()
@@ -76,7 +87,7 @@ def main(color):
     framerate = 15
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     board = PlayMode(board_size, screen, color)
-    board.set_board_padding((20, 85))
+    board.set_board_padding((100, 50))
 
     engine_path = r"C:\Users\paolo\OneDrive\Desktop\Final_project\engines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe"
     engine = chess.engine.SimpleEngine.popen_uci(engine_path)
@@ -87,7 +98,7 @@ def main(color):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 print('CLICK EVENT COORDINATE ')
                 print(event.pos)
-                board.on_click(event.pos)
+                running = board.on_click(event.pos)
 
             if event.type == pygame.QUIT:
                     running = False
@@ -99,8 +110,6 @@ def main(color):
                 elif event.key == pygame.K_UP:
                     board.key_up()
 
-
-
         screen.fill((200, 200, 200))
         board.render_board()
         rectangle = (20,20, 100, 50)
@@ -111,7 +120,7 @@ def main(color):
 
                 
     pygame.quit() 
-    return 
+    return board.logic_board
 
 def color_choice():
     color = None
@@ -191,5 +200,55 @@ def color_choice():
         clock.tick(framerate)
 
 
+def ending_message(board : AnalysisLogic, color):
 
+    WIDTH = 1200
+    HEIGHT = 800
+
+    running = True
+    pygame.font.init() 
+    clock = pygame.time.Clock()
+    framerate = 15
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+     
+    rect = (200,50,200,200)
+
+    board = board.get_current_board()
+
+    print('DID YOU WIN OR LOSE ? ')
+    print(board)
+    print(board.is_checkmate())
+    print('turn and color ')
+    print(board.turn)
+    print(color)
+
+    if board.is_checkmate():
+        if board.turn == color:
+            msg = 'You lose'
+        else:
+            msg = 'You win'
+    else: 
+        msg = ' Draw '
+
+    button = Button(rect, message=msg, screen=screen)
+
+
+
+    while running:
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                print('CLICK EVENT COORDINATE ')
+                print(event.pos)
+
+            if event.type == pygame.QUIT:
+                    running = False
+
+
+        screen.fill((150, 150, 150))
+        button.render()
+        pygame.display.update()
+        clock.tick(framerate)
+
+    
     return color
