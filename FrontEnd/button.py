@@ -17,14 +17,10 @@ class Button:
     def set_on_click(self, method):
         self.on_click = method
 
-    def check_click(self, coordinates, args = None):
+    def check_click(self, coordinates, args = []):
         click_x, click_y = coordinates
-        if (
-            self.x <= click_x <= self.x + self.width
-            and self.y <= click_y <= self.y + self.height
-        ):
-            if self.on_click:
-                self.on_click(*args)  
+        if self.x <= click_x <= self.x + self.width and self.y <= click_y <= self.y + self.height:
+            return True
 
     def render(self):
         # pygame.draw.rect(screen,(0,0,0),random_choice_square[1])

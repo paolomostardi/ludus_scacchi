@@ -2,6 +2,8 @@ from FrontEnd import helper
 from FrontEnd.render_chess import RenderChess
 from FrontEnd.analysis_logic import AnalysisLogic
 from FrontEnd.button import Button
+from FrontEnd.analysis_mode import main as analysis_main
+
 
 import pygame
 import chess
@@ -199,8 +201,45 @@ def color_choice():
         pygame.display.update()
         clock.tick(framerate)
 
+def model_chioce():
+    
+    WIDTH = 1200
+    HEIGHT = 800
 
-def ending_message(board : AnalysisLogic, color):
+    running = True
+    pygame.font.init() 
+    clock = pygame.time.Clock()
+    framerate = 15
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))    
+
+    analysis_rect = (200,400,200,200)
+    analysis_button = Button(analysis_rect, color= (30,123,45), message = ' Select the model you would like to play with ' , screen=screen )
+
+
+
+    while running:
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                print('CLICK EVENT COORDINATE ')
+                print(event.pos)
+                if analysis_button.check_click(event.pos,[logic_board]):
+                        print('hello')
+                        pygame.quit()
+                        analysis_main(logic_board)
+
+            if event.type == pygame.QUIT:
+                    running = False
+
+
+        screen.fill((150, 150, 150))
+        button.render()
+        analysis_button.render()
+        pygame.display.update()
+        clock.tick(framerate)
+ 
+
+def ending_message(logic_board : AnalysisLogic, color):
 
     WIDTH = 1200
     HEIGHT = 800
@@ -209,11 +248,9 @@ def ending_message(board : AnalysisLogic, color):
     pygame.font.init() 
     clock = pygame.time.Clock()
     framerate = 15
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-     
-    rect = (200,50,200,200)
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))    
 
-    board = board.get_current_board()
+    board = logic_board.get_current_board()
 
     print('DID YOU WIN OR LOSE ? ')
     print(board)
@@ -224,14 +261,18 @@ def ending_message(board : AnalysisLogic, color):
 
     if board.is_checkmate():
         if board.turn == color:
-            msg = 'You lose'
+            msg = ' You lose'
         else:
-            msg = 'You win'
+            msg = ' You win'
     else: 
         msg = ' Draw '
 
+    
+    rect = (300,50,200,500)
     button = Button(rect, message=msg, screen=screen)
 
+    analysis_rect = (200,400,200,200)
+    analysis_button = Button(analysis_rect, color= (30,123,45), message = ' Analyse the game ? ' , screen=screen )
 
 
     while running:
@@ -240,6 +281,10 @@ def ending_message(board : AnalysisLogic, color):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 print('CLICK EVENT COORDINATE ')
                 print(event.pos)
+                if analysis_button.check_click(event.pos,[logic_board]):
+                        print('hello')
+                        pygame.quit()
+                        analysis_main(logic_board)
 
             if event.type == pygame.QUIT:
                     running = False
@@ -247,8 +292,9 @@ def ending_message(board : AnalysisLogic, color):
 
         screen.fill((150, 150, 150))
         button.render()
+        analysis_button.render()
         pygame.display.update()
         clock.tick(framerate)
 
-    
+
     return color

@@ -9,9 +9,16 @@ import chess.engine
 
 class AnalysisMode(RenderChess):
 
-    def __init__(self, board_size, screen):
+    def __init__(self, board_size, screen, logic_board = None):
         super().__init__(board_size, screen)
-        self.logic_board = AnalysisLogic()
+        
+        if logic_board is None:
+            print('hello')
+            self.logic_board = AnalysisLogic()
+        else:
+            print('CORRECT ')
+            self.logic_board = logic_board
+            self.chess_board = logic_board.get_current_board()
 
     def generate_move(self):
         try:
@@ -43,7 +50,7 @@ class AnalysisMode(RenderChess):
         return
 
 
-def main():
+def main(logic_board: AnalysisLogic = None):
 
     WIDTH = 1200
     HEIGHT = 800
@@ -54,7 +61,12 @@ def main():
     clock = pygame.time.Clock()
     framerate = 15
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    board = AnalysisMode(board_size, screen)
+
+    if logic_board:
+        board = AnalysisMode(board_size, screen, logic_board)
+    else:
+        board = AnalysisMode(board_size, screen)
+    
     board.set_board_padding((20, 85))
 
     engine_path = r"C:\Users\paolo\OneDrive\Desktop\Final_project\engines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe"
