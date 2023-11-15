@@ -26,10 +26,12 @@ class LichessUser:
 
                 self.username = json_response['username']
 
+                self.bullet_rating = json_response['perfs']['bullet']['rating']
                 self.blitz_rating = json_response['perfs']['blitz']['rating']
                 self.rapid_rating = json_response['perfs']['rapid']['rating']
                 self.classical_rating = json_response['perfs']['classical']['rating']
 
+                self.bullet_amount_of_games = json_response['perfs']['bullet']['games']
                 self.blitz_amount_of_games = json_response['perfs']['blitz']['games']
                 self.rapid_amount_of_games = json_response['perfs']['rapid']['games']
                 self.classical_amount_of_games = json_response['perfs']['classical']['games']
