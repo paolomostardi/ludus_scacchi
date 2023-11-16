@@ -2,6 +2,8 @@ import os
 import requests
 
 
+
+
 def get_pgn_games_from_username(username, folder, number_of_games=2000, performance_type=None):
 
     if performance_type is None:

@@ -84,15 +84,20 @@ def main(color):
     board_size = 700
 
     running = True
+    resign = False
+    pygame.font.init() 
 
     clock = pygame.time.Clock()
     framerate = 15
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     board = PlayMode(board_size, screen, color)
-    board.set_board_padding((100, 50))
+    board.set_board_padding((50, 50))
 
     engine_path = r"C:\Users\paolo\OneDrive\Desktop\Final_project\engines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe"
     engine = chess.engine.SimpleEngine.popen_uci(engine_path)
+
+    resign_rectangle = (755,50,50,50)
+    resign_button = Button(resign_rectangle,message='    Resing', screen=screen)
 
     while running:
 
@@ -101,6 +106,9 @@ def main(color):
                 print('CLICK EVENT COORDINATE ')
                 print(event.pos)
                 running = board.on_click(event.pos)
+                if resign_button.check_click(event.pos):
+                    running = False
+                    resign = True
 
             if event.type == pygame.QUIT:
                     running = False
@@ -114,18 +122,17 @@ def main(color):
 
         screen.fill((200, 200, 200))
         board.render_board()
-        rectangle = (20,20, 100, 50)
-        pygame.draw.rect(screen, board.dark_blue, rectangle)
+        resign_button.render()
+
         pygame.display.update()
         clock.tick(framerate)
 
 
-                
+              
     pygame.quit() 
-    return board.logic_board
+    return board.logic_board, resign
 
 def color_choice():
-    color = None
 
     
 
@@ -133,12 +140,18 @@ def color_choice():
     HEIGHT = 800
     board_size = 700
 
+    icon = pygame.image.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\FrontEnd\Pieces\black\b.png')
+
+
     running = True
     pygame.font.init() 
     clock = pygame.time.Clock()
     framerate = 15
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     font =  pygame.font.SysFont('Times new roman', 50)
+
+    pygame.display.set_icon(icon)
+    pygame.display.set_caption('Ludus Scacchi')
 
     white_choice_square = (605,200,500,100)
     black_choice_square = (95,200,500,100)
@@ -239,7 +252,7 @@ def model_chioce():
         clock.tick(framerate)
  
 
-def ending_message(logic_board : AnalysisLogic, color):
+def ending_message(logic_board : AnalysisLogic, color, resign):
 
     WIDTH = 1200
     HEIGHT = 800
@@ -252,27 +265,20 @@ def ending_message(logic_board : AnalysisLogic, color):
 
     board = logic_board.get_current_board()
 
-    print('DID YOU WIN OR LOSE ? ')
-    print(board)
-    print(board.is_checkmate())
-    print('turn and color ')
-    print(board.turn)
-    print(color)
-
-    if board.is_checkmate():
-        if board.turn == color:
-            msg = ' You lose'
+    if board.is_checkmate() or resign:
+        if board.turn == color or resign:
+            msg = '    You lose'
         else:
-            msg = ' You win'
+            msg = '    You win'
     else: 
-        msg = ' Draw '
+        msg = '  Draw '
 
     
-    rect = (300,50,200,500)
+    rect = (50,50,50,50)
     button = Button(rect, message=msg, screen=screen)
 
-    analysis_rect = (200,400,200,200)
-    analysis_button = Button(analysis_rect, color= (30,123,45), message = ' Analyse the game ? ' , screen=screen )
+    analysis_rect = (50,150,50,50)
+    analysis_button = Button(analysis_rect, color= (30,123,45), message = '    Analyse the game ? ' , screen=screen )
 
 
     while running:

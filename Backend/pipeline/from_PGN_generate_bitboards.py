@@ -148,6 +148,8 @@ def from_bitboard_save_file(filepath, username, x_bitboard, y_bitboard, list_of_
     numpy.save(y_filename, y_bitboard)
     numpy.save(white_filename, list_of_white)
 
+    print('saving at : ', x_filename)
+
 
     return
 
@@ -171,14 +173,19 @@ def generate_from_username(username, first_pgn_index):
     return
 
 
-def generate_from_filename(username, first_pgn_index = 0, filename = None, number = None):
+def generate_from_filename(username, first_pgn_index = 0, filename = None, number = None, saving_path = None):
 
     user_rating = 1700
 
     filepath = filename
-    filepath_to_save = 'Backend/data/bit_boards/bit_boards_' + str(user_rating) + '/'
+    if saving_path:
+        filepath_to_save = saving_path
+    else:
+        filepath_to_save = 'Backend/data/bit_boards/bit_boards_' + str(user_rating) + '/'
 
     json_df = pandas.read_json(filepath, lines=True)
+
+    print(' it will be fine')
 
     json_df = json_df.iloc[first_pgn_index:]
 

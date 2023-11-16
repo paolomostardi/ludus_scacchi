@@ -2,7 +2,12 @@ import pygame
 import requests
 from Backend.pipeline.lichess_user import LichessUser
 from FrontEnd.button import Button
-
+from Backend.pipeline import get_games_in_pgn_from_lichess_api as get_games
+from Backend.pipeline import from_PGN_generate_bitboards as generate_bitboards
+from Backend.pipeline import create_second_dataset
+import numpy as np
+from keras.models import load_model
+from keras import Model
 
 def choose_model():
 
@@ -121,7 +126,7 @@ def get_user_info(username):
     return user
 
 
-def train_on_user(user : LichessUser):
+def show_user_infos(user : LichessUser):
 
     WIDTH = 1200
     HEIGHT = 800
@@ -165,9 +170,6 @@ def train_on_user(user : LichessUser):
             if event.type == pygame.QUIT:
                     running = False
 
-
-
-
         screen.fill((150, 150, 150))
         
         question_button.render()
@@ -181,6 +183,29 @@ def train_on_user(user : LichessUser):
         clock.tick(framerate)
 
 
+def train_on_user(username, model_path):
+    print('doing some stuff')
+    saving_path =r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\pgn_games\_'
+    games_path = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\pgn_games\pgn_games_pollofritto.csv'
+    generate_bitboards.generate_from_filename(username,0,games_path,0,saving_path)
+
+    x = np.load(saving_path + 'pollofritto_0_bitboard.npy')
+    y = np.load(saving_path + 'pollofritto_0_Y_bitboard.npy')
+
+   
+    create_second_dataset.transform_from_first_dataset_to_second(x,y,True,r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\pgn_games\_pollofritto_0_x2_bitboard.npy')
+
+    x2 = np.load(saving_path + 'pollofritto_0_x2_bitboard.npy')
+
+    model1 = load_model(model_path[0])
+    model2 = load_model(model_path[1])
+
+    print(model1.summary())
+    print(model2.summary())
+    
+    model1.fit(x,y)
+
+
 
 
 
@@ -188,8 +213,13 @@ def train_on_user(user : LichessUser):
 
 
 def main():
+    model_path1 = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\saved_model\first_mode_engine\resnet.h5'
+    model_path2 = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\saved_model\second_part_engine\VGG19_piece_Predictor.h5'
+    train_on_user('pollofritto',[model_path1,model_path2])
 
 
-    model = choose_model()
-    user = choose_user()
-    train_on_user(user)
+
+
+
+
+

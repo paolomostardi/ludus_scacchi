@@ -16,6 +16,12 @@ class Button:
         self.outside_color = color
         self.screen = screen 
 
+        if self.y + self.height // 2 > 50:
+            self.font_height = self.y
+        else:
+            self.font_height = self.y + self.height // 2
+
+
     def set_on_click(self, method):
         self.on_click = method
 
@@ -37,7 +43,7 @@ class Button:
         # pygame.draw.rect(screen,(0,0,0),random_choice_square[1])
         
         pygame.draw.rect(self.screen, self.color, self.rectangle)
-        self.screen.blit(self.text_surface, (self.x , self.y + self.height // 2 ))
+        self.screen.blit(self.text_surface, (self.x , self.font_height))
 
         if self.outside:
             pygame.draw.rect(self.screen, self.outside_color, self.rectangle, 2)
