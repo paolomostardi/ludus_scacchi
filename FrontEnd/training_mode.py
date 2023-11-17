@@ -8,6 +8,8 @@ from Backend.pipeline import create_second_dataset
 import numpy as np
 from keras.models import load_model
 from keras import Model
+import pandas as pd
+import os
 
 def choose_model():
 
@@ -187,13 +189,9 @@ def train_on_user(username, model_path):
     print('doing some stuff')
     saving_path =r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\pgn_games\_'
     games_path = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\pgn_games\pgn_games_pollofritto.csv'
-    generate_bitboards.generate_from_filename(username,0,games_path,0,saving_path)
 
     x = np.load(saving_path + 'pollofritto_0_bitboard.npy')
-    y = np.load(saving_path + 'pollofritto_0_Y_bitboard.npy')
-
-   
-    create_second_dataset.transform_from_first_dataset_to_second(x,y,True,r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\pgn_games\_pollofritto_0_x2_bitboard.npy')
+    y = np.load(saving_path + 'pollofritto_0_Y_bitboard.npy')   
 
     x2 = np.load(saving_path + 'pollofritto_0_x2_bitboard.npy')
 
@@ -203,19 +201,82 @@ def train_on_user(username, model_path):
     print(model1.summary())
     print(model2.summary())
     
-    model1.fit(x,y)
+    y1,y2 = create_second_dataset.transform_y(y)
+
+    model1.fit(x,np.array(y1))
+    model2.fit(x2,np.array(y2))
+
+
+def check_model_fit_on_username(username,path_to_model):
+    df = pd.read_csv(path_to_model + '\list_of_users.csv')
+    if username in df['trained_users']:
+        return True
+    return False
+
+def check_data_available_on_username(username):
+    path = 'training_data\data'
+    if username in os.listdir(path):
+        return True
+    return False
+
+def fit_model_on_user_data(username,path_to_model):
+    path_to_model1 = path_to_model + r'\first_part\model.h5'
+    path_to_model2 = path_to_model + r'\second_part\model.h5'
 
 
 
+    model1 = load_model(path_to_model1)
+    model2 = load_model(path_to_model2)
+    
+    data_path = r'training_data\data\pollofritto\bitboard'
+
+    print(path_to_model)
+    print(path_to_model1)
+    
+    x1 = np.load(data_path + r'\x.npy')
+    x2 = np.load(data_path + r'\x2.npy')
+    y1 = np.load(data_path + r'\y.npy') 
+    y2 = np.load(data_path + r'\y2.npy')
+
+    model1.fit(x1,y1)
+    model2.fit(x2,y2)
+
+    return model1, model2 
+
+def download_and_process_data_of_user(username):
+    folder_path = r'training_data\data\\' + username + r'\pgn\pgn_games_' + username + '.csv'
+    saving_path = r'training_data\data\\' + username + r'\bitboard'
 
 
+    print('generating the bitboards')
+    print('current path being used ', folder_path)
+    generate_bitboards.generate_from_filename('',0,folder_path,0,saving_path)
 
+
+    return 
+
+
+# todo handle missing file and folder
+def train_model_given_user_and_model(username, path_to_model, path_to_save = None):
+    if path_to_save is None:
+        path_to_save = path_to_model
+
+    print('checking if the model has already been trained')
+
+    if check_model_fit_on_username(username,path_to_model):
+        print('model already trained')
+    else:
+        if False:
+            fit_model_on_user_data(username,path_to_model) 
+        else:
+            download_and_process_data_of_user(username)
+            fit_model_on_user_data(username, path_to_model)
 
 
 def main():
-    model_path1 = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\saved_model\first_mode_engine\resnet.h5'
-    model_path2 = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\saved_model\second_part_engine\VGG19_piece_Predictor.h5'
-    train_on_user('pollofritto',[model_path1,model_path2])
+    model_path = 'training_data\model\model1'
+
+    fit_model_on_user_data('pollofritto',model_path)
 
 
 

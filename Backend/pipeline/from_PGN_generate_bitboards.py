@@ -5,7 +5,7 @@ import io
 import chess.pgn
 
 from Backend.pipeline import count_users_with_most_games_from_lichess_api as count
-
+from Backend.pipeline import create_second_dataset as second
 
 def number_of_square_to_bitboard_index(square):
     x = square % 8
@@ -138,46 +138,45 @@ def from_list_of_x_and_y_position_create_bitboard(list_of_x_position, list_of_y_
     return x_bitboard_list, y_bitboard_list, list_of_white_player
 
 
-def from_bitboard_save_file(filepath, username, x_bitboard, y_bitboard, list_of_white):
-    print(' saving bitboards files')
-    x_filename = filepath + username + '_bitboard.npy'
-    y_filename = filepath + username + '_Y_bitboard.npy'
+def from_bitboard_reshape_data(x,y):
+    print('reshaping data to fit 2 models type of engine')
+    x2 = second.transform_from_first_dataset_to_second(x,y)
+    y,y2 = second.transform_y(y)
+
+    return x,x2,y,y2
+
+
+
+def from_bitboard_save_file(filepath, username, x_bitboard, y_bitboard, x2_bitboard, y2_bitboard, list_of_white):
+    print('saving bitboards files')
+    x_filename = filepath + username + r'\x.npy'
+    x2_filename = filepath + username + r'\x2.npy'
+    y_filename = filepath + username + r'\y.npy'
+    y2_filename = filepath + username + r'\y2.npy'
+    
     white_filename = filepath + username + '_white_bitboard.npy'
 
     numpy.save(x_filename, x_bitboard)
     numpy.save(y_filename, y_bitboard)
-    numpy.save(white_filename, list_of_white)
+    numpy.save(x2_filename, x2_bitboard)
+    numpy.save(y2_filename, y2_bitboard)
+        
+    # numpy.save(white_filename, list_of_white)
 
     print('saving at : ', x_filename)
 
-
     return
 
 
-def generate_from_username(username, first_pgn_index):
-
-    user_rating = 1700
-
-    filepath = 'Backend/data/pgn_games/pgn_games_' + str(user_rating) + '/pgn_games_' + username + '.json'
-    filepath_to_save = 'Backend/data/bit_boards/bit_boards_' + str(user_rating) + '/'
-
-    json_df = pandas.read_json(filepath, lines=True)
-    json_df = json_df.iloc[first_pgn_index:]
-
-    list_of_position = from_json_dataframe_create_list_of_chess_position(json_df, username)
-    x_list, y_list = from_list_of_chess_position_split_x_and_y_for_bitboards(list_of_position)
-
-    x_bitboard, y_bitboard, list_of_white = from_list_of_x_and_y_position_create_bitboard(x_list, y_list)
-    from_bitboard_save_file(filepath_to_save, username, x_bitboard, y_bitboard, list_of_white)
-
-    return
-
+# filename has to be defined by the user
+# filename is the path to a json file where the games will be converted 
 
 def generate_from_filename(username, first_pgn_index = 0, filename = None, number = None, saving_path = None):
 
     user_rating = 1700
 
     filepath = filename
+
     if saving_path:
         filepath_to_save = saving_path
     else:
@@ -193,6 +192,9 @@ def generate_from_filename(username, first_pgn_index = 0, filename = None, numbe
     x_list, y_list = from_list_of_chess_position_split_x_and_y_for_bitboards(list_of_position)
 
     x_bitboard, y_bitboard, list_of_white = from_list_of_x_and_y_position_create_bitboard(x_list, y_list)
-    from_bitboard_save_file(filepath_to_save, username+'_'+str(number), x_bitboard, y_bitboard, list_of_white)
+
+    x1, x2, y1, y2 = from_bitboard_reshape_data(x_bitboard,y_bitboard)
+
+    from_bitboard_save_file(filepath_to_save, username,  x1, x2, y1, y2, list_of_white)
 
     return

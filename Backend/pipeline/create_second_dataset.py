@@ -10,3 +10,16 @@ def transform_from_first_dataset_to_second(x, y, saving = False, saving_path = N
         np.save(saving_path, array)
     return np.array(array)
     
+
+def transform_shape_to_64(shape):
+    return np.reshape(shape,64)
+
+def transform_y(y):
+    y1 = []
+    y2 = []
+
+    for i in y:
+        y1.append( transform_shape_to_64(i[0]))
+        y2.append( transform_shape_to_64(i[1]))
+
+    return y1,y2
