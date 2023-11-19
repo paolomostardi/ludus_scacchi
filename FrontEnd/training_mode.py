@@ -209,7 +209,7 @@ def train_on_user(username, model_path):
 
 def check_model_fit_on_username(username,path_to_model):
     df = pd.read_csv(path_to_model + '\list_of_users.csv')
-    if username in df['trained_users']:
+    if username in df['trained_users'].values:
         return True
     return False
 
@@ -219,16 +219,20 @@ def check_data_available_on_username(username):
         return True
     return False
 
-def fit_model_on_user_data(username,path_to_model):
+def fit_model_on_user_data(username,path_to_model,saving_path = None):
     path_to_model1 = path_to_model + r'\first_part\model.h5'
     path_to_model2 = path_to_model + r'\second_part\model.h5'
+    
+    if saving_path is None:
+        saving_path = path_to_model
 
-
+    saving_to_model1 = saving_path + r'\first_part\model.h5'
+    saving_to_model2 = saving_path + r'\second_part\model.h5'
 
     model1 = load_model(path_to_model1)
     model2 = load_model(path_to_model2)
     
-    data_path = r'training_data\data\pollofritto\bitboard'
+    data_path = r'training_data\data\\' + username+ r'\bitboard'
 
     print(path_to_model)
     print(path_to_model1)
@@ -241,20 +245,37 @@ def fit_model_on_user_data(username,path_to_model):
     model1.fit(x1,y1)
     model2.fit(x2,y2)
 
+    df = pd.read_csv(path_to_model + '\list_of_users.csv')
+    df = df.append({'trained_users': username}, ignore_index=True)
+
+
+    model1.save(saving_to_model1)
+    model2.save(saving_to_model2)
+
+    print(df)
+    df.to_csv(path_to_model + '\list_of_users.csv')
+
+
+    
+
     return model1, model2 
 
 def download_and_process_data_of_user(username):
-    folder_path = r'training_data\data\\' + username + r'\pgn\pgn_games_' + username + '.csv'
+    folder_path = r'training_data\data\\' + username + r'\pgn'
+    file_path = r'training_data\data\\' + username + r'\pgn\pgn_games_' + username + '.csv'
+
     saving_path = r'training_data\data\\' + username + r'\bitboard'
+
+    os.makedirs(saving_path)
 
 
     print('generating the bitboards')
-    print('current path being used ', folder_path)
-    generate_bitboards.generate_from_filename('',0,folder_path,0,saving_path)
-
-
+    print('---------------- CURRENT PATH BEING USED --------------')
+    
+    print(folder_path)    
+    get_games.get_pgn_games_from_username(username,folder_path,number_of_games=100)    
+    generate_bitboards.generate_from_filename('',0,file_path,0,saving_path)
     return 
-
 
 # todo handle missing file and folder
 def train_model_given_user_and_model(username, path_to_model, path_to_save = None):
@@ -266,8 +287,9 @@ def train_model_given_user_and_model(username, path_to_model, path_to_save = Non
     if check_model_fit_on_username(username,path_to_model):
         print('model already trained')
     else:
-        if False:
-            fit_model_on_user_data(username,path_to_model) 
+        if check_data_available_on_username(username):
+            fit_model_on_user_data(username,path_to_model)
+
         else:
             download_and_process_data_of_user(username)
             fit_model_on_user_data(username, path_to_model)
@@ -275,8 +297,8 @@ def train_model_given_user_and_model(username, path_to_model, path_to_save = Non
 
 def main():
     model_path = 'training_data\model\model1'
-
-    fit_model_on_user_data('pollofritto',model_path)
+    username = 'chess'
+    train_model_given_user_and_model(username,model_path)
 
 
 

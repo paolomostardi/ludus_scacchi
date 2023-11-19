@@ -3,6 +3,7 @@ import pandas
 import chess
 import io
 import chess.pgn
+import os
 
 from Backend.pipeline import count_users_with_most_games_from_lichess_api as count
 from Backend.pipeline import create_second_dataset as second
@@ -147,7 +148,7 @@ def from_bitboard_reshape_data(x,y):
 
 
 
-def from_bitboard_save_file(filepath, username, x_bitboard, y_bitboard, x2_bitboard, y2_bitboard, list_of_white):
+def from_bitboard_save_file(filepath, username, x_bitboard, x2_bitboard, y_bitboard, y2_bitboard, list_of_white):
     print('saving bitboards files')
     x_filename = filepath + username + r'\x.npy'
     x2_filename = filepath + username + r'\x2.npy'
@@ -182,9 +183,11 @@ def generate_from_filename(username, first_pgn_index = 0, filename = None, numbe
     else:
         filepath_to_save = 'Backend/data/bit_boards/bit_boards_' + str(user_rating) + '/'
 
-    json_df = pandas.read_json(filepath, lines=True)
+    print(filepath)
+    assert os.path.isfile(filepath)
 
-    print(' it will be fine')
+
+    json_df = pandas.read_json(filepath, lines=True)
 
     json_df = json_df.iloc[first_pgn_index:]
 
