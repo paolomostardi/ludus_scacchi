@@ -132,87 +132,6 @@ def main(color):
     pygame.quit() 
     return board.logic_board, resign
 
-def color_choice():
-
-    
-
-    WIDTH = 1200
-    HEIGHT = 800
-    board_size = 700
-
-    icon = pygame.image.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\FrontEnd\Pieces\black\b.png')
-
-
-    running = True
-    pygame.font.init() 
-    clock = pygame.time.Clock()
-    framerate = 15
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    font =  pygame.font.SysFont('Times new roman', 50)
-
-    pygame.display.set_icon(icon)
-    pygame.display.set_caption('Ludus Scacchi')
-
-    white_choice_square = (605,200,500,100)
-    black_choice_square = (95,200,500,100)
-    random_choice_square = (350, 400, 250, 100),(600, 400, 250, 100)
-
-
-    while running:
-
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                print('CLICK EVENT COORDINATE ')
-                print(event.pos)
-                if black_choice_square[0] < event.pos[0] < black_choice_square[0] + black_choice_square[2] and black_choice_square[1] < event.pos[1] < black_choice_square[1] + black_choice_square[3]:
-                    pygame.quit() 
-                    return False
-                if white_choice_square[0] < event.pos[0] < white_choice_square[0] + white_choice_square[2] and white_choice_square[1] < event.pos[1] < white_choice_square[1] + white_choice_square[3]:
-                    pygame.quit() 
-                    return True
-                if random_choice_square[0][0] < event.pos[0] < random_choice_square[0][0] + (random_choice_square[0][2] * 2) and random_choice_square[0][1] < event.pos[1] < random_choice_square[0][1] + random_choice_square[0][3]:
-                    pygame.quit() 
-                    return None 
-            if event.type == pygame.QUIT:
-                    running = False
-
-
-        screen.fill((150, 150, 150))
-        
-
-        str_to_render = 'CHOOSE A COLOR' 
-        text_surface = font.render(str_to_render, True, (0,0,0))
-        screen.blit(text_surface, (375 , 25 ))
-        
-        # black choice
-
-        pygame.draw.rect(screen,(10,10,10),black_choice_square)
-        str_to_render = '   BLACK ' 
-        text_surface = font.render(str_to_render, True, (255,255,255))
-        screen.blit(text_surface, (black_choice_square[0] + 20, black_choice_square[1] + 20 ))
-
-        # white choice
-
-        pygame.draw.rect(screen,(255,255,255),white_choice_square)
-        str_to_render = '   WHITE ' 
-        text_surface = font.render(str_to_render, True, (0,0,0))
-        screen.blit(text_surface, (white_choice_square[0] + 20, white_choice_square[1] + 20 ))
-        
-        # random choice
-
-        pygame.draw.rect(screen,(255,255,255),random_choice_square[0])
-        
-        pygame.draw.rect(screen,(0,0,0),random_choice_square[1])
-
-        str_to_render = '           RAN' 
-        text_surface = font.render(str_to_render, True, (0,0,0))
-        screen.blit(text_surface, (350, random_choice_square[0][1] + 20 ))
-        str_to_render = 'DOM' 
-        text_surface = font.render(str_to_render, True, (255,255,255))
-        screen.blit(text_surface, (600, random_choice_square[0][1] + 20 ))
-
-        pygame.display.update()
-        clock.tick(framerate)
 
 def model_chioce():
     
@@ -251,7 +170,6 @@ def model_chioce():
         pygame.display.update()
         clock.tick(framerate)
  
-
 def ending_message(logic_board : AnalysisLogic, color, resign):
 
     WIDTH = 1200
