@@ -7,6 +7,8 @@ from FrontEnd.analysis_mode import main as analysis_main
 
 import pygame
 import chess
+import os
+
 from keras import models
 from keras.models import load_model
 
@@ -18,11 +20,18 @@ from Backend.engine__creation import engine_creation as engine
 
 class PlayMode(RenderChess):
 
-    def __init__(self, board_size, screen, color = None):
+    def __init__(self, board_size, screen, color = None, model_path = ''):
         super().__init__(board_size, screen)
         self.logic_board = AnalysisLogic()
-        self.resnet = load_model(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\saved_model\first_mode_engine\resnet.h5')
-        self.vgg = load_model(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\saved_model\second_part_engine\VGG19_piece_Predictor.h5')
+
+        model_path = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\training_data\model\\' + model_path
+        self.model1 = load_model(model_path + r'\first_part\model.h5')
+        self.model2 = load_model(model_path + r'\second_part\model.h5')
+        
+        self.list_of_moves = []
+
+        move_rectangle = (800,150,350,620)
+        self.move_background = Button(move_rectangle,color=(106,131,146),screen=screen, border_radius=15)
 
         if color is None:
             self.color = random.choice([True,False])
@@ -30,10 +39,11 @@ class PlayMode(RenderChess):
             self.color = color
 
         if not self.color:
-            move = engine.engine(self.chess_board.fen(),self.resnet,self.vgg)
+            move = engine.engine(self.chess_board.fen(),self.model1,self.model2)
+            self.append_move_to_list_of_moves_to_render(self.chess_board.san(move))
             self.logic_board.add_move(move)
             self.chess_board.push(move)
-
+            
         
 
     def generate_move(self):
@@ -52,14 +62,41 @@ class PlayMode(RenderChess):
 
     def push_move_after_second_click(self, click_location):
         super().push_move_after_second_click(click_location)
+        
+
+
         move = self.generate_move()
+
+
+        if self.list_of_moves != []:
+            self.chess_board.pop()
+
+            if self.chess_board.san(move) != self.list_of_moves[-1].message:
+                print('asdasdasd')
+
+                self.append_move_to_list_of_moves_to_render(self.chess_board.san(move))
+                self.chess_board.push(move)
+            else: 
+                self.chess_board.push(move)
+        else:
+            self.chess_board.pop()
+
+            self.append_move_to_list_of_moves_to_render(self.chess_board.san(move))
+            self.chess_board.push(move)
+
+
+
         self.logic_board.add_move(move)
+
+
+
         if self.chess_board.is_game_over():
             return False
         
         if self.chess_board.turn is not self.color:
-            move = engine.engine(self.chess_board.fen(),self.resnet,self.vgg)
+            move = engine.engine(self.chess_board.fen(),self.model1,self.model2)
             self.logic_board.add_move(move)
+            self.append_move_to_list_of_moves_to_render(self.chess_board.san(move))
             self.chess_board.push(move)
             if self.chess_board.is_game_over():
                 return False 
@@ -73,15 +110,34 @@ class PlayMode(RenderChess):
         self.logic_board.key_down()
         self.chess_board = self.logic_board.get_current_board()
 
-    def render_gui(self):
+    def append_move_to_list_of_moves_to_render(self, move):
+        
+        index = len(self.list_of_moves)
+        if index % 2:
+            square = (975,int(index/2) * 50 + 150, 175, 50)
+        else:
+            square = (800,int(index/2) * 50 + 150, 175, 50)
+
+        self.list_of_moves.append(Button(square, (95,125,140),self.screen,message=move,font_padding=(85,0),padding=False,padding_size=2, font_size=45,padding_color=(80,100,150)))
+        
+    
+    def render_move_list(self):
+        self.move_background.render()
+        for i in self.list_of_moves:
+            i.render()
+
         return
 
 
-def play(color, engine):
+def play(color, engine_path):
 
     WIDTH = 1200
     HEIGHT = 800
     board_size = 700
+
+    background_color = (33,41,46)
+    button_gray = (200,200,200)
+    light_blue = (106,131,146)
 
     running = True
     resign = False
@@ -90,11 +146,19 @@ def play(color, engine):
     clock = pygame.time.Clock()
     framerate = 15
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    board = PlayMode(board_size, screen, color)
+    board = PlayMode(board_size, screen, color,model_path=engine_path)
     board.set_board_padding((50, 50))
 
-    resign_rectangle = (755,50,50,50)
-    resign_button = Button(resign_rectangle,message='Resing', screen=screen)
+    flag_image = pygame.image.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\FrontEnd\Pieces\flag.png')
+    
+    flag_image = helper.resize_image(flag_image, 200, 0.30)
+
+    resign_rectangle = (800,50,75,75)
+    resign_button = Button(resign_rectangle, screen=screen, color=light_blue, border_radius=5)
+
+    background_rectangle = (30,30,740,740)
+    background_button = Button(background_rectangle,light_blue,screen)
+
 
     while running:
 
@@ -117,14 +181,18 @@ def play(color, engine):
                 elif event.key == pygame.K_UP:
                     board.key_up()
 
-        screen.fill((200, 200, 200))
+        screen.fill(background_color)
+
+        background_button.render()
         board.render_board()
+        board.render_move_list()
+
         resign_button.render()
+
+        screen.blit(flag_image, (resign_button.x + 10 , resign_button.y + 10))
 
         pygame.display.update()
         clock.tick(framerate)
-
-
               
     pygame.quit() 
     return board.logic_board, resign
