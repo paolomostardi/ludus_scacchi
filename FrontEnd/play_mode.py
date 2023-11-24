@@ -4,6 +4,7 @@ from FrontEnd.analysis_logic import AnalysisLogic
 from FrontEnd.button import Button
 from FrontEnd.analysis_mode import main as analysis_main
 
+from FrontEnd import training_mode
 
 import pygame
 import chess
@@ -138,9 +139,11 @@ def play(color, engine_path):
     background_color = (33,41,46)
     button_gray = (200,200,200)
     light_blue = (106,131,146)
+    orange = (218,145,37)
 
     running = True
     resign = False
+    game_not_finish = True
     pygame.font.init() 
 
     clock = pygame.time.Clock()
@@ -160,17 +163,42 @@ def play(color, engine_path):
     background_button = Button(background_rectangle,light_blue,screen)
 
 
+    win_message_rectangle = (800,150,350,100)
+    win_message_button = Button(win_message_rectangle,orange,screen,message='You win!',font_padding=(70,25))
+
+    play_again_rectangle = (800,300,350,100)
+    play_again_button =  Button(play_again_rectangle,orange,screen,message='PLAY AGAIN', font_size=30, font_padding=(70,40))
+
+    analyse_game_rectangle = (815,450,150,100)
+    analyse_game_button = Button(analyse_game_rectangle,orange,screen,message='Analyse game',border_radius=10, font_size=20, font_padding=(22,40))
+
+    train_new_model_rectangle = (990,450,150,100)
+    train_new_model_button = Button(train_new_model_rectangle,orange,screen,message='Train model',border_radius=10, font_size=20, font_padding=(22,40)) 
+
+
     while running:
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
-                print('CLICK EVENT COORDINATE ')
-                print(event.pos)
-                running = board.on_click(event.pos)
-                if resign_button.check_click(event.pos):
-                    running = False
-                    resign = True
-
+                if not resign:
+                    print('CLICK EVENT COORDINATE ')
+                    print(event.pos)
+                    game_not_finish = board.on_click(event.pos)
+                    
+                    if resign_button.check_click(event.pos):
+                        game_not_finish = False
+                        resign = True
+                if resign or not game_not_finish:
+                    if play_again_button.check_click(event.pos):
+                        pygame.quit()
+                        main()
+                    if analyse_game_button.check_click(event.pos):
+                        pygame.quit()
+                        analysis_main(board.logic_board)
+                    if train_new_model_button.check_click(event.pos):
+                        pygame.quit()
+                        training_mode.main()
+                        
             if event.type == pygame.QUIT:
                     running = False
 
@@ -185,7 +213,17 @@ def play(color, engine_path):
 
         background_button.render()
         board.render_board()
-        board.render_move_list()
+
+        if game_not_finish:
+            board.render_move_list()
+
+        else: 
+            board.move_background.render()
+            play_again_button.render()
+            win_message_button.render()
+            analyse_game_button.render()
+            train_new_model_button.render()
+            
 
         resign_button.render()
 
@@ -232,7 +270,6 @@ def color_choice():
     pygame.display.set_caption('Ludus Scacchi')
 
     # x, y, width, height
-
     
     white_color, black_color, random_color = False,False,False
     choosen_engine_index = None
@@ -251,7 +288,15 @@ def color_choice():
     container_button = Button(container_rectangle,light_blue,screen=screen)
 
     start_rectangle = (800,650,300, 100)
-    start_button = Button(start_rectangle,orange,screen,message='START GAME',padding=True, padding_color=button_gray, padding_size=8, font_size= 30, font_padding=(50, 30), border_radius=30)
+    start_button = Button(start_rectangle,orange,screen,message='START GAME',padding=False, padding_color=button_gray, padding_size=4, font_size= 30, font_padding=(50, 30), border_radius=30)
+
+
+    back_junk = (0,350,1500, 260)
+    back_junk = Button(back_junk,light_blue,screen=screen)
+
+    back_junk2 = (700,345,1500, 500)
+    back_junk2 = Button(back_junk2,light_blue,screen=screen, padding=True, padding_color=background_color)
+
 
     engine_button_list = []
 
@@ -296,15 +341,14 @@ def color_choice():
         screen.fill(background_color)
 
         container_button.render()
+        back_junk.render()
+        back_junk2.render()
 
         black_button.render()
         screen.blit(black_bishop_icon, (black_button.x + 200 , random_button.y - 20))
 
-
         white_button.render()
         screen.blit(white_bishop_icon, (white_button.x + 40 , random_button.y - 20))
-
-
 
         random_button.render()        
         screen.blit(mix_king_icon, (random_button.x + 32 , random_button.y - 10))
