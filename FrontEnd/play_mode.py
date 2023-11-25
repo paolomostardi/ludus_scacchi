@@ -45,8 +45,6 @@ class PlayMode(RenderChess):
             self.logic_board.add_move(move)
             self.chess_board.push(move)
             
-        
-
     def generate_move(self):
         try:
             move = self.chess_board.peek()
@@ -128,7 +126,12 @@ class PlayMode(RenderChess):
             i.render()
 
         return
-
+    
+    def return_all_messages(self):
+        answer = []
+        for i in self.list_of_moves:
+            answer.append(i.message)
+        return answer
 
 def play(color, engine_path):
 
@@ -194,7 +197,7 @@ def play(color, engine_path):
                         main()
                     if analyse_game_button.check_click(event.pos):
                         pygame.quit()
-                        analysis_main(board.logic_board)
+                        analysis_main(board.logic_board,board.return_all_messages())
                     if train_new_model_button.check_click(event.pos):
                         pygame.quit()
                         training_mode.main()
