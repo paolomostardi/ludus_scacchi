@@ -66,6 +66,13 @@ class RenderChess:
         else:
             self.display_promotion = False
             return False
+        
+    def is_click_not_in_board(self,click):
+        
+        if self.board_x_padding < click[0] < self.board_size + self.board_x_padding and self.board_y_padding < click[1] < self.board_size + self.board_y_padding:
+            return False
+        return True
+
 
     def push_move_after_second_click(self, click_location):
 

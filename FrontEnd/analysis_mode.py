@@ -6,6 +6,7 @@ from FrontEnd.button import Button
 
 import pygame
 import chess
+import os 
 
 from keras.models import load_model
 
@@ -41,6 +42,11 @@ class AnalysisMode(RenderChess):
         self.model2 = load_model(model_path + r'\second_part\model.h5')
         self.calculate_best_move()
 
+    def update_engine(self,model_path):
+        self.model1 = load_model(model_path + r'\first_part\model.h5')
+        self.model2 = load_model(model_path + r'\second_part\model.h5')
+        self.calculate_best_move()
+
     def calculate_best_move(self):
         move = engine.engine(self.chess_board.fen(),self.model1,self.model2)
         self.best_move = move
@@ -66,6 +72,8 @@ class AnalysisMode(RenderChess):
             print('ERROR')
 
     def on_click(self, event):
+        if self.is_click_not_in_board(event):
+            return
         if self.first_square is None:
             self.get_first_click(event)
         else:
@@ -141,11 +149,19 @@ def main(logic_board: AnalysisLogic = None, list_of_moves = []):
    
     board = AnalysisMode(board_size, screen, logic_board,list_of_moves= list_of_moves)
 
+    render_choice = False
     
     board.set_board_padding((50, 50))
 
     background_rectangle = (30,30,740,740)
     background_button = Button(background_rectangle,light_blue,screen)
+
+    engine_button_list = []
+
+    path = 'training_data\model'
+    for index, engine_name in enumerate(os.listdir(path)):
+        engine_rect = (800,80 + (50 * index), 350, 50) 
+        engine_button_list.append( Button(engine_rect,light_blue,screen,message=engine_name,font_size= 40, font_padding=(20,0),padding=True,padding_size=1,padding_color=(50,50,50) ) )
 
 
     while running:
@@ -155,6 +171,18 @@ def main(logic_board: AnalysisLogic = None, list_of_moves = []):
                 print('CLICK EVENT COORDINATE ')
                 print(event.pos)
                 board.on_click(event.pos)
+                
+                if board.change_model_button.check_click(event.pos):
+                    render_choice = True
+
+                if render_choice:
+                    print('checking') 
+                    for engine in engine_button_list:
+                        print('engine')
+                        if engine.check_click(event.pos):
+                            print('choosen engine')
+                            board.update_engine(path+'\\'+engine.message)
+                            render_choice = False
 
             if event.type == pygame.QUIT:
                     running = False
@@ -172,6 +200,10 @@ def main(logic_board: AnalysisLogic = None, list_of_moves = []):
         board.render_board()
         board.render_move_list()
         board.render_best_move()
+
+        if render_choice:
+            for engine in engine_button_list:
+                engine.render()
 
         pygame.display.update()
         clock.tick(framerate)
