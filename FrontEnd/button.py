@@ -9,7 +9,7 @@ class Button:
         self.color =  color
         
         self.message = message
-        self.font =  pygame.font.SysFont('Times new roman', font_size)
+        self.font =  pygame.font.SysFont('calibri', font_size)
         self.text_surface = self.font.render(self.message, True, (0,0,0))
 
         self.on_click = None

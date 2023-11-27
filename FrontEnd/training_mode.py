@@ -11,6 +11,8 @@ from keras import Model
 import pandas as pd
 import os
 from FrontEnd import helper
+import json
+
 
 
 def choose_user():
@@ -19,7 +21,7 @@ def choose_user():
     HEIGHT = 800
 
     running = True
-    pygame.font.init() 
+    pygame.font.init()  
     clock = pygame.time.Clock()
     framerate = 15
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -27,12 +29,14 @@ def choose_user():
     background_color = (33,41,46)
     black = (50,50,50)
     padding_size = 2
-    button_gray = (200,200,200)
+    button_gray = (185,185,185)
     light_blue = (106,131,146)
     orange = (218,145,37)
 
     user_text = ''
     text_box_clicked = False    
+    total_game_clicked = False
+
     
     background_div_rect = (0,0,1200,550)
     background_div = Button(background_div_rect, color = light_blue, screen=screen )    
@@ -45,13 +49,13 @@ def choose_user():
     path = 'training_data\model'
     for index, engine_name in enumerate(os.listdir(path)):
         engine_rect = (40,120 + (50 * index), 350, 35) 
-        engine_button_list.append( Button(engine_rect,orange,screen,message=engine_name,font_size= 27, font_padding=(20,-2),padding=True,padding_size=padding_size,padding_color=(50,50,50) ) )    
+        engine_button_list.append( Button(engine_rect,orange,screen,message=engine_name,font_size= 27, font_padding=(20,3),padding=True,padding_size=padding_size,padding_color=(50,50,50) ) )    
     
-    select_user_rect = (600,50,500,50)
+    select_user_rect = (600,50,550,50)
     select_user_message = Button(select_user_rect, color = orange, message = ' Insert name of the user ' ,font_size = 32, font_padding=(10,10), screen=screen, border_radius=10, padding=True, padding_color=black,padding_size=padding_size )
     
     user_input_rect = (610,120,400,45)
-    user_input = Button(user_input_rect, color= orange, message = user_text , screen=screen , padding=True, padding_color=black, padding_size=padding_size, font_size = 25 , font_padding=(10,5))
+    user_input = Button(user_input_rect, color= orange, message = user_text , screen=screen , padding=True, padding_color=black, padding_size=padding_size, font_size = 25 , font_padding=(10,10))
     
     user_search_rect = (920,120,200,45)
     user_search_button = Button(user_search_rect, color= button_gray, message = 'Search user' , screen=screen , padding=True, padding_color=black, padding_size=padding_size, font_size = 25 , font_padding=(45,10))
@@ -62,11 +66,23 @@ def choose_user():
     new_model_rect = (300,470,250,70)
     new_model_button = Button(new_model_rect, color= orange, message = 'NEW MODEL' , screen=screen, font_size= 25 ,padding=True, padding_color=black, padding_size= padding_size, border_radius=10, font_padding=(10,10))
  
+    display_user = False
     
     
+    display_user_rect = (610,180,550,200)
+    display_user_background = Button(display_user_rect,color=orange,screen=screen, padding=True, padding_color=black, padding_size=padding_size, font_padding=(175,10))
+
+    analysis_rect = (810,375,200,50)
+    user_input_total_games = Button(analysis_rect, color = button_gray, screen=screen, font_size=25, padding=True, padding_color=black, padding_size = 1, font_padding=(10,20),message='')
+    
+    analysis_rect = (1010,375,150,50)
+    games_to_use_message = Button(analysis_rect, color= button_gray, screen=screen,message='Games to use', font_size=25 ,padding=True, padding_color=black,padding_size=padding_size , font_padding=(5,10)    )
+
     flag_image = pygame.image.load(r'FrontEnd\Pieces\search_icon.png')
     
     flag_image = helper.resize_image(flag_image, 200, 0.18)
+
+    current_model = ''
 
     while running:
 
@@ -74,15 +90,57 @@ def choose_user():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 print('CLICK EVENT COORDINATE ')
                 print(event.pos)
+                text_box_clicked = False
+                total_game_clicked = False
 
                 if user_input.check_click(event.pos):
                     text_box_clicked = True
+                
+                elif user_input_total_games.check_click(event.pos):
+                    total_game_clicked = True
+                    
+                elif train_model_button.check_click(event.pos):
+                    pass
+
+                elif user_search_button.check_click(event.pos):
+                    display_user_rect = (610,230,500,200)
+
+                    f = open('pollofritto.json')
+                    json_file = json.load(f)
+                    user = LichessUser(json_file)
+                    analysis_rect = (620,250,300,10)
+                    bullet_button = Button(analysis_rect, color= orange, message = 'Bullet games:      ' + str(user.bullet_amount_of_games)  + '  Rating:  ' + str(user.bullet_rating), screen=screen, font_size=25 )
+
+                    analysis_rect = (620,280,300,10)
+                    blitz_button = Button(analysis_rect, color= orange, message = 'Blitz games:        ' + str(user.blitz_amount_of_games)  + '  Rating:  ' + str(user.blitz_rating), screen=screen, font_size=25 )
+
+                    analysis_rect = (620,310,300,10)
+                    rapid_button = Button(analysis_rect, color= orange, message = 'Rapid games:      ' + str(user.rapid_amount_of_games) + '  Rating:  ' + str(user.rapid_rating) , screen=screen, font_size=25 )
+                    
+                    analysis_rect = (620,340,300,10)
+                    classical_button = Button(analysis_rect, color= orange, message = 'Classical games: ' + str(user.classical_amount_of_games) + '  Rating:  ' + str(user.classical_rating) , screen=screen, font_size=25     )                    
+                    
+                    analysis_rect = (610,375,200,50)
+                    total_games_message = Button(analysis_rect, color= orange, message = 'Total games: ' + str(user.total_amount_of_games), screen=screen, font_size=25 ,padding=True, padding_color=black,padding_size=padding_size , font_padding=(10,20)   )
+                    
+
+                    display_user_background.update_message(user.username)
+                    
+                    display_user = True
+
+                elif train_model_button.check_click(event.pos):
+                    train_model_given_user_and_model(user.username, r'training_data\model\\' + current_model)
+
+                elif new_model_button.check_click(event.pos):
+                    print(current_model,' the current model is ')
+                    print(display_user_background.message)
+                    train_model_given_user_and_model(user.username, r'training_data\model\\' + current_model, path_to_save=r'\training_data\model\\' + display_user_background.message)
+
                 else:
-                    text_box_clicked = False
-                if train_model_button.check_click(event.pos):
-                    user = get_user_info(user_text)
-                    if user:
-                        return user
+                    for engine in engine_button_list:
+                        if engine.check_click(event.pos):
+                            current_model = engine.message 
+                            print(engine.message)
 
             if event.type == pygame.QUIT:
                     running = False
@@ -97,6 +155,14 @@ def choose_user():
                         user_text += event.unicode
                         user_input.update_message(user_text)
 
+                elif total_game_clicked:
+                    if event.key == pygame.K_BACKSPACE:
+                        msg = user_input_total_games.message[:-1]
+                        user_input.update_message(msg)
+                    else:
+                        msg = user_input_total_games.message
+                        user_input_total_games.update_message(msg + event.unicode)
+
                 print(user_input.message)
 
         screen.fill(background_color)
@@ -104,12 +170,21 @@ def choose_user():
         select_model_message.render()
         select_user_message.render()
 
-        
-        
         user_input.render()
         user_search_button.render()
         train_model_button.render()
         new_model_button.render()
+
+        if display_user:
+            display_user_background.render()
+            bullet_button.render()
+            blitz_button.render()
+            rapid_button.render()
+            classical_button.render()
+            total_games_message.render()
+            user_input_total_games.render()
+            games_to_use_message.render()
+
 
         screen.blit(flag_image, (user_search_button.x + 5, user_search_button.y + 5))
         
@@ -123,6 +198,7 @@ def choose_user():
         clock.tick(framerate)
 
 def get_user_info(username):
+    print('looking for the user :', username)
     url = "https://lichess.org/api/user/" + username
     response = requests.get(url)
     response = response.json()
@@ -154,16 +230,16 @@ def show_user_infos(user : LichessUser):
     enter_button = Button(analysis_rect, color= (200,45,45), message = ' Confirm user ', screen=screen )
 
     analysis_rect = (100,300,300,10)
-    bullet_button = Button(analysis_rect, color= (30,123,45), message = '  Total bullet games ' + str(user.bullet_amount_of_games) , screen=screen )
+    bullet_button = Button(analysis_rect, color= (30,123,45), message = 'Bullet games ' + str(user.bullet_amount_of_games) , screen=screen )
 
     analysis_rect = (100,400,300,10)
-    blitz_button = Button(analysis_rect, color= (30,123,45), message = '  Total blitz games ' + str(user.blitz_amount_of_games) , screen=screen )
+    blitz_button = Button(analysis_rect, color= (30,123,45), message = 'Blitz games ' + str(user.blitz_amount_of_games) , screen=screen )
 
     analysis_rect = (100,500,300,10)
-    rapid_button = Button(analysis_rect, color= (30,123,45), message = '  Total rapid games ' + str(user.rapid_amount_of_games) , screen=screen )
+    rapid_button = Button(analysis_rect, color= (30,123,45), message = 'Rapid games ' + str(user.rapid_amount_of_games) , screen=screen )
     
     analysis_rect = (100,600,300,10)
-    classical_button = Button(analysis_rect, color= (30,123,45), message = '  Total classical_amount_of_games ' + str(user.classical_amount_of_games) , screen=screen )
+    classical_button = Button(analysis_rect, color= (30,123,45), message = 'Classical games ' + str(user.classical_amount_of_games) , screen=screen )
 
 
 
