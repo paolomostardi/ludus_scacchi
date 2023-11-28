@@ -12,10 +12,12 @@ import pandas as pd
 import os
 from FrontEnd import helper
 import json
-
+import threading
+import queue
 
 
 def choose_user():
+    # region  button declaration
 
     WIDTH = 1200
     HEIGHT = 800
@@ -25,6 +27,7 @@ def choose_user():
     clock = pygame.time.Clock()
     framerate = 15
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    
 
     background_color = (33,41,46)
     black = (50,50,50)
@@ -37,7 +40,7 @@ def choose_user():
     text_box_clicked = False    
     total_game_clicked = False
 
-    
+
     background_div_rect = (0,0,1200,550)
     background_div = Button(background_div_rect, color = light_blue, screen=screen )    
     
@@ -50,10 +53,10 @@ def choose_user():
     for index, engine_name in enumerate(os.listdir(path)):
         engine_rect = (40,120 + (50 * index), 350, 35) 
         engine_button_list.append( Button(engine_rect,orange,screen,message=engine_name,font_size= 27, font_padding=(20,3),padding=True,padding_size=padding_size,padding_color=(50,50,50) ) )    
-    
+
     select_user_rect = (600,50,550,50)
     select_user_message = Button(select_user_rect, color = orange, message = ' Insert name of the user ' ,font_size = 32, font_padding=(10,10), screen=screen, border_radius=10, padding=True, padding_color=black,padding_size=padding_size )
-    
+   
     user_input_rect = (610,120,400,45)
     user_input = Button(user_input_rect, color= orange, message = user_text , screen=screen , padding=True, padding_color=black, padding_size=padding_size, font_size = 25 , font_padding=(10,10))
     
@@ -68,7 +71,7 @@ def choose_user():
  
     display_user = False
     
-    
+   
     display_user_rect = (610,180,550,200)
     display_user_background = Button(display_user_rect,color=orange,screen=screen, padding=True, padding_color=black, padding_size=padding_size, font_padding=(175,10))
 
@@ -83,6 +86,12 @@ def choose_user():
     flag_image = helper.resize_image(flag_image, 200, 0.18)
 
     current_model = ''
+
+    # endregion
+
+    to_render_progress = []
+
+    progress_queue = queue.Queue()
 
     while running:
 
@@ -105,9 +114,8 @@ def choose_user():
                 elif user_search_button.check_click(event.pos):
                     display_user_rect = (610,230,500,200)
 
-                    f = open('pollofritto.json')
-                    json_file = json.load(f)
-                    user = LichessUser(json_file)
+
+                    user = get_user_info(user_input.message)
                     analysis_rect = (620,250,300,10)
                     bullet_button = Button(analysis_rect, color= orange, message = 'Bullet games:      ' + str(user.bullet_amount_of_games)  + '  Rating:  ' + str(user.bullet_rating), screen=screen, font_size=25 )
 
@@ -134,7 +142,13 @@ def choose_user():
                 elif new_model_button.check_click(event.pos):
                     print(current_model,' the current model is ')
                     print(display_user_background.message)
-                    train_model_given_user_and_model(user.username, r'training_data\model\\' + current_model, path_to_save=r'\training_data\model\\' + display_user_background.message)
+                    path_to_current_model = r'training_data\model\\' + current_model
+                    path_to_save=r'\training_data\model\\' + display_user_background.message
+
+                    task_thread = threading.Thread(target=train_model_given_user_and_model, args=(user.username, path_to_current_model, path_to_save ,progress_queue))
+                    task_thread.start()
+
+                    to_render_progress = []
 
                 else:
                     for engine in engine_button_list:
@@ -165,6 +179,7 @@ def choose_user():
 
                 print(user_input.message)
 
+        # region render
         screen.fill(background_color)
         background_div.render()
         select_model_message.render()
@@ -194,8 +209,26 @@ def choose_user():
         for i in engine_button_list:
             i.render()
 
+      
+        while True:
+            try:
+                progress_message = progress_queue.get_nowait()  
+
+                current_lenght = len(to_render_progress)
+                progress_square = (10, 575 + (current_lenght * 50), 0, 0)
+                progress = Button(progress_square, background_color,screen,message=progress_message,font_color=(255,255,255),font_size = (30))
+                to_render_progress.append(progress)
+            except queue.Empty:
+                break
+        
+        
+        for i in to_render_progress:
+            i.render()
+
+
         pygame.display.update()
         clock.tick(framerate)
+        # endregion 
 
 def get_user_info(username):
     print('looking for the user :', username)
@@ -294,11 +327,13 @@ def check_model_fit_on_username(username,path_to_model):
         return True
     return False
 
+
 def check_data_available_on_username(username):
     path = 'training_data\data'
     if username in os.listdir(path):
         return True
     return False
+
 
 def fit_model_on_user_data(username,path_to_model,saving_path = None):
     path_to_model1 = path_to_model + r'\first_part\model.h5'
@@ -341,6 +376,7 @@ def fit_model_on_user_data(username,path_to_model,saving_path = None):
 
     return model1, model2 
 
+
 def download_and_process_data_of_user(username):
     folder_path = r'training_data\data\\' + username + r'\pgn'
     file_path = r'training_data\data\\' + username + r'\pgn\pgn_games_' + username + '.csv'
@@ -358,21 +394,31 @@ def download_and_process_data_of_user(username):
     generate_bitboards.generate_from_filename('',0,file_path,0,saving_path)
     return 
 
+
 # todo handle missing file and folder
-def train_model_given_user_and_model(username, path_to_model, path_to_save = None):
+def train_model_given_user_and_model(username, path_to_model, path_to_save = None, progress_queue = None):
     if path_to_save is None:
         path_to_save = path_to_model
 
-    print('checking if the model has already been trained')
+    if progress_queue:
+        progress_queue.put('checking if the model has already been trained')    
+    
 
     if check_model_fit_on_username(username,path_to_model):
-        print('model already trained')
+        if progress_queue:
+            progress_queue.put('model already trained')
     else:
         if check_data_available_on_username(username):
+            if progress_queue:
+                progress_queue.put('Data already process for this User')
             fit_model_on_user_data(username,path_to_model)
 
         else:
+            if progress_queue:
+                progress_queue.put('Processing data for user')
             download_and_process_data_of_user(username)
+            if progress_queue:
+                progress_queue.put('Training model on user')
             fit_model_on_user_data(username, path_to_model)
 
 
