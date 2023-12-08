@@ -15,7 +15,7 @@ import os
 
 
 
-training_mode.main()
+play_mode.main()
 
 
 

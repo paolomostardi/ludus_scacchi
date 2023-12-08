@@ -149,6 +149,10 @@ def play(color, engine_path):
     game_not_finish = True
     pygame.font.init() 
 
+    black_bishop_icon = pygame.image.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\FrontEnd\Pieces\black\b.png')
+    pygame.display.set_icon(black_bishop_icon)
+    pygame.display.set_caption('Ludus Scacchi')
+
     clock = pygame.time.Clock()
     framerate = 15
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -253,7 +257,11 @@ def color_choice():
 
     orange = (218,145,37,100)
 
+    pygame.init()  
     black_bishop_icon = pygame.image.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\FrontEnd\Pieces\black\b.png')
+    pygame.display.set_icon(black_bishop_icon)
+    pygame.display.set_caption('Ludus Scacchi')
+
     white_bishop_icon = pygame.image.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\FrontEnd\Pieces\white\b.png')
     mix_king_icon = pygame.image.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\FrontEnd\Pieces\mix_king.png')
 
@@ -269,8 +277,6 @@ def color_choice():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     font =  pygame.font.SysFont('Times new roman', 50)
 
-    pygame.display.set_icon(black_bishop_icon)
-    pygame.display.set_caption('Ludus Scacchi')
 
     # x, y, width, height
     

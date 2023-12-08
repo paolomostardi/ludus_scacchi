@@ -142,6 +142,10 @@ def main(logic_board: AnalysisLogic = None, list_of_moves = []):
 
     pygame.font.init()
 
+    black_bishop_icon = pygame.image.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\FrontEnd\Pieces\black\b.png')
+    pygame.display.set_icon(black_bishop_icon)
+    pygame.display.set_caption('Ludus Scacchi')
+
     clock = pygame.time.Clock()
     framerate = 15
     screen = pygame.display.set_mode((WIDTH, HEIGHT))

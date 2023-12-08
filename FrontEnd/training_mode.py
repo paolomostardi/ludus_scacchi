@@ -15,6 +15,10 @@ import json
 import threading
 import queue
 
+# training mode trains models on users games
+# it uses elements of the backend pipeline to prep the data for the models
+# it then trains the models on a separate thread to not block the UI 
+# finally it saves the models in the trainind_data/model folder
 
 def choose_user():
     # region  button declaration
@@ -28,6 +32,9 @@ def choose_user():
     framerate = 15
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     
+    black_bishop_icon = pygame.image.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\FrontEnd\Pieces\black\b.png')
+    pygame.display.set_icon(black_bishop_icon)
+    pygame.display.set_caption('Ludus Scacchi')
 
     background_color = (33,41,46)
     black = (50,50,50)
@@ -395,7 +402,6 @@ def download_and_process_data_of_user(username):
     return 
 
 
-# todo handle missing file and folder
 def train_model_given_user_and_model(username, path_to_model, path_to_save = None, progress_queue = None):
     if path_to_save is None:
         path_to_save = path_to_model
