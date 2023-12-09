@@ -2,6 +2,8 @@ from Backend.engine__creation import engine_creation as engine
 from FrontEnd import helper
 from FrontEnd.render_chess import RenderChess
 from FrontEnd.analysis_logic import AnalysisLogic
+from FrontEnd import play_mode
+
 from FrontEnd.button import Button
 
 import pygame
@@ -126,7 +128,7 @@ class AnalysisMode(RenderChess):
         self.best_move_button.render()
         return
 
-def main(logic_board: AnalysisLogic = None, list_of_moves = []):
+def main(logic_board: AnalysisLogic = AnalysisLogic(), list_of_moves = []):
 
     WIDTH = 1200
     HEIGHT = 800
@@ -160,6 +162,13 @@ def main(logic_board: AnalysisLogic = None, list_of_moves = []):
     background_rectangle = (30,30,740,740)
     background_button = Button(background_rectangle,light_blue,screen)
 
+    play_rectangle = (950,80,100,50)
+    play_button = Button(play_rectangle,color=orange,screen=screen,padding=True,padding_size=1, font_size=20,padding_color=(50,50,50), message='PLAY',font_padding=(30,18)) 
+
+    play_rectangle = (1050,80,100,50)
+    train_button = Button(play_rectangle,color=orange,screen=screen,padding=True,padding_size=1, font_size=20,padding_color=(50,50,50), message='TRAIN',font_padding=(25,18)) 
+
+
     engine_button_list = []
 
     path = 'training_data\model'
@@ -187,6 +196,10 @@ def main(logic_board: AnalysisLogic = None, list_of_moves = []):
                             print('choosen engine')
                             board.update_engine(path+'\\'+engine.message)
                             render_choice = False
+                            
+                elif play_button.check_click(event.pos):
+                    pygame.quit()
+                    play_mode.main()
 
             if event.type == pygame.QUIT:
                     running = False
@@ -204,6 +217,9 @@ def main(logic_board: AnalysisLogic = None, list_of_moves = []):
         board.render_board()
         board.render_move_list()
         board.render_best_move()
+
+        play_button.render()
+        train_button.render()
 
         if render_choice:
             for engine in engine_button_list:

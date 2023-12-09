@@ -174,7 +174,7 @@ def play(color, engine_path):
     win_message_button = Button(win_message_rectangle,orange,screen,message='You win!',font_padding=(70,25))
 
     play_again_rectangle = (800,300,350,100)
-    play_again_button =  Button(play_again_rectangle,orange,screen,message='PLAY AGAIN', font_size=30, font_padding=(70,40))
+    play_again_button =  Button(play_again_rectangle,orange,screen,message='  PLAY AGAIN', font_size=30, font_padding=(70,40))
 
     analyse_game_rectangle = (815,450,150,100)
     analyse_game_button = Button(analyse_game_rectangle,orange,screen,message='Analyse game',border_radius=10, font_size=20, font_padding=(22,40))
@@ -195,6 +195,7 @@ def play(color, engine_path):
                     if resign_button.check_click(event.pos):
                         game_not_finish = False
                         resign = True
+                        win_message_button.update_message('You lose')
                 if resign or not game_not_finish:
                     if play_again_button.check_click(event.pos):
                         pygame.quit()
@@ -296,14 +297,20 @@ def color_choice():
     container_rectangle = (-150,60,1500, 260)
     container_button = Button(container_rectangle,light_blue,screen=screen)
 
-    start_rectangle = (800,650,300, 100)
-    start_button = Button(start_rectangle,orange,screen,message='START GAME',padding=False, padding_color=button_gray, padding_size=4, font_size= 30, font_padding=(50, 30), border_radius=30)
+    start_rectangle = (850,660,300, 100)
+    start_button = Button(start_rectangle,orange,screen,message='START GAME',padding=False, padding_color=button_gray, padding_size=4, font_size= 30, font_padding=(60, 35), border_radius=30)
+
+    analysis_rectangle = (850,540,300, 100)
+    analysis_button = Button(analysis_rectangle,orange,screen,message='ANALYSE GAME',padding=False, padding_color=button_gray, padding_size=4, font_size= 30, font_padding=(50, 35), border_radius=30)
+
+    analysis_rectangle = (850,420,300, 100)
+    train_button = Button(analysis_rectangle,orange,screen,message='TRAIN MODEL',padding=False, padding_color=button_gray, padding_size=4, font_size= 30, font_padding=(60, 35), border_radius=30)
 
 
-    back_junk = (0,350,1500, 260)
+    back_junk = (0,350,1500, 1000)
     back_junk = Button(back_junk,light_blue,screen=screen)
 
-    back_junk2 = (700,345,1500, 500)
+    back_junk2 = (700,345,1500, 1000)
     back_junk2 = Button(back_junk2,light_blue,screen=screen, padding=True, padding_color=background_color)
 
 
@@ -312,7 +319,7 @@ def color_choice():
     path = 'training_data\model'
     for index, engine_name in enumerate(os.listdir(path)):
         engine_rect = (50,400 + (80 * index), 400, 50) 
-        engine_button_list.append( Button(engine_rect,orange,screen,message=engine_name,font_size= 40, border_radius= 20, font_padding=(20,0)) )
+        engine_button_list.append( Button(engine_rect,orange,screen,message=engine_name,font_size= 40, border_radius= 20, font_padding=(20,5)) )
 
     while running:
 
@@ -338,6 +345,13 @@ def color_choice():
                     white_color = False
                     random_color = True 
 
+                if analysis_button.check_click(event.pos):
+                        pygame.quit()
+                        analysis_main()
+                if train_button.check_click(event.pos):
+                        pygame.quit()
+                        training_mode.main()
+
                 for index,button in enumerate(engine_button_list):
                     if button.check_click(event.pos):
                         choosen_engine_index = index
@@ -362,6 +376,8 @@ def color_choice():
         random_button.render()        
         screen.blit(mix_king_icon, (random_button.x + 32 , random_button.y - 10))
         
+        analysis_button.render()
+        train_button.render()
 
         [engine.render() for engine in engine_button_list]
 

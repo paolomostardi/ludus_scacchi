@@ -2,6 +2,8 @@ import pygame
 import requests
 from Backend.pipeline.lichess_user import LichessUser
 from FrontEnd.button import Button
+from FrontEnd import play_mode
+
 from Backend.pipeline import get_games_in_pgn_from_lichess_api as get_games
 from Backend.pipeline import from_PGN_generate_bitboards as generate_bitboards
 from Backend.pipeline import create_second_dataset
@@ -76,8 +78,10 @@ def choose_user():
     new_model_rect = (300,470,250,70)
     new_model_button = Button(new_model_rect, color= orange, message = 'NEW MODEL' , screen=screen, font_size= 25 ,padding=True, padding_color=black, padding_size= padding_size, border_radius=10, font_padding=(10,10))
  
-    display_user = False
-    
+    play_rect = (570,470,250,70)
+    play_button = Button(play_rect, color= orange, message = 'PLAY WITH MODEL' , screen=screen, font_size= 25 ,padding=True, padding_color=black, padding_size= padding_size, border_radius=10, font_padding=(10,10))
+ 
+    display_user = False    
    
     display_user_rect = (610,180,550,200)
     display_user_background = Button(display_user_rect,color=orange,screen=screen, padding=True, padding_color=black, padding_size=padding_size, font_padding=(175,10))
@@ -150,12 +154,16 @@ def choose_user():
                     print(current_model,' the current model is ')
                     print(display_user_background.message)
                     path_to_current_model = r'training_data\model\\' + current_model
-                    path_to_save=r'\training_data\model\\' + display_user_background.message
+                    path_to_save=r'training_data\model\\' + display_user_background.message
 
                     task_thread = threading.Thread(target=train_model_given_user_and_model, args=(user.username, path_to_current_model, path_to_save ,progress_queue))
                     task_thread.start()
 
                     to_render_progress = []
+
+                elif play_button.check_click(event.pos):
+                    pygame.quit()
+                    play_mode.main()
 
                 else:
                     for engine in engine_button_list:
@@ -196,6 +204,7 @@ def choose_user():
         user_search_button.render()
         train_model_button.render()
         new_model_button.render()
+        play_button.render()
 
         if display_user:
             display_user_background.render()
@@ -236,6 +245,7 @@ def choose_user():
         pygame.display.update()
         clock.tick(framerate)
         # endregion 
+
 
 def get_user_info(username):
     print('looking for the user :', username)
@@ -371,6 +381,10 @@ def fit_model_on_user_data(username,path_to_model,saving_path = None):
     df = pd.read_csv(path_to_model + '\list_of_users.csv')
     df = df.append({'trained_users': username}, ignore_index=True)
 
+    print('saving at : ')
+    print(saving_path)
+    print(saving_to_model1)
+    print(saving_to_model2)
 
     model1.save(saving_to_model1)
     model2.save(saving_to_model2)
@@ -406,6 +420,7 @@ def train_model_given_user_and_model(username, path_to_model, path_to_save = Non
     if path_to_save is None:
         path_to_save = path_to_model
 
+
     if progress_queue:
         progress_queue.put('checking if the model has already been trained')    
     
@@ -417,7 +432,7 @@ def train_model_given_user_and_model(username, path_to_model, path_to_save = Non
         if check_data_available_on_username(username):
             if progress_queue:
                 progress_queue.put('Data already process for this User')
-            fit_model_on_user_data(username,path_to_model)
+            fit_model_on_user_data(username,path_to_model,path_to_save)
 
         else:
             if progress_queue:
@@ -425,7 +440,7 @@ def train_model_given_user_and_model(username, path_to_model, path_to_save = Non
             download_and_process_data_of_user(username)
             if progress_queue:
                 progress_queue.put('Training model on user')
-            fit_model_on_user_data(username, path_to_model)
+            fit_model_on_user_data(username, path_to_model,path_to_save)
 
 
 def main():
