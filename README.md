@@ -10,10 +10,9 @@ There are 3 major functionalities:
 future versions might allow you to create unique traning programs based on a model and generate positions where a lichess user is more likely to make mistakes. 
 
 ## Why ludus 
-There are a lot of chess engine that have been made and most of those focus on finding the best move.<br> This of course can lead very powerfull analysis but it does not create a very effictive traning partner. That is beacuse your opppenont plays in a perfect manner and it's simply unnatural. <br>
+While many chess engines concentrate on identifying the optimal move, they often lack the ability to emulate a human player effectively. This can hinder their role as an effective training partner since the opponent consistently makes perfect moves, which is unrealistic.
 
-
-Ludus attmepts to create the ideal sparring partner by prediciting what a real human would play simulating a real life 
+Ludus aims to rectify this by simulating real human behavior, predicting moves that align more closely with what a human player might choose in a game, thereby creating an ideal sparring partner for training purposes.
 
 ## Installation
 
