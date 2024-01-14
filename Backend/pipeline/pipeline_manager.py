@@ -1,8 +1,8 @@
 import pandas
 
-from Backend import count_users_with_most_games_from_lichess_api as count_users
-from Backend import get_games_in_pgn_from_lichess_api as games_in_pgn
-from Backend import from_PGN_generate_bitboards as generate_bitboard
+from Backend.pipeline import count_users_with_most_games_from_lichess_api as count_users
+from Backend.pipeline import get_games_in_pgn_from_lichess_api as games_in_pgn
+from Backend.pipeline import from_PGN_generate_bitboards as generate_bitboard
 
 
 class PipelineManager:
@@ -154,3 +154,34 @@ class PipelineManager:
         self.user_df = self.user_df.append(user, ignore_index=True)
         self.save_df()
 
+    def print_report(self):
+
+        total_slow_games = sum(self.user_df["total_slow_games"])
+        total_games = sum(self.user_df["total_amount_of_games"])
+
+        games_downloaded = sum(self.user_df["games_downloaded"])
+        bitboard_games = sum(self.user_df["bitboard_games"])
+        searched_games = sum(self.user_df["searched_games"])
+        
+        print()
+        print('printing current report')
+        print()
+
+        print(self.user_df)
+        print(f'there are currently {len(self.user_df)} users registered')
+        print()
+        
+        print(f'total games available : {total_games} ({total_slow_games} slow )')
+        print()
+
+        print(f'total games downloaded : {games_downloaded} ')
+        print()
+
+        print(f'total bitboards : {bitboard_games} ')
+        print()
+
+        print(f'searched games : {searched_games} ')
+        print()
+
+pipe = PipelineManager()
+pipe.print_report()
