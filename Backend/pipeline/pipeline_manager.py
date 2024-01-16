@@ -1,9 +1,9 @@
 import pandas
+import os
 
 from Backend.pipeline import count_users_with_most_games_from_lichess_api as count_users
 from Backend.pipeline import get_games_in_pgn_from_lichess_api as games_in_pgn
 from Backend.pipeline import from_PGN_generate_bitboards as generate_bitboard
-
 
 class PipelineManager:
     def __init__(self, user_file='Backend/data/user_record.csv', pgn_folder_first_part='Backend/data/pgn_games'):
@@ -108,6 +108,7 @@ class PipelineManager:
         print('saving at :', self.user_file)
         return
 
+    # downloads pgns from lichess api
     def add_pgn(self, number_of_games):
         if self.pgn_left_to_download() < number_of_games:
             self.add_users(number_of_games)
@@ -135,6 +136,7 @@ class PipelineManager:
 
         return
 
+    # finds other suitable users
     def add_users(self, number_of_games):
 
         current_df = self.current_range_df
@@ -183,5 +185,33 @@ class PipelineManager:
         print(f'searched games : {searched_games} ')
         print()
 
+    # updates the current record of the df to what is present in the filesystem
+    # it updates the amount of games downloaded and the amount of bitboards generated.
+    def update_record(self):
+        file_path = 'Backend/data/pgn_games/pgn_games_1700'
+        
+        for file in os.listdir(file_path):
+            
+            username = file.replace('pgn_games_','').split('.')[0]
+            path = file_path +'/'+ file
+            total_lines = 0
+            for line in open(path):
+                total_lines += 1 
+            df = self.user_df.loc[self.user_df['username'] == username]
+
+            if df.empty:
+                print(f'user {username} not found, adding it to the record')
+                print(f'adding {total_lines} amount of games donwloaded for that user')
+                self.add_user_from_username(username)
+
+            else:
+                total_games = df['games_downloaded'].values[0]
+                games_to_download = df['total_amount_of_games'].values[0]
+                print(f'user {username} found')
+                print(f'found {total_lines} amount of games donwloaded for that user, orignially found : {total_games} , total games avialable {games_to_download}')
+
+            print()    
+        return 
+
 pipe = PipelineManager()
-pipe.print_report()
+pipe.update_record()
