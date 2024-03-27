@@ -150,6 +150,7 @@ def from_bitboard_reshape_data(x,y):
 
 def from_bitboard_save_file(filepath, username, x_bitboard, x2_bitboard, y_bitboard, y2_bitboard, list_of_white):
     print('saving bitboards files')
+    username = ''
     x_filename = filepath + username + r'\x.npy'
     x2_filename = filepath + username + r'\x2.npy'
     y_filename = filepath + username + r'\y.npy'
@@ -167,7 +168,6 @@ def from_bitboard_save_file(filepath, username, x_bitboard, x2_bitboard, y_bitbo
     print('saving at : ', x_filename)
 
     return
-
 
 # filename has to be defined by the user
 # filename is the path to a json file where the games will be converted 
@@ -201,3 +201,19 @@ def generate_from_filename(username, first_pgn_index = 0, filename = None, numbe
     from_bitboard_save_file(filepath_to_save, username,  x1, x2, y1, y2, list_of_white)
 
     return
+
+def generate_from_filepath_and_username(username, saving_path, filepath):
+    
+    print('generating for the user : ', username)
+    json_df = pandas.read_json(filepath, lines=True)
+
+    list_of_position = from_json_dataframe_create_list_of_chess_position(json_df, username)
+    x_list, y_list = from_list_of_chess_position_split_x_and_y_for_bitboards(list_of_position)
+
+    x_bitboard, y_bitboard, list_of_white = from_list_of_x_and_y_position_create_bitboard(x_list, y_list)
+
+    x1, x2, y1, y2 = from_bitboard_reshape_data(x_bitboard,y_bitboard)
+
+    from_bitboard_save_file(saving_path, username,  x1, x2, y1, y2, list_of_white)
+
+    return 

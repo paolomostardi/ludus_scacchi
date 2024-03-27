@@ -45,7 +45,7 @@ class PipelineManager:
         return
 
     def get_pgn_folder(self):
-        return self.pgn_folder_first_part + str(self.user_rating) + '_pgn_games'
+        return self.pgn_folder_first_part + '/' + str(self.user_rating) + '_pgn_games'
 
     def get_df_of_users_by_current_rating(self):
 
@@ -82,15 +82,26 @@ class PipelineManager:
 
         bit_boards_generated = 0
         index = 0
+
         while bit_boards_generated < number_of_games:
             user = users_with_bitboards_left_to_generate.iloc[index]
             bitboards_already_generated_for_user = user['bitboard_games']
             total_pgn_available = user['games_downloaded']
             username = user['username']
-            generate_bitboard.generate_from_username(username, bitboards_already_generated_for_user)
+
+            saving_path = r'Backend\data\bit_boards\bit_boards_' + str(self.user_rating)
+            saving_path = saving_path + '\\' + username + '\\'           
+            
+            if not os.path.exists(saving_path):
+                os.makedirs(saving_path)
+
+            filepath = 'Backend\data\pgn_games\pgn_games_' + str(self.user_rating) + '\pgn_games_' + username + '.json'
+
+            generate_bitboard.generate_from_filepath_and_username(username, saving_path, filepath)
             index += 1
             bit_boards_generated += total_pgn_available - bitboards_already_generated_for_user
             self.change_user_bitboard(user, total_pgn_available)
+
         self.save_df()
 
     def change_user_bitboard(self, user, bitboard_amount):
@@ -98,13 +109,18 @@ class PipelineManager:
         self.user_df.loc[self.user_df['username'] == username, 'bitboard_games'] = bitboard_amount
         return
 
-    def change_user_pgn(self, user, pgn_amount):
+    def change_user_pgn_from_user(self, user, pgn_amount):
         username = user['username']
         self.user_df.loc[self.user_df['username'] == username, 'games_downloaded'] = pgn_amount
+        self.save_df()
         return
+    
+    def change_user_pgn_from_username(self, username, pgn_amount):
+        self.user_df.loc[self.user_df['username'] == username, 'games_downloaded'] = pgn_amount
+        self.save_df()
 
     def save_df(self):
-        self.user_df.to_csv(self.user_file)
+        self.user_df.to_csv(self.user_file, )
         print('saving at :', self.user_file)
         return
 
@@ -121,16 +137,17 @@ class PipelineManager:
         index = 0
 
         while games_downloaded < number_of_games:
-
+            
             user = users_with_games_left_to_download.iloc[index]
             games_already_downloaded = user['games_downloaded']
             total_pgn_available = user['total_amount_of_games']
             username = user['username']
+            print('downloading games for user : ',user)
 
             games_in_pgn.get_pgn_games_from_username(username, self.get_pgn_folder())
             index += 1
             games_downloaded += total_pgn_available - games_already_downloaded
-            self.change_user_pgn(user, total_pgn_available)
+            self.change_user_pgn_from_user(user, total_pgn_available)
 
         self.save_df()
 
@@ -186,7 +203,7 @@ class PipelineManager:
         print()
 
     # updates the current record of the df to what is present in the filesystem
-    # it updates the amount of games downloaded and the amount of bitboards generated.
+    # it updates the amount of games downloaded.
     def update_record(self):
         file_path = 'Backend/data/pgn_games/pgn_games_1700'
         
@@ -199,19 +216,26 @@ class PipelineManager:
                 total_lines += 1 
             df = self.user_df.loc[self.user_df['username'] == username]
 
+            print(f'checking user {username} ')
+
             if df.empty:
                 print(f'user {username} not found, adding it to the record')
                 print(f'adding {total_lines} amount of games donwloaded for that user')
                 self.add_user_from_username(username)
-
+                self.change_user_pgn_from_username(username,total_lines)
             else:
                 total_games = df['games_downloaded'].values[0]
                 games_to_download = df['total_amount_of_games'].values[0]
-                print(f'user {username} found')
-                print(f'found {total_lines} amount of games donwloaded for that user, orignially found : {total_games} , total games avialable {games_to_download}')
+                
+                if total_games != total_lines:
+                    print(f'discrepancy found updating the amount of games from {total_games} to {total_lines} ({games_to_download} available games) ')
+                    self.change_user_pgn_from_username(username,total_lines)
+
+
 
             print()    
         return 
+    
 
 pipe = PipelineManager()
 pipe.update_record()
