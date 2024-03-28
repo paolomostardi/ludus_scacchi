@@ -1,5 +1,5 @@
-import analysis_mode
-import pygame
+from FrontEnd import analysis_mode
+from FrontEnd import pygame
 import helper
 import chess
 

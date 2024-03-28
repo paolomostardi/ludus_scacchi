@@ -25,7 +25,7 @@ class PlayMode(RenderChess):
         super().__init__(board_size, screen)
         self.logic_board = AnalysisLogic()
 
-        model_path = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\training_data\model\\' + model_path
+        model_path = r'.\Ludus_scacchi\training_data\model\\' + model_path
         self.model1 = load_model(model_path + r'\first_part\model.h5')
         self.model2 = load_model(model_path + r'\second_part\model.h5')
         
@@ -259,12 +259,12 @@ def color_choice():
     orange = (218,145,37,100)
 
     pygame.init()  
-    black_bishop_icon = pygame.image.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\FrontEnd\Pieces\black\b.png')
+    black_bishop_icon = pygame.image.load(r'FrontEnd/Pieces/black/b.png')
     pygame.display.set_icon(black_bishop_icon)
     pygame.display.set_caption('Ludus Scacchi')
 
-    white_bishop_icon = pygame.image.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\FrontEnd\Pieces\white\b.png')
-    mix_king_icon = pygame.image.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\FrontEnd\Pieces\mix_king.png')
+    white_bishop_icon = pygame.image.load(r'FrontEnd/Pieces/white/b.png')
+    mix_king_icon = pygame.image.load(r'FrontEnd/Pieces/mix_king.png')
 
 
     white_bishop_icon = helper.resize_image(white_bishop_icon, 200, 0.85)
@@ -316,7 +316,7 @@ def color_choice():
 
     engine_button_list = []
 
-    path = 'training_data\model'
+    path = 'training_data/model'
     for index, engine_name in enumerate(os.listdir(path)):
         engine_rect = (50,400 + (80 * index), 400, 50) 
         engine_button_list.append( Button(engine_rect,orange,screen,message=engine_name,font_size= 40, border_radius= 20, font_padding=(20,5)) )

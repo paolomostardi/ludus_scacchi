@@ -39,7 +39,7 @@ class AnalysisMode(RenderChess):
             self.append_move_to_list_of_moves_to_render(move)
         self.chess_board = logic_board.get_current_board()
 
-        model_path = r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\training_data\model\resnet_vgg_1700'
+        model_path = r'/training_data/model/resnet_vgg_1700'
         self.model1 = load_model(model_path + r'\first_part\model.h5')
         self.model2 = load_model(model_path + r'\second_part\model.h5')
         self.calculate_best_move()
@@ -144,7 +144,7 @@ def main(logic_board: AnalysisLogic = AnalysisLogic(), list_of_moves = []):
 
     pygame.font.init()
 
-    black_bishop_icon = pygame.image.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\FrontEnd\Pieces\black\b.png')
+    black_bishop_icon = pygame.image.load(r'FrontEnd/Pieces/black/b.png')
     pygame.display.set_icon(black_bishop_icon)
     pygame.display.set_caption('Ludus Scacchi')
 

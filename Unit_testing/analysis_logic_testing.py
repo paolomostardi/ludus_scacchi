@@ -1,4 +1,4 @@
-import analysis_logic
+from FrontEnd import analysis_logic
 import chess
 
 
