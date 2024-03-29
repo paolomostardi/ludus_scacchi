@@ -4,15 +4,51 @@ import chess
 import io
 import chess.pgn
 import os
+import re
+import csv
 
 from Backend.pipeline import count_users_with_most_games_from_lichess_api as count
 from Backend.pipeline import create_second_dataset as second
+
+
+def from_fen_create_bitboard(fen):
+    pass
+
+def pgn_string_to_list_moves(pgn : str):
+    pattern = re.compile(r'\d+\.')
+    cleaned_string = re.sub(pattern, '', pgn)
+    cleaned_string = re.sub(r'\s+', ' ', cleaned_string).strip()
+    return cleaned_string.split()
+
+def from_pgn_fens_and_moves(pgn : str):
+    boards = get_chess_boards_from_pgn(pgn)
+    moves = pgn_string_to_list_moves(pgn)
+    boards = [i.fen() for i in boards]
+    
+    # deleting first move and last position
+    
+    moves.pop(0)
+    boards.pop(-1)
+
+    return (boards, moves)
+
+def append_to_file(filename,rows):
+    
+    with open(filename, 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(rows)
+
+
+def from_list_of_pgns_append_to_file(filename,pgn_list: str):
+
+    for pgn in pgn_list:
+        rows = from_pgn_fens_and_moves(pgn)
+        append_to_file(filename,rows)
 
 def number_of_square_to_bitboard_index(square):
     x = square % 8
     y = square // 8
     return x, y
-
 
 def from_chess_board_create_bit_boards(board):
 
@@ -39,7 +75,6 @@ def from_chess_board_create_bit_boards(board):
 
     board.turn = board_turn
     return bit_boards
-
 
 def from_chess_move_create_bitboard(move):
     from_square = move.from_square
