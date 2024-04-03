@@ -10,9 +10,19 @@ import csv
 from Backend.pipeline import count_users_with_most_games_from_lichess_api as count
 from Backend.pipeline import create_second_dataset as second
 
+# done for the first 10 million GAMES (not positions)
+
+def create_chunk(size : int, df : pandas.DataFrame, start: int, chunk_number: int):
+    bitboard_save = []
+    df = df.iloc[start:start + size]
+    for i in df:
+        bitboard_save.append(from_fen_create_bitboard(i))
+
+    bitboard_save = numpy.array(bitboard_save)
+    numpy.save('chunk_'+ str(chunk_number) + '.npy',bitboard_save)                 
 
 def from_fen_create_bitboard(fen):
-    pass
+    return from_chess_board_create_bit_boards(chess.Board(fen))
 
 def pgn_string_to_list_moves(pgn : str):
     pattern = re.compile(r'\d+\.')
@@ -36,8 +46,8 @@ def append_to_file(filename,rows):
     
     with open(filename, 'a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerows(rows)
-
+        for i in range(len(rows[0])):
+            writer.writerow([rows[0][i], rows[1][i]])
 
 def from_list_of_pgns_append_to_file(filename,pgn_list: str):
 
@@ -88,7 +98,6 @@ def from_chess_move_create_bitboard(move):
 
     return from_matrix[::-1, :], to_matrix[::-1, :]
 
-
 def get_chess_boards_from_pgn(pgn_string):
     board = chess.Board()
     bitboards = []
@@ -97,7 +106,6 @@ def get_chess_boards_from_pgn(pgn_string):
         bitboards.append(board.copy())
 
     return bitboards
-
 
 def from_json_dataframe_create_list_of_chess_position(json_df, username):
     print(' creating list of chess positions ')
@@ -112,7 +120,6 @@ def from_json_dataframe_create_list_of_chess_position(json_df, username):
             print('some error', e)
 
     return list_of_position_and_is_white_player
-
 
 def from_list_of_chess_position_split_x_and_y_for_bitboards(df):
     print(' splitting x and y  ')
@@ -155,7 +162,6 @@ def from_list_of_chess_position_split_x_and_y_for_bitboards(df):
 
     return list_of_x_position, list_of_y_position
 
-
 def from_list_of_x_and_y_position_create_bitboard(list_of_x_position, list_of_y_position):
     print(' creating bitboards ')
     x_bitboard_list = []
@@ -173,15 +179,12 @@ def from_list_of_x_and_y_position_create_bitboard(list_of_x_position, list_of_y_
     print('here is the length of x',len(x_bitboard_list), len(list_of_white_player))
     return x_bitboard_list, y_bitboard_list, list_of_white_player
 
-
 def from_bitboard_reshape_data(x,y):
     print('reshaping data to fit 2 models type of engine')
     x2 = second.transform_from_first_dataset_to_second(x,y)
     y,y2 = second.transform_y(y)
 
     return x,x2,y,y2
-
-
 
 def from_bitboard_save_file(filepath, username, x_bitboard, x2_bitboard, y_bitboard, y2_bitboard, list_of_white):
     print('saving bitboards files')
