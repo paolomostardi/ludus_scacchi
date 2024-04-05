@@ -10,6 +10,24 @@ import csv
 from Backend.pipeline import count_users_with_most_games_from_lichess_api as count
 from Backend.pipeline import create_second_dataset as second
 
+def move_and_position_to_bitboard(move, position): 
+    position = chess.Board(position)
+    position.push_san(move)
+    return from_chess_move_create_bitboard(position.peek())
+
+# expecting df with columns:
+# 'position','move' 
+
+def from_df_create_move_bitboard(size, moves, positions, start, chunk_number):
+    bitboard_save = []
+    moves = moves.iloc[start:start + size]
+    positions = positions.iloc[start:start + size]
+    for i in range(size):
+        bitboard_save.append(move_and_position_to_bitboard(moves[start + i],positions[start + i]))
+    
+    bitboard_save = numpy.array(bitboard_save)
+    numpy.save('chunk_'+ str(chunk_number) + '_y.npy',bitboard_save)                 
+
 # done for the first 10 million GAMES (not positions)
 
 def create_chunk(size : int, df : pandas.DataFrame, start: int, chunk_number: int):
@@ -25,6 +43,7 @@ def from_fen_create_bitboard(fen):
     return from_chess_board_create_bit_boards(chess.Board(fen))
 
 def pgn_string_to_list_moves(pgn : str):
+    pgn = pgn.replace('e.p.','')
     pattern = re.compile(r'\d+\.')
     cleaned_string = re.sub(pattern, '', pgn)
     cleaned_string = re.sub(r'\s+', ' ', cleaned_string).strip()
@@ -49,7 +68,7 @@ def append_to_file(filename,rows):
         for i in range(len(rows[0])):
             writer.writerow([rows[0][i], rows[1][i]])
 
-def from_list_of_pgns_append_to_file(filename,pgn_list: str):
+def from_list_of_pgns_append_to_file(filename,pgn_list : pandas.DataFrame):
 
     for pgn in pgn_list:
         rows = from_pgn_fens_and_moves(pgn)
@@ -86,7 +105,7 @@ def from_chess_board_create_bit_boards(board):
     board.turn = board_turn
     return bit_boards
 
-def from_chess_move_create_bitboard(move):
+def from_chess_move_create_bitboard(move : chess.Move):
     from_square = move.from_square
     to_square = move.to_square
 
@@ -118,7 +137,6 @@ def from_json_dataframe_create_list_of_chess_position(json_df, username):
                 list_of_position_and_is_white_player.append((get_chess_boards_from_pgn(game), username == white_player))
         except Exception as e:
             print('some error', e)
-
     return list_of_position_and_is_white_player
 
 def from_list_of_chess_position_split_x_and_y_for_bitboards(df):
@@ -223,7 +241,6 @@ def generate_from_filename(username, first_pgn_index = 0, filename = None, numbe
 
     print(filepath)
     assert os.path.isfile(filepath)
-
 
     json_df = pandas.read_json(filepath, lines=True)
 
