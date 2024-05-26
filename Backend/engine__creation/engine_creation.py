@@ -18,6 +18,14 @@ from Backend.pipeline import from_PGN_generate_bitboards as gen
 
 """
 
+# use the following function to predict the next move
+
+def engine(fen: str, model1, model2):
+    square = return_best_legal_piece(fen,model1)
+    print('INITIAL from square is ',square)
+
+    return return_square_to_move(fen,model2,square)
+
 
 def return_top_piece_to_move(fen: str, model: models.Model):
     board = chess.Board(fen)
@@ -121,10 +129,4 @@ def return_square_to_move(fen : str, model: models.Model, square: chess.square):
     sorted_indices, sorted_percentages = return_top_squares_given_square_and_board(fen,model,square)
     return find_most_likely_legal_move(chess.Board(fen),square,sorted_indices)
 
-
-def engine(fen: str, model1, model2):
-    square = return_best_legal_piece(fen,model1)
-    print('INITIAL from square is ',square)
-
-    return return_square_to_move(fen,model2,square)
 

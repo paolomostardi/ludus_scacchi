@@ -224,26 +224,27 @@ def change_data():
     K.clear_session()
     gc.collect()
 
+def main():
 
-print('LOADING DATA')
+    print('LOADING DATA')
 
-model_to_fit = test_resnet()
-x = np.load('/kaggle/input/1700-lichess-user-bitboards/x.npy', mmap_mode='r')
-y = np.load('/kaggle/input/1700-lichess-user-bitboards/asdad.npy', mmap_mode='r')
-white = np.load('/kaggle/input/1700-lichess-user-bitboards/white2.npy', mmap_mode='r')
+    model_to_fit = test_resnet()
+    x = np.load('/kaggle/input/1700-lichess-user-bitboards/x.npy', mmap_mode='r')
+    y = np.load('/kaggle/input/1700-lichess-user-bitboards/asdad.npy', mmap_mode='r')
+    white = np.load('/kaggle/input/1700-lichess-user-bitboards/white2.npy', mmap_mode='r')
 
-x_fit = [x[f_i:s_i], white[f_i:s_i]]
-y_fit = y[f_i:s_i]
+    x_fit = [x[f_i:s_i], white[f_i:s_i]]
+    y_fit = y[f_i:s_i]
 
-x_test = [x[s_i:t_i], white[s_i:t_i]]
-y_test = y[s_i:t_i]
+    x_test = [x[s_i:t_i], white[s_i:t_i]]
+    y_test = y[s_i:t_i]
 
-for i in range(6):
-    change_data()
-    print('CYCLE NUMBER ', i)
-    model_to_fit.fit(x_fit[0], np.array(y_fit), batch_size=64, epochs=5)
-    fit_result = fitness(model_to_fit, x_test[0], np.array(y_test))
-    print(fit_result)
-    K.clear_session()
-    gc.collect()
-    increase()
+    for i in range(6):
+        change_data()
+        print('CYCLE NUMBER ', i)
+        model_to_fit.fit(x_fit[0], np.array(y_fit), batch_size=64, epochs=5)
+        fit_result = fitness(model_to_fit, x_test[0], np.array(y_test))
+        print(fit_result)
+        K.clear_session()
+        gc.collect()
+        increase()

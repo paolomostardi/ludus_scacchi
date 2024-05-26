@@ -5,6 +5,9 @@ import chess.pgn
 import numpy
 from keras.models import load_model
 
+
+# testing different engines on a given dataset considering the engine can communicate in UCI  
+
 def test_engine_on_dataset(engine_path, dataset_path, amount_of_testing_sets, starting_point = 0):
 
     x_path, y_path = dataset_path

@@ -3,7 +3,7 @@ from Backend.pipeline import from_PGN_generate_bitboards as gen
 from keras.models import Model
 import numpy as np
 
-
+# this file creates a dataset fro something not sure 
 
 def generate_first_dataset():
     return 
