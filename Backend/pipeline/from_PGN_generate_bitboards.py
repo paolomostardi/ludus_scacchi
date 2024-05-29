@@ -70,7 +70,9 @@ def append_to_file(filename,rows):
         for i in range(len(rows[0])):
             writer.writerow([rows[0][i], rows[1][i]])
 
-# use this to generate the dataset with moves and positions
+# this functions adds to a given filename a set of moves and position fen
+# it expects a pandas df with only a column containing a sting with all the moves of the game.
+
 def from_list_of_pgns_append_to_file(filename,pgn_list : pandas.DataFrame):
 
     for pgn in pgn_list:    
@@ -221,6 +223,9 @@ def from_bitboard_save_file(filepath, username, x_bitboard, x2_bitboard, y_bitbo
     numpy.save(y_filename, y_bitboard)
     numpy.save(x2_filename, x2_bitboard)
     numpy.save(y2_filename, y2_bitboard)
+    numpy.save(white_filename, list_of_white)
+
+
         
     # numpy.save(white_filename, list_of_white)
 
