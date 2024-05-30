@@ -224,8 +224,6 @@ def from_bitboard_save_file(filepath, username, x_bitboard, x2_bitboard, y_bitbo
     numpy.save(x2_filename, x2_bitboard)
     numpy.save(y2_filename, y2_bitboard)
     numpy.save(white_filename, list_of_white)
-
-
         
     # numpy.save(white_filename, list_of_white)
 
