@@ -61,7 +61,6 @@ def white_evaluation(model : Model, testing_dataset : np.array):
     lenght = len(normal)
     print( 'total percentage of same result = {} total amount of same answer: {} out of {}', same, counter, lenght)
 
-
 if __name__ == "__main__":
     model = keras.models.load_model('Backend/data/models/gm_model_white/gm_model_chunk_9.keras')
     dataset = np.load('chunk_0.npy')

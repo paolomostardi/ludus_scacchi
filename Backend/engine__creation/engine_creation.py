@@ -22,15 +22,13 @@ from Backend.pipeline import from_PGN_generate_bitboards as gen
 
 def engine(fen: str, model1, model2):
     square = return_best_legal_piece(fen,model1)
-    print('INITIAL from square is ',square)
-
     return return_square_to_move(fen,model2,square)
 
-
+# returns a list of the estimation of squares from whitch to move in ascending order. (first one most likely)
 def return_top_piece_to_move(fen: str, model: models.Model):
     board = chess.Board(fen)
     x = gen.from_chess_board_create_bit_boards(board)
-    x = x.reshape(1, 14, 8, 8)
+    x = x.reshape(1, 15, 8, 8)
     prediction = model.predict(x)
 
     sorted_indices = np.argsort(prediction[0])[::-1]
