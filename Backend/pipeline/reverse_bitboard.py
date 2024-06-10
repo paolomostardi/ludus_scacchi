@@ -1,24 +1,19 @@
 import numpy as np
 import chess
+from Backend.pipeline import from_PGN_generate_bitboards as gen
 
+# 0 pawn # 1 knight # 2 bishop
+# 3 rook # 4 queen  # 5 king 
 
-# 0 pawn
-# 1 knight 
-# 2 bishop
-# 3 rook
-# 4 queen
-# 5 king
-# 6 pawn
-# 7 knight 
-# 8 bishop
-# 9 rook 
-# 10 queen
-# 11 king 
+# 6 pawn # 7 knight # 8 bishop
+# 9 rook # 10 queen # 11 king 
+
 # 12 legal moves white
 # 13 legal moves black
 # 14 whose to play  
 
 # something about the index is coming the wrong way so i need to fix it
+
 def transform_index(index):
     dict = {
         7: -7,
@@ -30,6 +25,7 @@ def transform_index(index):
         1: 5,
         0: 7
     }
+    
     index = 63 - index
     module = index % 8
     return index + dict[module] 
@@ -74,13 +70,17 @@ def from_bitboard_return_chess_board(bitboard: np.array) -> chess.Board:
             board.set_piece_at(transform_index(i),chess.Piece(chess.QUEEN,chess.BLACK))
     for i,answer in enumerate(bitboard[11].flat):
         if answer:
-            board.set_piece_at(transform_index(i),chess.Piece(chess.KING,chess.WHITE))
-    
+            board.set_piece_at(transform_index(i),chess.Piece(chess.KING,chess.BLACK))
 
-    print(board)
+    if not bitboard[14][0][0]:
+        board.turn = chess.BLACK
 
     return board
 
 if __name__ == "__main__":
-    x = np.load('chunk_0.npy')
-    from_bitboard_return_chess_board(x[10])
+    fen = 'r1bqk2r/ppppnppp/5b2/3P4/2B1R3/5N2/PP3PPP/R1BQ2K1 w kq - 0 11'
+    board = chess.Board(fen)
+    bitboard = gen.from_chess_board_create_bit_boards(board)
+    board_copy = from_bitboard_return_chess_board(bitboard)
+    print(board.fen == board_copy.fen)
+    print(board_copy.fen())
