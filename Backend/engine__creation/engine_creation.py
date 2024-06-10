@@ -14,11 +14,9 @@ from Backend.pipeline import from_PGN_generate_bitboards as gen
 23 22 21 20 19 18 17 16
 15 14 13 12 11 10 9  8
 7  6  5  4  3  2  1  0
-
 """
 
 # use the following function to predict the next move
-
 def engine(fen: str, model1, model2):
     square = return_best_legal_piece(fen,model1)
     return return_square_to_move(fen,model2,square)

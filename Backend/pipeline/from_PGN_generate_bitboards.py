@@ -4,12 +4,28 @@ import chess
 import io
 import chess.pgn
 import os
-from Backend.pipeline import create_second_dataset as second
 
 def number_of_square_to_bitboard_index(square):
     x = square % 8
     y = square // 8
     return x, y
+
+def transform_index(index):
+    dict = {
+        7: -7,
+        6: -5,
+        5: -3,
+        4: -1,
+        3: 1,
+        2: 3,
+        1: 5,
+        0: 7
+    }
+    
+    index = 63 - index
+    module = index % 8
+    return index + dict[module] 
+
 
 def from_chess_board_create_bit_boards(board : chess.Board):
 
@@ -26,12 +42,14 @@ def from_chess_board_create_bit_boards(board : chess.Board):
 
     board.turn = chess.WHITE
     for move in board.legal_moves:
-        x, y = number_of_square_to_bitboard_index(move.to_square)
+        index = transform_index(move.to_square)
+        x, y = number_of_square_to_bitboard_index(index)
         bit_boards[12][y][x] = 1
 
     board.turn = chess.BLACK
     for move in board.legal_moves:
-        x, y = number_of_square_to_bitboard_index(move.to_square)
+        index = transform_index(move.to_square)
+        x, y = number_of_square_to_bitboard_index(index)
         bit_boards[13][y][x] = 1
 
     board.turn = board_turn
