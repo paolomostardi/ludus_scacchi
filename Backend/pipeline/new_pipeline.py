@@ -10,12 +10,10 @@ from Backend.pipeline import from_PGN_generate_bitboards as gen
 
 # file used to train on the gm dataset https://www.kaggle.com/datasets/lazaro97/gm-chess-games
 
-
 # expecting df with columns:
 # 'position','move' 
 
-# total of 13.425.482 positions 
-
+# total of 10.747.142 positions 
 
 def move_and_position_to_bitboard(move : str, position): 
     position = chess.Board(position)
@@ -23,12 +21,13 @@ def move_and_position_to_bitboard(move : str, position):
     return gen.from_chess_move_create_bitboard(position.peek())
 
 
-def from_df_create_move_bitboard(size, moves, positions, start, chunk_number):
+def from_df_create_move_bitboard(size, df : pandas.DataFrame, start, chunk_number):
     bitboard_save = []
-    moves = moves.iloc[start:start + size]
-    positions = positions.iloc[start:start + size]
-    for i in range(size):
-        bitboard_save.append(move_and_position_to_bitboard(moves[start + i],positions[start + i]))  
+
+    df_copy = df[start:start+size]
+
+    for i in df_copy.iterrows():
+        bitboard_save.append(move_and_position_to_bitboard(i[1]['move'],i[1]['position']))  
     
     bitboard_save = numpy.array(bitboard_save)
     numpy.save('chunk_'+ str(chunk_number) + '_y.npy',bitboard_save)  
@@ -91,6 +90,18 @@ def append_to_file(filename,rows):
 
 # this functions adds to a given filename a set of moves and position fen
 # it expects a pandas df with only a column containing a sting with all the moves of the game.
+
+def create_all_y_chunk(df, size = 1_000_000):
+
+    positions = df['position']
+    moves = df['move']
+
+    total_chunks = len(df) // size
+
+    for i in range(total_chunks):
+        print('generating for chunk number ',i)
+        start = i * size 
+        from_df_create_move_bitboard( size,df,start=start,chunk_number=i )
 
 
 def from_list_of_pgns_append_to_file(filename,pgn_list : pandas.DataFrame):

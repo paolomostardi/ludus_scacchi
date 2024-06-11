@@ -4,6 +4,7 @@ import chess
 import io
 import chess.pgn
 import os
+from Backend.pipeline import create_second_dataset as second
 
 def number_of_square_to_bitboard_index(square):
     x = square % 8
@@ -25,7 +26,6 @@ def transform_index(index):
     index = 63 - index
     module = index % 8
     return index + dict[module] 
-
 
 def from_chess_board_create_bit_boards(board : chess.Board):
 
@@ -135,6 +135,7 @@ def from_list_of_chess_position_split_x_and_y_for_bitboards(df):
     return list_of_x_position, list_of_y_position
 
 def from_list_of_x_and_y_position_create_bitboard(list_of_x_position, list_of_y_position):
+    
     print(' creating bitboards ')
     x_bitboard_list = []
     y_bitboard_list = []
@@ -142,7 +143,7 @@ def from_list_of_x_and_y_position_create_bitboard(list_of_x_position, list_of_y_
     for x_position in list_of_x_position:
         x = from_chess_board_create_bit_boards(x_position[0])
         list_of_white_player.append(x_position[1])
-        x_bitboard_list.append(x)
+        x_bitboard_list.append(x) 
 
     for y_position in list_of_y_position:
         y = from_chess_move_create_bitboard(y_position.peek())
