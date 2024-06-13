@@ -30,7 +30,7 @@ def transform_index(index):
     module = index % 8
     return index + dict[module] 
 
-def from_bitboard_return_chess_board(bitboard: np.array) -> chess.Board:
+def from_bitboard_return_chess_board(bitboard: np.ndarray) -> chess.Board:
     empty_fen = '8/8/8/8/8/8/8/8 w - - 0 1'
     board = chess.Board(empty_fen)    
    
@@ -76,6 +76,20 @@ def from_bitboard_return_chess_board(bitboard: np.array) -> chess.Board:
         board.turn = chess.BLACK
 
     return board
+
+def give_max(board):
+    board = board.flatten()
+    max_switch = max(range(len(board)), key=board.__getitem__)
+    return max_switch
+
+def from_move_bitboard_return_bitboard(move_bitboard: np.ndarray) -> chess.Move:
+    
+    from_square = transform_index(give_max(move_bitboard[0]) )
+    to_square = transform_index(give_max(move_bitboard[1]))
+    move = chess.Move(from_square,to_square)    
+
+    return move
+
 
 if __name__ == "__main__":
     fen = 'r1bqk2r/ppppnppp/5b2/3P4/2B1R3/5N2/PP3PPP/R1BQ2K1 w kq - 0 11'
