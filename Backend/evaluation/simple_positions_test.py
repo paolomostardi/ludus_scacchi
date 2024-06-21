@@ -2,9 +2,7 @@ from Backend.engine__creation import engine_creation as engine
 import keras
 import chess
 
-
 """
-
 63 62 61 60 59 58 57 56
 55 54 53 52 51 50 49 48
 47 46 45 44 43 42 41 40
@@ -13,7 +11,6 @@ import chess
 23 22 21 20 19 18 17 16
 15 14 13 12 11 10 9  8
 7  6  5  4  3  2  1  0
-
 """
 
 # simple ladder checkmate with 2 rooks
@@ -28,7 +25,9 @@ def model1_assertion(model1):
     print(' testing positions')
     print(fen_list)
 
-# in this case we might want to use both ? 
+    # we test for the best legal piece and for the most likely piece,
+    # this means that the first one is forced to be legal (should be esier to guess then)   
+    
     counter = 0
     for fen in fen_list:
         index = engine.return_best_legal_piece(fen[0],model1)
@@ -57,3 +56,10 @@ if __name__ == "__main__":
 
 
 
+def main():
+    model = keras.models.load_model('Backend/data/models/gm_model_white/gm_model_chunk_9.keras')
+    model1_assertion(model)
+
+def test_model(model_path: str):
+    model = keras.models.load_model(model_path)
+    model1_assertion(model)

@@ -5,7 +5,7 @@ import chess.pgn
 import numpy
 from keras.models import load_model
 
-
+# used to test engines that are not ludus
 # testing different engines on a given dataset considering the engine can communicate in UCI  
 
 def test_engine_on_dataset(engine_path, dataset_path, amount_of_testing_sets, starting_point = 0):

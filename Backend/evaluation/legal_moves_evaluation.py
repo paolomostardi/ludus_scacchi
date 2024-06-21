@@ -6,7 +6,6 @@ import chess
 
 # this file checks how many moves played by the model are legal.
 
-
 def give_max(board):
     max_switch = max(range(len(board)), key=board.__getitem__)
     return max_switch
@@ -44,4 +43,4 @@ def main(start, finish):
     dataset = np.load('chunk_10.npy')
     legal_evaluation(model, dataset[start:finish])
 
-
+    
