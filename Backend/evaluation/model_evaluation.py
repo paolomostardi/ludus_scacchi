@@ -2,69 +2,23 @@ import numpy as np
 from keras import Model
 import keras
 
-
+from Backend.evaluation import legal_moves_evaluation
+from Backend.evaluation import simple_positions_test
+from Backend.evaluation import check_dataset_legal 
+from Backend.evaluation import white_board_evaluation
 
 
 # ALL TESTING DONE ONLY FOR THE FIRST HALF OF THE MODEL
 
-# create a large dataset where the color bitboard is automatically switched
-# create a dataset to see if the move played is legal 
+# function used to evaluate a keras model on set of tests 
+def evaluate_first_half_model(model_path : str, testing_dataset: np.array):
 
-
-def give_max(board):
-    max_switch = max(range(len(board)), key=board.__getitem__)
-    return max_switch
-
-def switch_dataset(testing_dataset):
-    comparing_bitboard = []
-    for bit_board in testing_dataset:
-
-        print(bit_board[14][0][0])
-
-        if bit_board[14][0][0]: # bitboard is true
-            print('hola')
-            bit_board[14] = np.uint64(0) 
-        else:
-            bit_board[14] = np.uint64(1)
-        
-        print(bit_board[14][0][0])
-        print('--------------------')
-
-        comparing_bitboard.append(bit_board)
-
-    comparing_bitboard = np.array(comparing_bitboard)
-    return comparing_bitboard
-
-def white_evaluation(model : Model, testing_dataset : np.array):
-    original_dataset = testing_dataset.copy()
-    comparing_bitboard = []
-    for bit_board in testing_dataset:
-        if bit_board[14][0][0]: # bitboard is true
-            bit_board[14] = np.uint64(0) 
-        else:
-            bit_board[14] = np.uint64(1)
-        comparing_bitboard.append(bit_board)
-
-    comparing_bitboard = np.array(comparing_bitboard)
+    check_dataset_legal.check_dataset_has_all_legal_moves(testing_dataset)
+    model =  keras.models.load_model(model_path)
     
-    switched = model.predict(comparing_bitboard)
-    normal = model.predict(original_dataset)
-
-    counter = 0 
-    for index, board in enumerate(switched):
-        max_switch = max(range(len(board)), key=board.__getitem__)
-        max_normal = max(range(len(normal[index])), key=normal[index].__getitem__)
-        if max_switch == max_normal:
-            counter += 1
-    
-    same = counter/len(normal)
-    lenght = len(normal)
-    print( 'total percentage of same result = {} total amount of same answer: {} out of {}', same, counter, lenght)
-
-if __name__ == "__main__":
-    model = keras.models.load_model('Backend/data/models/gm_model_white/gm_model_chunk_9.keras')
-    dataset = np.load('chunk_0.npy')
-    white_evaluation(model, dataset[:5000])
+    simple_positions_test.model1_assertion(model)
+    white_board_evaluation.white_evaluation(model,testing_dataset)
+    legal_moves_evaluation.legal_evaluation(model,testing_dataset)
 
 
 

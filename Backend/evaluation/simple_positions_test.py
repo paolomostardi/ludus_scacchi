@@ -34,7 +34,7 @@ def model1_assertion(model1):
         if index == fen[1]:
             counter += 1
         else:
-            print(fen[0], 'mistaken for this position')
+            print( 'mistaken for this position', index, fen[1])
     
     print('total position correct ',str(counter),'total lenght',str(len(fen_list)),'ratio: ',str(counter/len(fen_list))   )
 
@@ -49,17 +49,6 @@ def model1_assertion(model1):
     print('total position correct ',str(counter),'total lenght',str(len(fen_list)),'ratio: ',str(counter/len(fen_list))   )
 
 
-
-if __name__ == "__main__":
-    model = keras.models.load_model('Backend/data/models/gm_model_white/gm_model_chunk_9.keras')
-    model1_assertion(model)
-
-
-
 def main():
-    model = keras.models.load_model('Backend/data/models/gm_model_white/gm_model_chunk_9.keras')
-    model1_assertion(model)
-
-def test_model(model_path: str):
-    model = keras.models.load_model(model_path)
+    model = keras.models.load_model('Backend/data/models/gm_model_white_legal_moves/gm_model_chunk_9.keras')
     model1_assertion(model)

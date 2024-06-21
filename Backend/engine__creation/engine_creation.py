@@ -45,8 +45,6 @@ def has_legal_moves(board, square):
         return False 
     for move in board.legal_moves:
         if move.from_square == square:
-            print(move)
-            print(move)
             return True 
 
     return False 
@@ -56,7 +54,6 @@ def return_best_legal_piece(fen, model: models.Model):
     board = chess.Board(fen)
     for piece in top_indices:
         if has_legal_moves(board, piece):
-            print(piece)
             return piece
 
 

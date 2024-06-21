@@ -39,8 +39,8 @@ if __name__ == "__main__":
 
 
 def main(start, finish):
-    model = keras.models.load_model('Backend/data/models/gm_model_white/gm_model_chunk_9.keras')
+    model = keras.models.load_model('Backend/data/models/gm_model_white_legal_moves/gm_model_chunk_9.keras')
     dataset = np.load('chunk_10.npy')
     legal_evaluation(model, dataset[start:finish])
 
-    
+
