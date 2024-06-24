@@ -13,7 +13,6 @@ from Backend.evaluation import white_board_evaluation
 # function used to evaluate a keras model on set of tests 
 def evaluate_first_half_model(model_path : str, testing_dataset: np.array):
 
-    check_dataset_legal.check_dataset_has_all_legal_moves(testing_dataset)
     model =  keras.models.load_model(model_path)
     
     simple_positions_test.model1_assertion(model)

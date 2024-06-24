@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Python: Open Shell",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/launch_shell.py",
+            "console": "integratedTerminal"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Start and Open Shell",
+            "configurations": ["Python: Open Shell"],
+            "preLaunchTask": "Open Python Shell"
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+{   
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Open Python Shell",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "-m",
+                "IPython"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "detail": "Open a Python shell when the project starts"
+        }
+    ]
+}
