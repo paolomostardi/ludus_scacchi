@@ -17,6 +17,7 @@ from Backend.pipeline import from_PGN_generate_bitboards as gen
 
 def move_and_position_to_bitboard(move : str, position): 
     position = chess.Board(position)
+    print(move)
     position.push_san(move)    
     return gen.from_chess_move_create_bitboard(position.peek())
 
@@ -26,7 +27,10 @@ def from_df_create_move_bitboard(size, df : pandas.DataFrame, start, chunk_numbe
 
     df_copy = df[start:start+size]
 
+    c = 0
     for i in df_copy.iterrows():
+        c += 1
+        print(c)
         bitboard_save.append(move_and_position_to_bitboard(i[1]['move'],i[1]['position']))  
     
     bitboard_save = numpy.array(bitboard_save)
@@ -34,7 +38,6 @@ def from_df_create_move_bitboard(size, df : pandas.DataFrame, start, chunk_numbe
 
 
 # calling this to create the df once i have all the positions in a separete cvs file. 
-
 def create_chunk(size : int, df : pandas.DataFrame, start: int, chunk_number: int):
     bitboard_save = []
     df = df.iloc[start:start + size]
@@ -68,7 +71,7 @@ def create_all_chunk( df : pandas.DataFrame, chunk_size = 1_000_000, start = 0):
     for i in range(int ( total_size/chunk_size)):
         create_chunk(chunk_size,df['position'],chunk_size * i, i)
         print(i, ' AMOUNT OF CHUNK CHUNK')
-    
+
 
 
 def pgn_string_to_list_moves(pgn : str):
@@ -77,6 +80,13 @@ def pgn_string_to_list_moves(pgn : str):
     pattern = re.compile(r'\d+\.')
     cleaned_string = re.sub(pattern, '', pgn)
     cleaned_string = re.sub(r'\s+', ' ', cleaned_string).strip()
+    cleaned_string = re.sub(r'{', ' ', cleaned_string).strip()
+    cleaned_string = re.sub(r'}', ' ', cleaned_string).strip()
+    cleaned_string = re.sub(r'\[%eval -?\d+\]', ' ', cleaned_string).strip()
+    cleaned_string = re.sub(r'\[%eval #-\d+\]', ' ', cleaned_string).strip()
+
+    cleaned_string = cleaned_string.replace('..','')
+
     return cleaned_string.split()
 
 

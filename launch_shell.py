@@ -7,6 +7,10 @@ import tensorflow as tf
 
 import Backend.pipeline.from_PGN_generate_bitboards as gen
 import Backend.evaluation.model_evaluation as eval
+from Backend.pipeline import new_pipeline as pipe
+from Backend.pipeline import db_pipe as db_pipe
+
+
 
 from importlib import reload as r 
 

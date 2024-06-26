@@ -3,7 +3,6 @@ from Backend.pipeline import new_pipeline as pipe
 import chess
 import pandas
 
-
 def from_line_get_game_rating_and_time_format(game : str) -> list[str,int,int,str] :
 
     for line in game.split('\n'):
@@ -52,7 +51,7 @@ def create_df():
     print(df)
 
 def main():
-    df = pandas.read_csv('games.csv')
+    df = pandas.read_csv('/media/paolo/aa2/data/db_download/games.csv')
     df = df['game']
     for i in df:
         rows = pipe.from_pgn_fens_and_moves(i)
