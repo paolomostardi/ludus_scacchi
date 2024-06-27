@@ -4,7 +4,6 @@ import keras
 
 from Backend.evaluation import legal_moves_evaluation
 from Backend.evaluation import simple_positions_test
-from Backend.evaluation import check_dataset_legal 
 from Backend.evaluation import white_board_evaluation
 
 
