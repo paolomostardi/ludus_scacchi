@@ -82,7 +82,7 @@ def pgn_string_to_list_moves(pgn : str):
     cleaned_string = re.sub(r'\s+', ' ', cleaned_string).strip()
     cleaned_string = re.sub(r'{', ' ', cleaned_string).strip()
     cleaned_string = re.sub(r'}', ' ', cleaned_string).strip()
-    cleaned_string = re.sub(r'\[%eval -?\d+\]', ' ', cleaned_string).strip()
+    cleaned_string = re.sub(r'\[.*?\]', ' ', cleaned_string).strip()
     cleaned_string = re.sub(r'\[%eval #-\d+\]', ' ', cleaned_string).strip()
 
     cleaned_string = cleaned_string.replace(r'[%eval','')

@@ -21,6 +21,12 @@ try:
     df = pd.read_csv('df.csv')
 except :
     print('df file not found')
+
+try:
+    x = np.load('chunk_0.npy')
+except :
+    print('x file not found')
+    
     
 # Set up the local context with all the necessary variables
 local_vars = dict(globals(), **locals())

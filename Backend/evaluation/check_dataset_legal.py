@@ -12,6 +12,9 @@ def check_dataset_has_all_legal_moves(x,y) -> bool:
         try :
             board.push(move) 
         except :
+            print(index,'\n')
+            print(board)
+            print(move,'\n')
             return False
     return True
 
@@ -19,15 +22,12 @@ def check_pandas_df_has_all_legal_moves(df : pd.DataFrame) -> bool:
     for i, row in df.iterrows():
         try:
             board = chess.Board(row['position'])
-            board.push_san(row[' move '])
+            board.push_san(row['move'])
         except:
-            print(row)
-            print()
-            print(row['position'])
-            print()
-            print(row[' move '])
-            print()
-            print(i)
+            print(row, '\n\n')
+            print(row['position'], '\n\n')
+            print(row[' move '], '\n\n')
+            print(i, '\n\n')
             return False
         
     return True
