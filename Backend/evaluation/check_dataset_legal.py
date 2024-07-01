@@ -31,3 +31,14 @@ def check_pandas_df_has_all_legal_moves(df : pd.DataFrame) -> bool:
             return False
         
     return True
+
+
+def check_bitboard_folder( x_path, y_path, n_chunks) -> bool:
+    for i in range(n_chunks):
+        x = np.load( x_path + 'chunk_' + str(i) + '.npy')
+        y = np.load( y_path + 'chunk_' + str(i) + '_y.npy')
+        if not check_dataset_has_all_legal_moves(x,y):
+            print('something is not legal here ',i)
+            return False
+        
+    return True

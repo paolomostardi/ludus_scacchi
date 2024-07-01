@@ -13,40 +13,32 @@ import chess
 7  6  5  4  3  2  1  0
 """
 
-# simple ladder checkmate with 2 rooks
+
+# file used to test the first part of the model on simple positions
+# this is usefull to see if the model has a basic understunding of chess 
+
 def model1_assertion(model1):
 
     ladder_fen = 'k7/6R1/7R/8/8/8/8/K7 w - - 0 1',40
     queen_hang_fen = 'rnb1kb1r/ppp1pppp/5n2/3q4/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4', 21
     french_fen = 'r1bqkbnr/pp3ppp/2n1p3/3pP3/3p4/2P2N2/PP3PPP/RNBQKB1R w KQkq - 0 6', 21
     scholars_fen = 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',32
+    exchange_french_fen = 'rnbqkbnr/ppp2ppp/4p3/3P4/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3', 43
+    queen_hang2_fen = 'rn1qkbnr/pp1bpppp/8/1QPp4/8/8/PPP1PPPP/RNB1KBNR b KQkq - 0 4', 52
+    unsound_sacrifice = 'r1bqk1nr/pppp1Bpp/2n5/2b1p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4', 59
+    latvian_gambit = 'rnb1kbnr/ppp3pp/3p1q2/5p2/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 1 5', 34
 
-    fen_list = [ladder_fen,queen_hang_fen,french_fen,scholars_fen]
-    print(' testing positions')
-    print(fen_list)
 
-    # we test for the best legal piece and for the most likely piece,
-    # this means that the first one is forced to be legal (should be esier to guess then)   
-    
+    fen_list = [ladder_fen,queen_hang_fen,french_fen,scholars_fen,exchange_french_fen,queen_hang2_fen,unsound_sacrifice,latvian_gambit]
+    print('Testing on simple positions')    
     counter = 0
+
     for fen in fen_list:
         index = engine.return_best_legal_piece(fen[0],model1)
         if index == fen[1]:
             counter += 1
-        else:
-            print( 'mistaken for this position', index, fen[1])
     
-    print('total position correct ',str(counter),'total lenght',str(len(fen_list)),'ratio: ',str(counter/len(fen_list))   )
-
-    counter = 0
-    for fen in fen_list:
-        index, _ = engine.return_top_piece_to_move(fen[0],model1)
-        if index[0] == fen[1]:
-            counter += 1
-        else:
-            print(fen[0], 'mistaken for this position')
-        
-    print('total position correct ',str(counter),'total lenght',str(len(fen_list)),'ratio: ',str(counter/len(fen_list))   )
+    print('Positions guessed correctly: ',str(counter),', out of  ', str(len(fen_list)))
 
 
 def main():

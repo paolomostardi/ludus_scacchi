@@ -26,7 +26,7 @@ def return_top_piece_to_move(fen: str, model: models.Model):
     board = chess.Board(fen)
     x = gen.from_chess_board_create_bit_boards(board)
     x = x.reshape(1, 15, 8, 8)
-    prediction = model.predict(x)
+    prediction = model.predict(x,verbose = 0)
 
     sorted_indices = np.argsort(prediction[0])[::-1]
     sorted_percentages = prediction[0][sorted_indices] * 100

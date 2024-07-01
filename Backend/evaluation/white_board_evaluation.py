@@ -33,6 +33,7 @@ def switch_dataset(testing_dataset):
     return comparing_bitboard
 
 def white_evaluation(model : Model, testing_dataset : np.array):
+    
     original_dataset = testing_dataset.copy()
     comparing_bitboard = []
     for bit_board in testing_dataset:
@@ -44,8 +45,8 @@ def white_evaluation(model : Model, testing_dataset : np.array):
 
     comparing_bitboard = np.array(comparing_bitboard)
     
-    switched = model.predict(comparing_bitboard)
-    normal = model.predict(original_dataset)
+    switched = model.predict(comparing_bitboard, verbose = 0)
+    normal = model.predict(original_dataset, verbose = 0)
 
     counter = 0 
     for index, board in enumerate(switched):
@@ -56,4 +57,4 @@ def white_evaluation(model : Model, testing_dataset : np.array):
     
     same = counter/len(normal)
     lenght = len(normal)
-    print( 'total percentage of same result = {} total amount of same answer: {} out of {}', same, counter, lenght)
+    print( 'total percentage of same result = ', same ,' total amount of same answer: ',counter,'out of ',lenght)

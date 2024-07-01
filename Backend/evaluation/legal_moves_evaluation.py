@@ -24,10 +24,6 @@ def legal_evaluation(model : Model, testing_dataset : np.array):
 
         if piece_moves:
             counter += 1
-        else: 
-            print(chess.square_name(prediction))
-            print(board)
-            print(board.fen())
 
     print(counter, len(predictions))
             

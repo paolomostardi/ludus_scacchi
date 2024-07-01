@@ -26,8 +26,18 @@ try:
     x = np.load('chunk_0.npy')
 except :
     print('x file not found')
+
+try:
+    x = np.load('chunk_0.npy')
+except :
+    print('x file not found')
     
-    
+try:
+    model = keras.models.load_model(r'Backend/data/models/13-01/lichess_13_01.keras')
+except :
+    print('model file not found')
+
+
 # Set up the local context with all the necessary variables
 local_vars = dict(globals(), **locals())
 

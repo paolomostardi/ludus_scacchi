@@ -38,14 +38,14 @@ def from_df_create_move_bitboard(size, df : pandas.DataFrame, start, chunk_numbe
 
 
 # calling this to create the df once i have all the positions in a separete cvs file. 
-def create_chunk(size : int, df : pandas.DataFrame, start: int, chunk_number: int):
+def create_chunk(size : int, df : pandas.DataFrame, start: int, chunk_number: int, saving_path: str):
     bitboard_save = []
     df = df.iloc[start:start + size]
     for i in df:
         bitboard_save.append(from_fen_create_bitboard(i))
 
     bitboard_save = numpy.array(bitboard_save)
-    numpy.save('chunk_'+ str(chunk_number) + '.npy',bitboard_save)                 
+    numpy.save(saving_path + 'chunk_'+ str(chunk_number) + '.npy',bitboard_save)                 
 
 
 def from_fen_create_bitboard(fen):
@@ -65,11 +65,12 @@ def from_pgn_fens_and_moves(pgn : str):
     return (boards, moves)
 
 
-def create_all_chunk( df : pandas.DataFrame, chunk_size = 1_000_000, start = 0):
+def create_all_chunk( df : pandas.DataFrame, chunk_size = 1_000_000, start = 0, saving_path = ''):
+    print('starting: ')
     df = df.iloc[start:]
     total_size = len(df) - start
     for i in range(int ( total_size/chunk_size)):
-        create_chunk(chunk_size,df['position'],chunk_size * i, i)
+        create_chunk(chunk_size,df['position'],chunk_size * i, i, saving_path)
         print(i, ' AMOUNT OF CHUNK CHUNK')
 
 
