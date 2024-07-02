@@ -3,7 +3,7 @@ from keras.optimizers import SGD
 
 
 def VGG19():
-    input_shape = (14, 8, 8)
+    input_shape = (15, 8, 8)
 
     input_layer = layers.Input(input_shape)
 
