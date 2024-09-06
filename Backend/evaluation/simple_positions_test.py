@@ -29,8 +29,11 @@ def model1_assertion(model1):
     latvian_gambit = 'rnb1kbnr/ppp3pp/3p1q2/5p2/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 1 5', 34
 
 
+    # insert telegram stuff here
+    
+
+
     fen_list = [ladder_fen,queen_hang_fen,french_fen,scholars_fen,exchange_french_fen,queen_hang2_fen,unsound_sacrifice,latvian_gambit]
-    print('Testing on simple positions')    
     counter = 0
 
     for fen in fen_list:
