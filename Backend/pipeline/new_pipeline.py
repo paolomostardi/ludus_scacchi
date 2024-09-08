@@ -103,7 +103,7 @@ def append_to_file(filename,rows):
 
 
 # this functions adds to a given filename a set of moves and position fen
-# it expects a pandas df with only a column containing a sting with all the moves of the game.
+# it expects a pandas df with only a column containing a string with all the moves of the game.
 
 def create_all_y_chunk(df, size = 1_000_000):
 

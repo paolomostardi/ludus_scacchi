@@ -3,7 +3,11 @@ from Backend.pipeline import new_pipeline as pipe
 import chess
 import pandas
 
+# file used to create a pandas df from pgn lichess file of the month 
+
+# fuction that takes 
 def from_line_get_game_rating_and_time_format(game : str) -> list[str,int,int,str] :
+
 
     for line in game.split('\n'):
         if  'WhiteElo' in line:
@@ -30,16 +34,25 @@ def from_line_get_game_rating_and_time_format(game : str) -> list[str,int,int,st
 
     time_format = time_format.split()[2]
 
+    try:
+        moves
+    except:
+        print(game)
+    
+
     return time_format, white_elo, black_elo, moves
 
-def create_df():
-    file = open('/media/paolo/aa2/data/db_download/lichess_db_standard_rated_2013-01.pgn')
+def create_df(filename):
+    file = open(filename)
     all_games = []
     game = ''
     for line in file:
         
         if line[0] == '[' or line[0] == '\n':
             game += line
+
+        elif line[0] == ' ':
+            game=''
 
         else:
             game += line
