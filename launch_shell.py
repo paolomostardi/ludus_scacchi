@@ -9,8 +9,8 @@ import Backend.pipeline.from_PGN_generate_bitboards as gen
 import Backend.evaluation.model_evaluation as eval
 import Backend.evaluation.check_dataset_legal as check_legal
 
-from Backend.pipeline import new_pipeline as pipe
-from Backend.pipeline import db_pipe
+from Backend.pipeline import gm_pipeline as pipe
+from Backend.pipeline import lichess_month_db as m_pipe
 
 
 from importlib import reload as r 

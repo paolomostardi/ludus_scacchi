@@ -34,7 +34,7 @@ def choose_user():
     framerate = 15
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     
-    black_bishop_icon = pygame.image.load(r'C:\Users\paolo\OneDrive\Desktop\Final_project\Ludus_scacchi\FrontEnd\Pieces\black\b.png')
+    black_bishop_icon = pygame.image.load(r'FrontEnd/Pieces/black/b.png')
     pygame.display.set_icon(black_bishop_icon)
     pygame.display.set_caption('Ludus Scacchi')
 
@@ -57,11 +57,13 @@ def choose_user():
     select_model_message = Button(select_model_rect, color= orange, message = ' Select model ' ,font_size = 32, font_padding=(10,10), screen=screen, border_radius=10, padding=True, padding_color=black,padding_size=padding_size )
 
     engine_button_list = []
-
-    path = 'training_data\model'
-    for index, engine_name in enumerate(os.listdir(path)):
-        engine_rect = (40,120 + (50 * index), 350, 35) 
-        engine_button_list.append( Button(engine_rect,orange,screen,message=engine_name,font_size= 27, font_padding=(20,3),padding=True,padding_size=padding_size,padding_color=(50,50,50) ) )    
+    try: 
+        path = 'training_data\model'
+        for index, engine_name in enumerate(os.listdir(path)):
+            engine_rect = (40,120 + (50 * index), 350, 35) 
+            engine_button_list.append( Button(engine_rect,orange,screen,message=engine_name,font_size= 27, font_padding=(20,3),padding=True,padding_size=padding_size,padding_color=(50,50,50) ) )    
+    except Exception:
+        print('ops')
 
     select_user_rect = (600,50,550,50)
     select_user_message = Button(select_user_rect, color = orange, message = ' Insert name of the user ' ,font_size = 32, font_padding=(10,10), screen=screen, border_radius=10, padding=True, padding_color=black,padding_size=padding_size )
@@ -92,7 +94,7 @@ def choose_user():
     analysis_rect = (1010,375,150,50)
     games_to_use_message = Button(analysis_rect, color= button_gray, screen=screen,message='Games to use', font_size=25 ,padding=True, padding_color=black,padding_size=padding_size , font_padding=(5,10)    )
 
-    flag_image = pygame.image.load(r'FrontEnd\Pieces\search_icon.png')
+    flag_image = pygame.image.load(r'FrontEnd/Pieces/search_icon.png')
     
     flag_image = helper.resize_image(flag_image, 200, 0.18)
 

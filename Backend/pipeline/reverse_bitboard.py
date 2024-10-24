@@ -12,8 +12,6 @@ from Backend.pipeline import from_PGN_generate_bitboards as gen
 # 13 legal moves black
 # 14 whose to play  
 
-# something about the index is coming the wrong way so i need to fix it
-
 def transform_index(index):
     dict = {
         7: -7,

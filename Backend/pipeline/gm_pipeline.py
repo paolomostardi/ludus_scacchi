@@ -7,7 +7,7 @@ import csv
 
 from Backend.pipeline import from_PGN_generate_bitboards as gen
 
-
+# file used to convert the gm dataset to bitboards
 # file used to train on the gm dataset https://www.kaggle.com/datasets/lazaro97/gm-chess-games
 
 # expecting df with columns:

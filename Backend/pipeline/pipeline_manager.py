@@ -5,6 +5,9 @@ from Backend.pipeline import count_users_with_most_games_from_lichess_api as cou
 from Backend.pipeline import get_games_in_pgn_from_lichess_api as games_in_pgn
 from Backend.pipeline import from_PGN_generate_bitboards as generate_bitboard
 
+# this file is a command line tool to handle all the data on a local machine. 
+# It downloads data from the api based on the amount requested and so on. 
+
 class PipelineManager:
     def __init__(self, user_file='Backend/data/user_record.csv', pgn_folder_first_part='Backend/data/pgn_games'):
 

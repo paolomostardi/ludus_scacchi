@@ -1,11 +1,12 @@
 from Backend.pipeline import from_PGN_generate_bitboards as gen
-from Backend.pipeline import new_pipeline as pipe
+from Backend.pipeline import gm_pipeline as pipe
 import chess
 import pandas
 
 # file used to create a pandas df from pgn lichess file of the month 
 
 # fuction that takes 
+
 def from_line_get_game_rating_and_time_format(game : str) -> list[str,int,int,str] :
 
 
@@ -64,7 +65,7 @@ def create_df(filename):
     print(df)
 
 def main():
-    df = pandas.read_csv('/media/paolo/aa2/data/db_download/games.csv')
+    df = pandas.read_csv('games.csv')
     df = df['game']
     for i in df:
         rows = pipe.from_pgn_fens_and_moves(i)
