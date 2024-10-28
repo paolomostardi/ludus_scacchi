@@ -5,7 +5,8 @@ import pandas
 
 # file used to create a pandas df from pgn lichess file of the month 
 
-# fuction that takes 
+# todo create df so that the columns name match the gm_pipeline code
+
 
 def from_line_get_game_rating_and_time_format(game : str) -> list[str,int,int,str] :
 

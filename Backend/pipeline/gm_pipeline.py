@@ -15,6 +15,9 @@ from Backend.pipeline import from_PGN_generate_bitboards as gen
 
 # total of 10.747.142 positions 
 
+# using generate all chunks will create a set of bitboards from a given df where each position is separeted and the moves are as well. 
+
+
 def move_and_position_to_bitboard(move : str, position): 
     position = chess.Board(position)
     print(move)
@@ -22,7 +25,7 @@ def move_and_position_to_bitboard(move : str, position):
     return gen.from_chess_move_create_bitboard(position.peek())
 
 
-def from_df_create_move_bitboard(size, df : pandas.DataFrame, start, chunk_number):
+def from_df_create_move_bitboard(size, df : pandas.DataFrame, start, chunk_number, saving_path = ''):
     bitboard_save = []
 
     df_copy = df[start:start+size]
@@ -34,10 +37,11 @@ def from_df_create_move_bitboard(size, df : pandas.DataFrame, start, chunk_numbe
         bitboard_save.append(move_and_position_to_bitboard(i[1]['move'],i[1]['position']))  
     
     bitboard_save = numpy.array(bitboard_save)
-    numpy.save('chunk_'+ str(chunk_number) + '_y.npy',bitboard_save)  
+    numpy.save(saving_path + 'chunk_'+ str(chunk_number) + '_y.npy',bitboard_save)  
 
 
 # calling this to create the df once i have all the positions in a separete cvs file. 
+
 def create_chunk(size : int, df : pandas.DataFrame, start: int, chunk_number: int, saving_path: str):
     bitboard_save = []
     df = df.iloc[start:start + size]
@@ -64,6 +68,7 @@ def from_pgn_fens_and_moves(pgn : str):
 
     return (boards, moves)
 
+# magic function 
 
 def create_all_chunk( df : pandas.DataFrame, chunk_size = 1_000_000, start = 0, saving_path = ''):
     print('starting: ')
@@ -105,7 +110,7 @@ def append_to_file(filename,rows):
 # this functions adds to a given filename a set of moves and position fen
 # it expects a pandas df with only a column containing a string with all the moves of the game.
 
-def create_all_y_chunk(df, size = 1_000_000):
+def create_all_y_chunk(df, size = 1_000_000, saving_path = ''):
 
     positions = df['position']
     moves = df['move']
@@ -115,7 +120,7 @@ def create_all_y_chunk(df, size = 1_000_000):
     for i in range(total_chunks):
         print('generating for chunk number ',i)
         start = i * size 
-        from_df_create_move_bitboard( size,df,start=start,chunk_number=i )
+        from_df_create_move_bitboard( size,df,start=start,chunk_number=i, saving_path = saving_path )
 
 
 def from_list_of_pgns_append_to_file(filename,pgn_list : pandas.DataFrame):

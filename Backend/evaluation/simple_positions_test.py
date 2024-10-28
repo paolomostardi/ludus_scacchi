@@ -1,6 +1,8 @@
 from Backend.engine__creation import engine_creation as engine
 import keras
 import chess
+import pandas as pd
+
 
 """
 63 62 61 60 59 58 57 56
@@ -29,21 +31,42 @@ def model1_assertion(model1):
     latvian_gambit = 'rnb1kbnr/ppp3pp/3p1q2/5p2/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 1 5', 34
 
 
-    # insert telegram stuff here
+    df = pd.read_csv('Backend/evaluation/simple_positions.csv')
+
+
+    fen_list = [ladder_fen,queen_hang_fen,french_fen,scholars_fen,
+                exchange_french_fen,queen_hang2_fen,unsound_sacrifice,
+                latvian_gambit]
     
-
-
-    fen_list = [ladder_fen,queen_hang_fen,french_fen,scholars_fen,exchange_french_fen,queen_hang2_fen,unsound_sacrifice,latvian_gambit]
     counter = 0
+    counter2 = 0
 
-    for fen in fen_list:
-        index = engine.return_best_legal_piece(fen[0],model1)
-        if index == fen[1]:
+    df = df.iterrows()
+
+    for i in df:
+        
+        position,move = i[1][0],i[1][1]
+        print(position,move)
+        
+        index = engine.return_best_legal_piece(position,model1)
+        counter2 += 1
+        if index == move:
             counter += 1
-    
-    print('Positions guessed correctly: ',str(counter),', out of  ', str(len(fen_list)))
+
+    print('Positions guessed correctly: ',str(counter),', out of  ', counter2)
 
 
 def main():
     model = keras.models.load_model('Backend/data/models/gm_model_white_legal_moves/gm_model_chunk_9.keras')
     model1_assertion(model)
+
+    model = keras.models.load_model('Backend/data/models/13-01/lichess_13_01.keras')
+    model1_assertion(model)
+
+    model = keras.models.load_model('Backend/data/models/14_07/gm_dataset_squeezenet.keras')
+    model1_assertion(model)
+
+    model = keras.models.load_model('Backend/data/models/gm_model_white/gm_model_chunk_9.keras')
+    model1_assertion(model)
+
+    
