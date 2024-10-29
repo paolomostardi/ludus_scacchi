@@ -20,7 +20,6 @@ from Backend.pipeline import from_PGN_generate_bitboards as gen
 
 def move_and_position_to_bitboard(move : str, position): 
     position = chess.Board(position)
-    print(move)
     position.push_san(move)    
     return gen.from_chess_move_create_bitboard(position.peek())
 
@@ -33,7 +32,7 @@ def from_df_create_move_bitboard(size, df : pandas.DataFrame, start, chunk_numbe
     c = 0
     for i in df_copy.iterrows():
         c += 1
-        print(c)
+        print(f"\rProgress: {c} out of {size}", end="")
         bitboard_save.append(move_and_position_to_bitboard(i[1]['move'],i[1]['position']))  
     
     bitboard_save = numpy.array(bitboard_save)
@@ -118,7 +117,9 @@ def create_all_y_chunk(df, size = 1_000_000, saving_path = ''):
     total_chunks = len(df) // size
 
     for i in range(total_chunks):
+        print()
         print('generating for chunk number ',i)
+
         start = i * size 
         from_df_create_move_bitboard( size,df,start=start,chunk_number=i, saving_path = saving_path )
 

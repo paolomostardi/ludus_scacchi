@@ -2,6 +2,7 @@ from Backend.pipeline import from_PGN_generate_bitboards as gen
 from Backend.pipeline import gm_pipeline as pipe
 import chess
 import pandas
+import os 
 
 # file used to create a pandas df from pgn lichess file of the month 
 
@@ -44,7 +45,10 @@ def from_line_get_game_rating_and_time_format(game : str) -> list[str,int,int,st
 
     return time_format, white_elo, black_elo, moves
 
-def create_df(filename):
+def create_df(filename : str, saving_path = None):
+    
+    if saving_path is None:
+        saving_path = ''
     file = open(filename)
     all_games = []
     game = ''
@@ -62,13 +66,37 @@ def create_df(filename):
             game = ''
 
     df = pandas.DataFrame(all_games,columns=['time_format','white_elo','black_elo','game'])
-    df.to_csv('games.csv')
+    df.to_csv(saving_path + 'games.csv')
     print(df)
 
-def main():
-    df = pandas.read_csv('games.csv')
+def main(filename : str, saving_path = None ):
+    
+
+    if saving_path is None:
+        saving_path = ''
+    
+    print('Creating the dataframe')
+
+    create_df(filename, saving_path)
+
+    df = pandas.read_csv(saving_path+'games.csv')
+
     df = df['game']
+
+    print('Transforming the dataframe to only moves')
     for i in df:
         rows = pipe.from_pgn_fens_and_moves(i)
-        pipe.append_to_file('df.csv',rows)
-        
+        pipe.append_to_file(saving_path + 'df.csv',rows)
+
+    # todo add check with OS.path.isdir 
+
+    del(df)
+
+    # creates the bitboards (should take the most amount of time)
+
+    print('genereting bitboards')
+
+    df = pandas.read_csv(saving_path + 'df.csv')
+    pipe.create_all_chunk(df,saving_path=saving_path)
+    pipe.create_all_y_chunk(df,saving_path=saving_path)
+
