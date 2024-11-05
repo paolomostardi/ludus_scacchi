@@ -62,7 +62,7 @@ def conv_block(input_tensor, kernel_size, filters, stage, block, strides=(2, 2))
 def ResNet50():
     bn_axis = -1
 
-    input_shape = (14, 8, 8)
+    input_shape = (15 , 8, 8)
 
     input_layer = Input(shape=input_shape, name='input_1')
 

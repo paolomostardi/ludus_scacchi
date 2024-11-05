@@ -11,6 +11,10 @@ import Backend.evaluation.check_dataset_legal as check_legal
 
 from Backend.pipeline import gm_pipeline as pipe
 from Backend.pipeline import lichess_month_db as m_pipe
+from Backend.models.architectures.resnet50_implementation import ResNet50 as resnet
+
+
+
 
 
 from importlib import reload as r 
@@ -28,9 +32,9 @@ except :
     print('x file not found')
 
 try:
-    x = np.load('chunk_0.npy')
+    y = np.load('chunk_0_y.npy')
 except :
-    print('x file not found')
+    print('y file not found')
     
 try:
     model = keras.models.load_model(r'Backend/data/models/13-01/lichess_13_01.keras')

@@ -3,7 +3,7 @@ import os
 import warnings
 from keras.layers import ReLU
 from keras import layers
-
+from keras import backend
 
 def hard_sigmoid(x):
     return ReLU(6.)(x + 3.) * (1. / 6.)
@@ -70,54 +70,3 @@ def _inverted_res_block(x, expansion, filters, kernel_size, stride,se_ratio, act
     if stride == 1 and infilters == filters:
         x = layers.Add(name=prefix + 'Add')([shortcut, x])
     return x
-
-
-def MobileNetV3():
-
-    # Determine proper input shape and default size.
-    # If both input_shape and input_tensor are used, they should match
-       # If input_shape is None, infer shape from input_tensor
-
-    row_axis, col_axis = (0, 1)
-    row_axis, col_axis = (1, 2)
-    activation = ReLU
-
-
-    x = layers.ZeroPadding2D(padding=,name='Conv_pad')(img_input)
-    x = layers.Conv2D(16,kernel_size=3,strides=(2, 2),paddding='valid',use_bias=False,name='Conv')(x)
-    x = layers.BatchNormalization(axis=channel_axis,epsilon=1e-3,momentum=0.999,name='Conv/BatchNorm')(x)
-    x = layers.Activation(activation)(x)
-
-    x = stack_fn(x, kernel, activation, se_ratio)
-
-    last_conv_ch = _depth(backend.int_shape(x)[channel_axis] * 6)
-
-    x = layers.Conv2D(last_conv_ch,kernel_size=1,padding='same',use_bias=False,name='Conv_1')(x)
-    x = layers.BatchNormalization(axis=channel_axis,epsilon=1e-3,momentum=0.999,name='Conv_1/BatchNorm')(x)
-    x = layers.Activation(activation)(x)
-    x = layers.Conv2D(last_point_ch,kernel_size=1,padding='same',name='Conv_2')(x)
-    x = layers.Activation(activation)(x)
-        if dropout_rate > 0:
-            x = layers.Dropout(dropout_rate)(x)
-        x = layers.Conv2D(classes,
-                          kernel_size=1,
-                          padding='same',
-                          name='Logits')(x)
-        x = layers.Flatten()(x)
-        x = layers.Softmax(name='Predictions/Softmax')(x)
-    else:
-        if pooling == 'avg':
-            x = layers.GlobalAveragePooling2D(name='avg_pool')(x)
-        elif pooling == 'max':
-            x = layers.GlobalMaxPooling2D(name='max_pool')(x)
-    # Ensure that the model takes into account
-    # any potential predecessors of `input_tensor`.
-    if input_tensor is not None:
-        inputs = keras_utils.get_source_inputs(input_tensor)
-    else:
-        inputs = img_input
-
-    # Create model.
-    model = models.Model(inputs, x, name='MobilenetV3' + model_type)
-
-    return model
