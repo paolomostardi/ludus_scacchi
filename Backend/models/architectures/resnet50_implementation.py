@@ -30,10 +30,8 @@ def identity_block(input_tensor, kernel_size, filters, stage, block):
 
 def conv_block(input_tensor, kernel_size, filters, stage, block, strides=(2, 2)):
     filters1, filters2, filters3 = filters
-    if backend.image_data_format() == 'channels_last':
-        bn_axis = 3
-    else:
-        bn_axis = 1
+    bn_axis = 1
+
     conv_name_base = 'res' + str(stage) + block + '_branch'
     bn_name_base = 'bn' + str(stage) + block + '_branch'
 
@@ -60,7 +58,7 @@ def conv_block(input_tensor, kernel_size, filters, stage, block, strides=(2, 2))
 
 
 def ResNet50():
-    bn_axis = -1
+    bn_axis = 1
 
     input_shape = (15 , 8, 8)
 

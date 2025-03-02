@@ -84,6 +84,7 @@ def main(filename : str, saving_path = None ):
     df = df['game']
 
     print('Transforming the dataframe to only moves')
+    
     for i in df:
         rows = pipe.from_pgn_fens_and_moves(i)
         pipe.append_to_file(saving_path + 'df.csv',rows)

@@ -11,6 +11,9 @@ def give_max(board):
     return max_switch
 
 def legal_evaluation(model : Model, testing_dataset : np.array):
+
+    
+
     predictions = model.predict(testing_dataset)
 
     counter = 0

@@ -5,12 +5,18 @@ from keras.src.applications import imagenet_utils
 from keras.src.models import Functional
 from keras.src.ops import operation_utils
 from keras.src.utils import file_utils
+from keras import Input
+
+from keras import Model
+from keras.optimizers import SGD
 
 
 # implementation taken form : 
 # https://github.com/keras-team/keras/blob/v3.6.0/keras/src/applications/inception_v3.py
 # reference paper https://arxiv.org/pdf/1512.00567
 
+
+# ADDING PADDING TO AVOID NEGATIVE SHAPE. MIGHT HAVE TO CHANGE THE SIZE OF THE KERNELS INSTEAD. 
 
 def inception(include_top = True, pooling = 'avg',classifier_activation="softmax"):
 
@@ -19,17 +25,29 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
     # Determine proper input shape
 
     input_shape = (15,8,8)
-    channel_axis = 1
+    channel_axis = 3
     classes = 64
 
-    x = conv2d_bn(input_shape, 32, 3, 3, strides=(2, 2), padding="valid")
+    input_layer = Input(shape=input_shape) 
+
+    x = conv2d_bn(input_layer, 32, 3, 3, strides=(2, 2), padding="valid")
     x = conv2d_bn(x, 32, 3, 3, padding="valid")
     x = conv2d_bn(x, 64, 3, 3)
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
     x = layers.MaxPooling2D((3, 3), strides=(2, 2))(x)
+
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
 
     x = conv2d_bn(x, 80, 1, 1, padding="valid")
     x = conv2d_bn(x, 192, 3, 3, padding="valid")
     x = layers.MaxPooling2D((3, 3), strides=(2, 2))(x)
+
+
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+
+
 
     # mixed 0: 35 x 35 x 256
     branch1x1 = conv2d_bn(x, 64, 1, 1)
@@ -51,11 +69,17 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
         name="mixed0",
     )
 
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+
     # mixed 1: 35 x 35 x 288
     branch1x1 = conv2d_bn(x, 64, 1, 1)
 
     branch5x5 = conv2d_bn(x, 48, 1, 1)
     branch5x5 = conv2d_bn(branch5x5, 64, 5, 5)
+
+
+
 
     branch3x3dbl = conv2d_bn(x, 64, 1, 1)
     branch3x3dbl = conv2d_bn(branch3x3dbl, 96, 3, 3)
@@ -71,6 +95,11 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
         name="mixed1",
     )
 
+
+
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+
     # mixed 2: 35 x 35 x 288
     branch1x1 = conv2d_bn(x, 64, 1, 1)
 
@@ -81,6 +110,8 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
     branch3x3dbl = conv2d_bn(branch3x3dbl, 96, 3, 3)
     branch3x3dbl = conv2d_bn(branch3x3dbl, 96, 3, 3)
 
+
+
     branch_pool = layers.AveragePooling2D(
         (3, 3), strides=(1, 1), padding="same"
     )(x)
@@ -90,6 +121,10 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
         axis=channel_axis,
         name="mixed2",
     )
+
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+
 
     # mixed 3: 17 x 17 x 768
     branch3x3 = conv2d_bn(x, 384, 3, 3, strides=(2, 2), padding="valid")
@@ -105,6 +140,9 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
         [branch3x3, branch3x3dbl, branch_pool], axis=channel_axis, name="mixed3"
     )
 
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+
     # mixed 4: 17 x 17 x 768
     branch1x1 = conv2d_bn(x, 192, 1, 1)
 
@@ -118,6 +156,8 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
     branch7x7dbl = conv2d_bn(branch7x7dbl, 128, 7, 1)
     branch7x7dbl = conv2d_bn(branch7x7dbl, 192, 1, 7)
 
+
+
     branch_pool = layers.AveragePooling2D(
         (3, 3), strides=(1, 1), padding="same"
     )(x)
@@ -127,6 +167,11 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
         axis=channel_axis,
         name="mixed4",
     )
+
+
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+
 
     # mixed 5, 6: 17 x 17 x 768
     for i in range(2):
@@ -152,6 +197,11 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
             name="mixed" + str(5 + i),
         )
 
+
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+
+
     # mixed 7: 17 x 17 x 768
     branch1x1 = conv2d_bn(x, 192, 1, 1)
 
@@ -175,6 +225,19 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
         name="mixed7",
     )
 
+
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+
+
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+
+
+
     # mixed 8: 8 x 8 x 1280
     branch3x3 = conv2d_bn(x, 192, 1, 1)
     branch3x3 = conv2d_bn(branch3x3, 320, 3, 3, strides=(2, 2), padding="valid")
@@ -190,6 +253,10 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
     x = layers.concatenate(
         [branch3x3, branch7x7x3, branch_pool], axis=channel_axis, name="mixed8"
     )
+
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+    x = layers.ZeroPadding2D(padding=(3, 3))(x)
+
 
     # mixed 9: 8 x 8 x 2048
     for i in range(2):
@@ -234,7 +301,10 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
 
 
     # Create model.
-    model = Functional(input_shape, x, name='inception_v3_chess')
+    model = Model(inputs=[input_layer], outputs=[x])
+
+    opt = SGD(learning_rate=0.01, momentum=0.9)
+    model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
     return model
 
@@ -253,22 +323,3 @@ def conv2d_bn(
     x = layers.Activation("relu", name=name)(x)
     return x
 
-
-@keras_export("keras.applications.inception_v3.preprocess_input")
-def preprocess_input(x, data_format=None):
-    return imagenet_utils.preprocess_input(
-        x, data_format=data_format, mode="tf"
-    )
-
-
-@keras_export("keras.applications.inception_v3.decode_predictions")
-def decode_predictions(preds, top=5):
-    return imagenet_utils.decode_predictions(preds, top=top)
-
-
-preprocess_input.__doc__ = imagenet_utils.PREPROCESS_INPUT_DOC.format(
-    mode="",
-    ret=imagenet_utils.PREPROCESS_INPUT_RET_DOC_TF,
-    error=imagenet_utils.PREPROCESS_INPUT_ERROR_DOC,
-)
-decode_predictions.__doc__ = imagenet_utils.decode_predictions.__doc__
