@@ -1,7 +1,7 @@
 class architecture_info:
     def __init__(self, main_architecture, amount_of_parameters, amount_of_layers, residual_network, dropout_rate,
                  batch_normalization, activation_function, learning_rate, optimizer, loss_function, batch_size,
-                 weight_initialization, input_shape, color_to_move_representation, brain_hand_both):
+                 weight_initialization, input_shape, color_to_move_representation, brain_hand_both, momentum):
         self.main_architecture = main_architecture
         self.amount_of_parameters = amount_of_parameters
         self.amount_of_layers = amount_of_layers
@@ -12,6 +12,7 @@ class architecture_info:
         self.learning_rate = learning_rate
         self.optimizer = optimizer
         self.loss_function = loss_function
+        self.momentum = momentum        
         self.batch_size = batch_size
         self.weight_initialization = weight_initialization
         self.input_shape = input_shape
