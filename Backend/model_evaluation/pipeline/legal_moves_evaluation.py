@@ -1,7 +1,7 @@
 import numpy as np
 from keras import Model
 import keras
-from Backend.pipeline import reverse_bitboard as r
+from Backend.data_pipeline import reverse_bitboard as r
 import chess
 
 # this file checks how many moves played by the model are legal.
@@ -10,9 +10,7 @@ def give_max(board):
     max_switch = max(range(len(board)), key=board.__getitem__)
     return max_switch
 
-def legal_evaluation(model : Model, testing_dataset : np.array):
-
-    
+def legal_evaluation(model : Model, testing_dataset : np.array):    
 
     predictions = model.predict(testing_dataset)
 

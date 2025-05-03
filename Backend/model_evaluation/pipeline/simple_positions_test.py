@@ -1,4 +1,3 @@
-from Backend.engine__creation import engine_creation as engine
 import keras
 import chess
 import pandas as pd
@@ -17,7 +16,7 @@ import pandas as pd
 
 
 # file used to test the first part of the model on simple positions
-# this is usefull to see if the model has a basic understunding of chess 
+# this is useful to see if the model has a basic understunding of chess 
 
 def model1_assertion(model1):
 

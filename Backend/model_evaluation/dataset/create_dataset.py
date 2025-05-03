@@ -1,7 +1,5 @@
 import pandas
 import os
-from Backend.evaluation.dataset.architecture import architecture_info 
-
 
 def main():
 

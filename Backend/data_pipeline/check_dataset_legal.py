@@ -1,6 +1,6 @@
 import numpy as np
 import chess 
-from Backend.pipeline import reverse_bitboard as reverse
+from Backend.data_pipeline import reverse_bitboard as reverse
 import pandas as pd 
 
 # function used to check if all the bitboards have legal moves

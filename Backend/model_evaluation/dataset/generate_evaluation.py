@@ -1,4 +1,4 @@
-import architecture_info
+import Backend.model_evaluation.dataset.architecture.architecture_info as architecture_info
 
 
 def generate_evaluation_for_one_model(model_info : architecture_info,

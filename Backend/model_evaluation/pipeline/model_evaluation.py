@@ -2,9 +2,9 @@ import numpy as np
 from keras import Model
 import keras
 
-from Backend.evaluation import legal_moves_evaluation
-from Backend.evaluation import simple_positions_test
-from Backend.evaluation import white_board_evaluation
+from Backend.model_evaluation.pipeline import legal_moves_evaluation
+from Backend.model_evaluation.pipeline import simple_positions_test
+from Backend.model_evaluation.pipeline import white_board_evaluation
 
 
 # ALL TESTING DONE ONLY FOR THE FIRST HALF OF THE MODEL

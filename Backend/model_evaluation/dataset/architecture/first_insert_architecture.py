@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-from Backend.evaluation.dataset.architecture.architecture_info import architecture_info
+from Backend.model_evaluation.dataset.architecture.architecture_info import architecture_info
 
 
 # this data has been inserted 3 / 05 / 2025
