@@ -1,25 +1,10 @@
 import pandas
 import os
+from Backend.evaluation.dataset.architecture import architecture_info 
 
 
 def main():
-    architecture_columns = [ 
-                'main_architecture', 
-                'amount_of_parameters',
-                'amount_of_layers',
-                'residual_network',
-                'dropout_rate',
-                'batch_normalization',
-                'activation_function',
-                'learning_rate',
-                'optimizer',
-                'loss_function',
-                'batch_size',
-                'weight_initialization',
-                'input_shape',
-                'color_to_move_rapresentation',
-                'brain_hand_both' # determines if the model is used to predict the piece that will move, where the piece will mmove to, or both
-               ]
+
     
     dataset_columns = [
                       '2013_01_dataset',
@@ -42,9 +27,12 @@ def main():
     output_folder = 'Backend/evaluation/dataset/separate_datasets'
     os.makedirs(output_folder, exist_ok=True)
 
-    # Create individual datasets
-    architecture_df = pandas.DataFrame(columns=architecture_columns)
-    architecture_df.to_csv(f'{output_folder}/architecture_dataset.csv', index=False)
+    # Load architecture dataset
+    architecture_file = os.path.join(output_folder, 'architecture_dataset.csv')
+    architecture_df = pandas.read_csv(architecture_file)
+
+    # Extract architecture columns
+    architecture_columns = architecture_df.columns.tolist()
 
     dataset_df = pandas.DataFrame(columns=dataset_columns)
     dataset_df.to_csv(f'{output_folder}/dataset_columns_dataset.csv', index=False)
