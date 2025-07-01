@@ -18,6 +18,7 @@ import pandas as pd
 # file used to test the first part of the model on simple positions
 # this is useful to see if the model has a basic understunding of chess 
 
+    
 def model1_assertion(model1):
 
     ladder_fen = 'k7/6R1/7R/8/8/8/8/K7 w - - 0 1',40

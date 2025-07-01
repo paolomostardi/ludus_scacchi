@@ -1,3 +1,7 @@
+
+# this class is used to store the architecture information of a model
+# one of the 3 parts of the main dataset 
+
 class architecture_info:
     def __init__(self, main_architecture, amount_of_parameters, amount_of_layers, residual_network, dropout_rate,
                  batch_normalization, activation_function, learning_rate, optimizer, loss_function, batch_size,

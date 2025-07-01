@@ -78,7 +78,7 @@ data = [
 df = pd.DataFrame(data)
 
 # Define the output directory and file path
-output_dir = os.path.join(os.getcwd(), "Backend/evaluation/dataset/separate_datasets")
+output_dir = os.path.join(os.getcwd(), "Backend/model_evaluation/dataset/separate_datasets")
 os.makedirs(output_dir, exist_ok=True)
 output_file = os.path.join(output_dir, "architecture_dataset.csv")
 

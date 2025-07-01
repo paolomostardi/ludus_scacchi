@@ -14,15 +14,14 @@ def main():
                     ]
     
     evaluation_columns = [
-                          'datasetset2_accuracy',
-                          'datasetset3_accuracy',
-                          'datasetset4_accuracy',
+                          col + '_accuracy' for col in dataset_columns if col != 'epochs'
+                        ] + [
                           'legal_moves_accuracy',
                           'simple_moves_accuracy'
-                         ]
+                        ]
 
     # Create a subfolder for the datasets
-    output_folder = 'Backend/evaluation/dataset/separate_datasets'
+    output_folder = 'Backend/model_evaluation/dataset/separate_datasets'
     os.makedirs(output_folder, exist_ok=True)
 
     # Load architecture dataset
