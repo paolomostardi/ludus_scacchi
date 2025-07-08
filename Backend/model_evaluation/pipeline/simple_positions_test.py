@@ -29,9 +29,9 @@ def model1_assertion(model1):
     queen_hang2_fen = 'rn1qkbnr/pp1bpppp/8/1QPp4/8/8/PPP1PPPP/RNB1KBNR b KQkq - 0 4', 52
     unsound_sacrifice = 'r1bqk1nr/pppp1Bpp/2n5/2b1p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4', 59
     latvian_gambit = 'rnb1kbnr/ppp3pp/3p1q2/5p2/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 1 5', 34
+    
 
-
-    df = pd.read_csv('Backend/evaluation/simple_positions.csv')
+    df = pd.read_csv('Backend/model_evaluation/simple_positions.csv')
 
 
     fen_list = [ladder_fen,queen_hang_fen,french_fen,scholars_fen,
