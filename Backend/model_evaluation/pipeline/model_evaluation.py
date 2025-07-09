@@ -47,7 +47,6 @@ def total_accuracy(model_path : str, testing_dataset : np.array, y):
 
         return result
 
-
 def main():
     model_path = 'Backend/data/models/13-01/lichess_13_01.keras'
     testing_dataset = np.load('/media/paolo/aa2/data/bitboards/2013_01/x/chunk_0.npy')

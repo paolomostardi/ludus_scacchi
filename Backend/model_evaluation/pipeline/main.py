@@ -22,9 +22,6 @@ def main(model):
     check_simple_moves(model, simple_dataset)
 
 
-
-
-
 def give_max(board):
     max_switch = max(range(len(board)), key=board.__getitem__)
     return max_switch
@@ -117,4 +114,5 @@ def check_simple_moves(model, dataset):
 def check_accuracy_on_dataset(model, dataset ):
     pass
 
-
+def main_evaluation(model : str):
+    pass
