@@ -49,6 +49,8 @@ def has_legal_moves(board, square):
 
     return False 
 
+
+# TODO add type hinting to the function
 def return_best_legal_piece(fen, model: models.Model):
     top_indices, _ = return_top_piece_to_move(fen, model)
     board = chess.Board(fen)

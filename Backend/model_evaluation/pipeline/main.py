@@ -115,4 +115,14 @@ def check_accuracy_on_dataset(model, dataset ):
     pass
 
 def main_evaluation(model : str):
+    # read column of dataset 
+    # create array with each dataset name
+    # evualte on each dataset and add results to list
+    # update dataset where model and the training set are used as key, if not present create a new entry. (should newest always win ?)
+    
+    # where to get the evaluation datasets? 
+    #   Can i import a collection ? 
+    #   Do i need to each db individually ?
+    #    If so Should i just move all the dbs in one db ? 
     pass
+
