@@ -1,6 +1,4 @@
-from Backend.pipeline import from_PGN_generate_bitboards as gen
-from Backend.pipeline import gm_pipeline as pipe
-import chess
+from Backend.data_pipeline import gm_pipeline as pipe
 import pandas
 import os 
 
@@ -95,7 +93,7 @@ def main(filename : str, saving_path = None ):
 
     # creates the bitboards (should take the most amount of time)
 
-    print('genereting bitboards')
+    print('generating bitboards')
 
     df = pandas.read_csv(saving_path + 'df.csv')
     pipe.create_all_chunk(df,saving_path=saving_path)
