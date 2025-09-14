@@ -13,9 +13,11 @@ def main():
     fen_list = [ladder_fen,queen_hang_fen,french_fen,scholars_fen,
                 exchange_french_fen,queen_hang2_fen,unsound_sacrifice,
                 latvian_gambit]
+
     
     # generate dataframe from the list, column one is the string, column 2 is the number rapresenting the appropriate square. 
     
-    
-    pass
-    
+    df = pd.DataFrame(fen_list, columns=["FEN", "TargetSquare"])
+    df.to_csv("simple_positions.csv", index=False)
+
+main()

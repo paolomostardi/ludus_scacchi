@@ -4,7 +4,8 @@ import chess
 import io
 import chess.pgn
 import os
-from Backend.pipeline import create_second_dataset as second
+
+from Backend.data_pipeline import create_second_dataset as second
 
 def number_of_square_to_bitboard_index(square):
     x = square % 8
@@ -44,6 +45,7 @@ def from_chess_board_create_bit_boards(board : chess.Board):
     board_turn = board.turn
     bit_boards = numpy.zeros((15, 8, 8), dtype=numpy.bool_)
 
+    #  boards from 0-11 are used for the pieces
     for piece in chess.PIECE_TYPES:
         for square in board.pieces(piece, chess.WHITE):
             index = numpy.unravel_index(square, (8, 8))
@@ -71,6 +73,7 @@ def from_chess_board_create_bit_boards(board : chess.Board):
 
     return bit_boards
 
+# creates 2 bitboards where the first one has the moving piece and the second one has the landing square
 def from_chess_move_create_bitboard(move : chess.Move):
     from_square = move.from_square
     to_square = move.to_square
