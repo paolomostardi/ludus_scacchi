@@ -33,7 +33,7 @@ def return_top_piece_to_move(fen: str, model: models.Model):
 
     return sorted_indices, sorted_percentages
 
-def has_legal_moves(board, square):
+def has_legal_moves(board : chess.Board, square):
 
     from_square = square
     from_square = (from_square - (from_square % 8)) + (7 - from_square % 8)
@@ -49,6 +49,8 @@ def has_legal_moves(board, square):
 
     return False 
 
+
+# TODO add type hinting to the function
 def return_best_legal_piece(fen, model: models.Model):
     top_indices, _ = return_top_piece_to_move(fen, model)
     board = chess.Board(fen)

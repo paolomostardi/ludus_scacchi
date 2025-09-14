@@ -30,13 +30,11 @@ def transform_index(index):
 
 
 """ 
-    
     main function used to create a bit board from a chess board in pychess 
     the current shape of the biboard is 15 for 8x8 boards 
     there are 12 different pieces and colors 
     the first 6 are assigned to the white pieces and the second ones are assigned to the black pieces 
     2 boards are assigned for all the legal moves 
-
 """
 
 
