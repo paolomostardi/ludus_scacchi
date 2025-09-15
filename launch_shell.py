@@ -5,13 +5,13 @@ import numpy as np
 import keras
 import tensorflow as tf
 
-import Backend.pipeline.from_PGN_generate_bitboards as gen
-import Backend.evaluation.model_evaluation as eval
-import Backend.evaluation.check_dataset_legal as check_legal
+import Backend.data_pipeline.from_PGN_generate_bitboards as gen
+import Backend.model_evaluation.pipeline.model_evaluation as eval
+import Backend.model_evaluation.pipeline.legal_moves_evaluation as check_legal
 
-from Backend.pipeline import gm_pipeline as pipe
-from Backend.pipeline import lichess_month_db as m_pipe
-from Backend.models.architectures.resnet50_implementation import ResNet50 as resnet
+from Backend.data_pipeline import gm_pipeline as pipe
+from Backend.data_pipeline import lichess_month_db as m_pipe
+from Backend.model_architecture.implementation.resnet50_implementation import ResNet50 as resnet
 
 
 
