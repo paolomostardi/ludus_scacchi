@@ -10,20 +10,30 @@ x1 = (1, 1)
 x2 = (2, 2)
 x3 = (3, 3)
 
-# what is this
 # Experimental architecture 
-# has 2 functions:
-    # 1 - final_model: 
-        # Has a shape of 
-        # One convulational block
-        # 3 dense layers        
-    # 2 - final_model_architecture:
-        # block 1
-        # block 2
-        # block 3
-        # block 4
+# This code defines several convolutional neural network architectures with the following purposes:
+#
+# 1 - single_block_model:
+#     - Takes a single input of shape (15, 8, 8)
+#     - Contains one convolutional block followed by a flatten + three dense layers
+#     - Outputs a reshaped tensor of shape (2, 8, 8)
+#
+# 2 - final_model_architecture:
+#     - Takes a single input of shape (15, 8, 8)
+#     - Stacks four convolutional blocks, each with Conv2D layers followed by MaxPooling
+#     - Includes zero-padding between blocks to preserve spatial dimensions
+#     - Ends with a flatten + three dense layers and reshapes the output to (2, 8, 8)
+#
+# 3 - double_input_shape_model:
+#     - Takes two inputs: one of shape (15, 8, 8) and another of shape (1, 8, 8)
+#     - Concatenates the inputs along the channel dimension
+#     - Applies the same four-block convolutional + dense architecture as final_model_architecture
+#     - Outputs a reshaped tensor of shape (2, 8, 8)
+#
+# Each model uses ReLU activations in the Conv2D and Dense layers, SGD optimizer with 
+# momentum 0.9, and categorical crossentropy loss. The reshaping at the end allows 
+# for output compatibility with a target tensor of shape (2, 8, 8).
 
-# TODO fix the code 
 
 def block_1(input_layer):
 
@@ -44,27 +54,27 @@ def block_2(input_layer):
     return pool2
 
 def block_3(input_layer):
-    conv4 = Conv2D(64, kernel_size=x1, strides=(1, 1), padding='valid', activation='relu')(pad1)
+    conv4 = Conv2D(64, kernel_size=x1, strides=(1, 1), padding='valid', activation='relu')(input_layer)
     conv5 = Conv2D(32, kernel_size=x1, strides=(1, 1), padding='valid', activation='relu')(conv4)
     conv6 = Conv2D(64, kernel_size=x1, strides=(1, 1), padding='valid', activation='relu')(conv5)
     conv7 = Conv2D(128, kernel_size=x3, strides=(1, 1), padding='valid', activation='relu')(conv6)
     pool2 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='valid', name='max_pooling2d_1')(conv7)  
 
 def block_4(input_layer):
-    conv8 = Conv2D(256, kernel_size=x1, strides=(1, 1), padding='valid', activation='relu')(pad2)
+    conv8 = Conv2D(256, kernel_size=x1, strides=(1, 1), padding='valid', activation='relu')(input_layer)
     conv9 = Conv2D(128, kernel_size=x1, strides=(1, 1), padding='valid', activation='relu')(conv8)
     conv10 = Conv2D(64, kernel_size=x1, strides=(1, 1), padding='valid', activation='relu')(conv9)
     conv11 = Conv2D(128, kernel_size=x3, strides=(1, 1), padding='valid', activation='relu')(conv10)
     pool3 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='valid')(conv11)
 
 def dense_block(input_layer):
-    dense1 = Dense(64, activation='relu', name='dense')(flatten)
+    dense1 = Dense(64, activation='relu', name='dense')(input_layer)
     dense2 = Dense(32, activation='relu', name='dense_1')(dense1)
     dense3 = Dense(128, activation='relu', name='dense_2')(dense2)
 
+# a simple model 
+def single_block_model(input_shape):
 
-def final_model():
-    input_shape = (14, 8, 8)
     input_layer = Input(shape=input_shape)
 
     X = block_1(input_layer)
@@ -84,9 +94,8 @@ def final_model():
     return model
 
 
-def final_model_architecture():
+def final_model_architecture(input_shape):
 
-    input_shape = (14, 8, 8)
     input_layer = Input(shape=input_shape, name='input_1')
 
     # block 1
@@ -134,12 +143,11 @@ def final_model_architecture():
     return model
 
 
-def double_input_shape_model():
+def double_input_shape_model(input_shape):
     x1 = (1, 1)
     x2 = (2, 2)
     x3 = (3, 3)
 
-    input_shape = (14, 8, 8)
     second_input_shape = (1,8,8)
 
     input_layer = Input(shape=input_shape, name='input_1')
