@@ -18,10 +18,7 @@ from keras.optimizers import SGD
 
 # ADDING PADDING TO AVOID NEGATIVE SHAPE. MIGHT HAVE TO CHANGE THE SIZE OF THE KERNELS INSTEAD. 
 
-def inception(include_top = True, pooling = 'avg',classifier_activation="softmax"):
-
-
-    
+def inception(include_top = True, pooling = 'avg',classifier_activation="softmax"):    
     # Determine proper input shape
 
     input_shape = (15,8,8)
@@ -46,8 +43,6 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
 
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
-
-
 
     # mixed 0: 35 x 35 x 256
     branch1x1 = conv2d_bn(x, 64, 1, 1)
@@ -78,9 +73,6 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
     branch5x5 = conv2d_bn(x, 48, 1, 1)
     branch5x5 = conv2d_bn(branch5x5, 64, 5, 5)
 
-
-
-
     branch3x3dbl = conv2d_bn(x, 64, 1, 1)
     branch3x3dbl = conv2d_bn(branch3x3dbl, 96, 3, 3)
     branch3x3dbl = conv2d_bn(branch3x3dbl, 96, 3, 3)
@@ -95,8 +87,6 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
         name="mixed1",
     )
 
-
-
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
 
@@ -110,8 +100,6 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
     branch3x3dbl = conv2d_bn(branch3x3dbl, 96, 3, 3)
     branch3x3dbl = conv2d_bn(branch3x3dbl, 96, 3, 3)
 
-
-
     branch_pool = layers.AveragePooling2D(
         (3, 3), strides=(1, 1), padding="same"
     )(x)
@@ -124,7 +112,6 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
 
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
-
 
     # mixed 3: 17 x 17 x 768
     branch3x3 = conv2d_bn(x, 384, 3, 3, strides=(2, 2), padding="valid")
@@ -155,8 +142,6 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
     branch7x7dbl = conv2d_bn(branch7x7dbl, 128, 1, 7)
     branch7x7dbl = conv2d_bn(branch7x7dbl, 128, 7, 1)
     branch7x7dbl = conv2d_bn(branch7x7dbl, 192, 1, 7)
-
-
 
     branch_pool = layers.AveragePooling2D(
         (3, 3), strides=(1, 1), padding="same"
@@ -197,10 +182,8 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
             name="mixed" + str(5 + i),
         )
 
-
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
-
 
     # mixed 7: 17 x 17 x 768
     branch1x1 = conv2d_bn(x, 192, 1, 1)
@@ -225,18 +208,14 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
         name="mixed7",
     )
 
-
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
 
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
 
-
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
-
-
 
     # mixed 8: 8 x 8 x 1280
     branch3x3 = conv2d_bn(x, 192, 1, 1)
@@ -256,7 +235,6 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
 
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
     x = layers.ZeroPadding2D(padding=(3, 3))(x)
-
 
     # mixed 9: 8 x 8 x 2048
     for i in range(2):
@@ -298,7 +276,6 @@ def inception(include_top = True, pooling = 'avg',classifier_activation="softmax
             x = layers.GlobalAveragePooling2D()(x)
         elif pooling == "max":
             x = layers.GlobalMaxPooling2D()(x)
-
 
     # Create model.
     model = Model(inputs=[input_layer], outputs=[x])
