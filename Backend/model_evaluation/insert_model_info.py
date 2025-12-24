@@ -92,10 +92,9 @@ def insert_model_info(
     # Residual? Check for Add layers
     residual_network = has_layer_type(model, Add)
     
-    # Dropout?
     dropout_rate = 0
     # Find first dropout to get rate data? Or just check existence.
-    # CSV seems to want a rate number. 
+    # CSV want a rate number. 
     for layer in model.layers:
         if isinstance(layer, Dropout):
             dropout_rate = layer.rate
@@ -110,10 +109,10 @@ def insert_model_info(
     weight_init = get_weight_init(model)
     
     input_shape_tuple = model.input_shape[1:] if model.input_shape[0] is None else model.input_shape
-    # Format input shape as '15' or '(15, 8, 8)' based on CSV style. 
-    # CSV example L2 says '15'. It likely refers to channels (15 planes of 8x8).
-    # Let's check CSV L2: "15". L1: "15".
-    # This likely refers to the first dimension (channels).
+
+    # Format input shape as '15' or '(15, 8, 8)'. 
+    # This refers to the first dimension (channels), how many features are used to rapresent the board.
+    # So 12 board for piecese and then for castling legal moves enpassant and so on.
     input_shape_val = input_shape_tuple[0]
     
     new_row = {
@@ -141,11 +140,8 @@ def insert_model_info(
     print(new_row)
     
     # Append to dataframe
-    # Using pd.concat
     new_df = pd.DataFrame([new_row])
     df = pd.concat([df, new_df], ignore_index=True)
-    
-    # Save back to CSV
     df.to_csv(csv_path, index=False)
     print(f"Successfully added model info to {csv_path}")
 
@@ -153,12 +149,14 @@ if __name__ == "__main__":
     csv_file = os.path.join(os.path.dirname(__file__), 'cvs/architecture_dataset.csv')
     
     # Configuration for the new model
+    # Adding experimental architecture
+    # Some info added by hand 
     insert_model_info(
         model_func=experimental_architecture1,
         csv_path=csv_file,
         main_architecture='Experimental_ResNet_Custom',
         name_kaggle='Experimental_Arch1',
         color_representation='full',
-        brain_hand='brain', # Default
-        batch_size=64    # Default
+        brain_hand='brain', 
+        batch_size=64   
     )
