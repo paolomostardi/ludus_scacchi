@@ -5,11 +5,12 @@ from Backend.model_evaluation.dataset.architecture.architecture_info import arch
 
 # this data has been inserted 3 / 05 / 2025
 # it is the begging data of 3 architectures 
-# the code can be found in the folder models/architectures
+# the code can be found in the folder model_architecture/implementation
 # resent50_implementation.py, inception_chess.py, squeeze_net.py
 
 
 # Update the instantiation of architecture_info objects to match the class definition
+
 resnet = architecture_info(
     main_architecture="ResNet",
     amount_of_parameters=47415938,

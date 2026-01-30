@@ -1,11 +1,12 @@
-import numpy as np
 
 import numpy as np
 from keras import Model
-import keras
 
-# create a large dataset where the color bitboard is automatically switched
-# create a dataset to see if the move played is legal 
+
+"""
+This file is used to evaluate whether the model changes behaviour when the color bitboard is switched.
+
+"""
 
 
 def give_max(board):
@@ -18,8 +19,7 @@ def switch_dataset(testing_dataset):
 
         print(bit_board[14][0][0])
 
-        if bit_board[14][0][0]: # bitboard is true
-            print('hola')
+        if bit_board[14][0][0]: # bitboard is
             bit_board[14] = np.uint64(0) 
         else:
             bit_board[14] = np.uint64(1)

@@ -8,12 +8,7 @@ import numpy as np
 #  it may find datasets in folders. 
 
 
-def main(model):
-    legal_dataset = ""
-    simple_dataset = ""
-    dataset_1700 = ""
-    dataset_gm = ""
-    dataset_mixed = ""
+def main(model, legal_dataset = "", simple_dataset = "", dataset_1700 = "", dataset_gm = "", dataset_mixed = ""):
 
     legal_dataset = np.load(legal_dataset)
     check_legal_moves(model, legal_dataset)
