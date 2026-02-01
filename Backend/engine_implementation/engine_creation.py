@@ -3,7 +3,7 @@ import numpy as np
 
 from keras import models
 from keras.models import load_model
-from Backend.pipeline import from_PGN_generate_bitboards as gen 
+from Backend.data_pipeline import from_PGN_generate_bitboards as gen 
 
 """
 63 62 61 60 59 58 57 56

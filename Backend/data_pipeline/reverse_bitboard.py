@@ -1,6 +1,6 @@
 import numpy as np
 import chess
-from Backend.pipeline import from_PGN_generate_bitboards as gen
+from Backend.data_pipeline import from_PGN_generate_bitboards as gen
 
 # 0 pawn # 1 knight # 2 bishop
 # 3 rook # 4 queen  # 5 king 

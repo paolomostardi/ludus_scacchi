@@ -1,9 +1,9 @@
 import pandas
 import os
 
-from Backend.pipeline import count_users_with_most_games_from_lichess_api as count_users
-from Backend.pipeline import get_games_in_pgn_from_lichess_api as games_in_pgn
-from Backend.pipeline import from_PGN_generate_bitboards as generate_bitboard
+from Backend.data_pipeline import count_users_with_most_games_from_lichess_api as count_users
+from Backend.data_pipeline import get_games_in_pgn_from_lichess_api as games_in_pgn
+from Backend.data_pipeline import from_PGN_generate_bitboards as generate_bitboard
 
 # this file is a command line tool to handle all the data on a local machine. 
 # It downloads data from the api based on the amount requested and so on. 

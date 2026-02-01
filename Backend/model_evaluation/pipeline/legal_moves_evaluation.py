@@ -2,7 +2,6 @@ import numpy as np
 from keras import Model
 import keras
 from Backend.data_pipeline import reverse_bitboard as r
-import chess
 
 # this file checks how many moves played by the model are legal.
 
@@ -30,14 +29,25 @@ def legal_evaluation(model : Model, testing_dataset : np.array):
             
 
 if __name__ == "__main__":
+    print("Loading the model for testing")
     model = keras.models.load_model('Backend/data/models/gm_model_white/gm_model_chunk_9.keras')
     dataset = np.load('chunk_0.npy')
     legal_evaluation(model, dataset[1:2])
 
 
-def main(start, finish):
-    model = keras.models.load_model('Backend/data/models/gm_model_white_legal_moves/gm_model_chunk_9.keras')
-    dataset = np.load('chunk_10.npy')
+def main(start, finish, model_str = '',dataset_str = ''):
+    print("Loading the model for testing")
+    
+    if model_str == '':
+        model = keras.models.load_model('Backend/data/models/gm_model_white_legal_moves/gm_model_chunk_9.keras')
+    else:
+        model = keras.models.load_model(model_str)
+
+    if dataset_str == '' : 
+        dataset = np.load('chunk_10.npy')
+    else:
+        dataset = np.load(dataset_str)
+    
     legal_evaluation(model, dataset[start:finish])
 
 

@@ -1,19 +1,17 @@
 import pygame
 import requests
-from Backend.pipeline.lichess_user import LichessUser
+from Backend.data_pipeline.lichess_user import LichessUser
 from FrontEnd.button import Button
 from FrontEnd import play_mode
 
-from Backend.pipeline import get_games_in_pgn_from_lichess_api as get_games
-from Backend.pipeline import from_PGN_generate_bitboards as generate_bitboards
-from Backend.pipeline import create_second_dataset
+from Backend.data_pipeline import get_games_in_pgn_from_lichess_api as get_games
+from Backend.data_pipeline import from_PGN_generate_bitboards as generate_bitboards
+from Backend.data_pipeline import create_second_dataset
 import numpy as np
 from keras.models import load_model
-from keras import Model
 import pandas as pd
 import os
 from FrontEnd import helper
-import json
 import threading
 import queue
 
