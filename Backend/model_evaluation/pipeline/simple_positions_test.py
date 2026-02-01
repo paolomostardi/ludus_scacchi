@@ -2,7 +2,9 @@ import keras
 import chess
 import pandas as pd
 
+from Backend.model_evaluation import create_dataset_for_simple_positions as create_simple
 
+import os
 """
 63 62 61 60 59 58 57 56
 55 54 53 52 51 50 49 48
@@ -19,24 +21,18 @@ import pandas as pd
 # this is useful to see if the model has a basic understunding of chess 
 
     
-def model1_assertion(model1):
+def model1_assertion(model1, df_str = ''):
 
-    ladder_fen = 'k7/6R1/7R/8/8/8/8/K7 w - - 0 1',40
-    queen_hang_fen = 'rnb1kb1r/ppp1pppp/5n2/3q4/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4', 21
-    french_fen = 'r1bqkbnr/pp3ppp/2n1p3/3pP3/3p4/2P2N2/PP3PPP/RNBQKB1R w KQkq - 0 6', 21
-    scholars_fen = 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',32
-    exchange_french_fen = 'rnbqkbnr/ppp2ppp/4p3/3P4/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3', 43
-    queen_hang2_fen = 'rn1qkbnr/pp1bpppp/8/1QPp4/8/8/PPP1PPPP/RNB1KBNR b KQkq - 0 4', 52
-    unsound_sacrifice = 'r1bqk1nr/pppp1Bpp/2n5/2b1p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4', 59
-    latvian_gambit = 'rnb1kbnr/ppp3pp/3p1q2/5p2/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 1 5', 34
-    
-
-    df = pd.read_csv('Backend/model_evaluation/simple_positions.csv')
+    if (df_str == ''):
+        if (not os.path.exists('Backend/model_evaluation/simple_positions.csv')):
+            # creates the dataset with the positions 
+            create_simple.main()
+        df = pd.read_csv('Backend/model_evaluation/simple_positions.csv')
+        
+    else:
+        df = pd.read_csv(df_str)
 
 
-    fen_list = [ladder_fen,queen_hang_fen,french_fen,scholars_fen,
-                exchange_french_fen,queen_hang2_fen,unsound_sacrifice,
-                latvian_gambit]
     
     counter = 0
     counter2 = 0

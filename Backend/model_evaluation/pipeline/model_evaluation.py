@@ -26,10 +26,10 @@ https://www.kaggle.com/code/paolomostardi/evaluate-model
 
 """
 
-def evaluate_first_half_model(model_path : str, testing_dataset: np.array, y : np.array):
+def evaluate_first_half_model(model_path : str, testing_dataset: np.array, y : np.array,  simple_position = ''):
 
     model =  keras.models.load_model(model_path)    
-    simple_positions_test.model1_assertion(model)
+    simple_positions_test.model1_assertion(model,simple_position)
     print('-----')
     print('testing if the move changes based on the bitboard color')
     white_board_evaluation.white_evaluation(model,testing_dataset)
