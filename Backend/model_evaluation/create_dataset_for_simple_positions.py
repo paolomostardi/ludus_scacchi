@@ -14,7 +14,7 @@ def main():
                 exchange_french_fen,queen_hang2_fen,unsound_sacrifice,
                 latvian_gambit]
     
-    path_to_save = os.getcwd() + "Backend/model_evaluation/simple_positions.csv"
+    path_to_save = os.getcwd() + "/Backend/model_evaluation/simple_positions.csv"
     print("Saving the DF in  the directory : ", path_to_save )
 
     # generate dataframe from the list, column one is the string, column 2 is the number rapresenting the appropriate square. 

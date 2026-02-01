@@ -27,10 +27,10 @@ import os
 def model1_assertion(model1, df_str = ''):
 
     if (df_str == ''):
-        if (not os.path.exists('Backend/model_evaluation/simple_positions.csv')):
+        if (not os.path.exists(os.getcwd() + 'Backend/model_evaluation/simple_positions.csv')):
             # creates the dataset with the positions 
             create_simple.main()
-        df = pd.read_csv('Backend/model_evaluation/simple_positions.csv')
+        df = pd.read_csv(os.getcwd() + 'Backend/model_evaluation/simple_positions.csv')
         
     else:
         df = pd.read_csv(df_str)
