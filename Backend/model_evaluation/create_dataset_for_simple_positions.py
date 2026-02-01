@@ -1,5 +1,5 @@
 import pandas as pd
-
+import os 
 def main():
     ladder_fen = 'k7/6R1/7R/8/8/8/8/K7 w - - 0 1',40
     queen_hang_fen = 'rnb1kb1r/ppp1pppp/5n2/3q4/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4', 21
@@ -13,11 +13,17 @@ def main():
     fen_list = [ladder_fen,queen_hang_fen,french_fen,scholars_fen,
                 exchange_french_fen,queen_hang2_fen,unsound_sacrifice,
                 latvian_gambit]
-
     
+    path_to_save = os.getcwd() + "Backend/model_evaluation/simple_positions.csv"
+    print("Saving the DF in  the directory : ", path_to_save )
+
     # generate dataframe from the list, column one is the string, column 2 is the number rapresenting the appropriate square. 
     
     df = pd.DataFrame(fen_list, columns=["FEN", "TargetSquare"])
-    df.to_csv("simple_positions.csv", index=False)
+    print("Saving the following dataset: ",  df)   
+
+    df.to_csv(path_to_save, index=False)
+
+
 
 main()
