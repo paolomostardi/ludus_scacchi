@@ -1,5 +1,6 @@
 import pandas as pd
 import os 
+
 def main():
     ladder_fen = 'k7/6R1/7R/8/8/8/8/K7 w - - 0 1',40
     queen_hang_fen = 'rnb1kb1r/ppp1pppp/5n2/3q4/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4', 21
@@ -24,6 +25,3 @@ def main():
 
     df.to_csv(path_to_save, index=False)
 
-
-
-main()

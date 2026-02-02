@@ -30,7 +30,7 @@ def model1_assertion(model1, df_str = ''):
         if (not os.path.exists(os.getcwd() + 'Backend/model_evaluation/simple_positions.csv')):
             # creates the dataset with the positions 
             create_simple.main()
-        df = pd.read_csv(os.getcwd() + 'Backend/model_evaluation/simple_positions.csv')
+        df = pd.read_csv(os.getcwd() + '/Backend/model_evaluation/simple_positions.csv')
         
     else:
         df = pd.read_csv(df_str)
@@ -45,12 +45,12 @@ def model1_assertion(model1, df_str = ''):
     for i in df:
         
         position,move = i[1][0],i[1][1]
-        print(position,move)
         
         index = engine.return_best_legal_piece(position,model1)
         counter2 += 1
         if index == move:
             counter += 1
+        print(position,'------------ Expected move: ',move,' Acutal move: ',index)
 
     print('Positions guessed correctly: ',str(counter),', out of  ', counter2)
 
