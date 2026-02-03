@@ -9,7 +9,7 @@ def give_max(board):
     max_switch = max(range(len(board)), key=board.__getitem__)
     return max_switch
 
-def legal_evaluation(model : Model, testing_dataset : np.array):    
+def legal_evaluation(model : Model, testing_dataset : np.array) -> float:    
 
     predictions = model.predict(testing_dataset)
 
@@ -26,6 +26,7 @@ def legal_evaluation(model : Model, testing_dataset : np.array):
             counter += 1
 
     print(counter, len(predictions))
+    return counter / len(predictions)
             
 
 if __name__ == "__main__":

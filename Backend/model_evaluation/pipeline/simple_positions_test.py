@@ -24,7 +24,7 @@ import os
 # this is useful to see if the model has a basic understunding of chess 
 
     
-def model1_assertion(model1, df_str = ''):
+def model1_assertion(model1, df_str = '') -> float:
 
     if (df_str == ''):
         if (not os.path.exists(os.getcwd() + 'Backend/model_evaluation/simple_positions.csv')):
@@ -38,8 +38,7 @@ def model1_assertion(model1, df_str = ''):
 
     
     counter = 0
-    counter2 = 0
-
+    total_amount_rows = len(df)
     df = df.iterrows()
 
     for i in df:
@@ -47,12 +46,12 @@ def model1_assertion(model1, df_str = ''):
         position,move = i[1][0],i[1][1]
         
         index = engine.return_best_legal_piece(position,model1)
-        counter2 += 1
         if index == move:
             counter += 1
         print(position,'------------ Expected move: ',move,' Acutal move: ',index)
 
-    print('Positions guessed correctly: ',str(counter),', out of  ', counter2)
+    print('Positions guessed correctly: ',str(counter),', out of  ', total_amount_rows)
+    return counter/total_amount_rows
 
 
 def main():

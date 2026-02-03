@@ -58,3 +58,4 @@ def white_evaluation(model : Model, testing_dataset : np.array):
     same = counter/len(normal)
     lenght = len(normal)
     print( 'total percentage of same result = ', same ,' total amount of same answer: ',counter,'out of ',lenght)
+    return same

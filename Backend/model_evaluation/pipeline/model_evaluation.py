@@ -29,18 +29,19 @@ https://www.kaggle.com/code/paolomostardi/evaluate-model
 def evaluate_first_half_model(model_path : str, testing_dataset: np.array, y : np.array,  simple_position = ''):
 
     model =  keras.models.load_model(model_path)    
-    simple_positions_test.model1_assertion(model,simple_position)
+    simple = simple_positions_test.model1_assertion(model,simple_position)
     print('-----')
     print('testing if the move changes based on the bitboard color')
-    white_board_evaluation.white_evaluation(model,testing_dataset)
+    white = white_board_evaluation.white_evaluation(model,testing_dataset)
     print('-----')
     print('testing percentage of legal moves')
-    legal_moves_evaluation.legal_evaluation(model,testing_dataset)
+    legal = legal_moves_evaluation.legal_evaluation(model,testing_dataset)
     print('-----')
     print('testing total accuracy on the given dataset')
     result = total_accuracy(model_path, testing_dataset, y)
 
     print(result)
+    return simple,white,legal,result
 
 
 def total_accuracy(model_path : str, testing_dataset : np.array, y):
