@@ -30,18 +30,22 @@ def transform_index(index):
 
 
 """ 
-    main function used to create a bit board from a chess board in pychess 
-    the current shape of the biboard is 15 for 8x8 boards 
-    there are 12 different pieces and colors 
+    Main function used to create a bit board from a chess board in pychess 
+    the current shape of the bitboard is 15 (17-19) for 8x8 boards  
+    there are 12 different pieces and colors.
     the first 6 are assigned to the white pieces and the second ones are assigned to the black pieces 
-    2 boards are assigned for all the legal moves 
+    2 boards are assigned for all the legal moves.
+    The last board is assigned to determine which color is playing, where black is rapresented by all 0
+    and white by all 1. 
+
 """
 
+# adding castling and enpassant
 
 def from_chess_board_create_bit_boards(board : chess.Board):
 
     board_turn = board.turn
-    bit_boards = numpy.zeros((15, 8, 8), dtype=numpy.bool_)
+    bit_boards = numpy.zeros((15, 8, 8), dtype=numpy.bool_) # if enpassant or castaling are enabled this should be 2 more for each
 
     #  boards from 0-11 are used for the pieces
     for piece in chess.PIECE_TYPES:
@@ -58,12 +62,14 @@ def from_chess_board_create_bit_boards(board : chess.Board):
         x, y = number_of_square_to_bitboard_index(index)
         bit_boards[12][y][x] = 1
 
+    # TODO add castaling and enpassant for white 
     board.turn = chess.BLACK
     for move in board.legal_moves:
         index = transform_index(move.to_square)
         x, y = number_of_square_to_bitboard_index(index)
         bit_boards[13][y][x] = 1
 
+    # TODO add castling and enpassant for black
     board.turn = board_turn
 
     if board_turn == chess.WHITE:

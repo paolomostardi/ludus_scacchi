@@ -4,6 +4,9 @@ from keras import Input
 from keras.optimizers import SGD
 
 
+
+
+
 def identity_block(input_tensor, kernel_size, filters, stage, block):
     filters1, filters2, filters3 = filters
     bn_axis = 1

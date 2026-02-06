@@ -15,6 +15,7 @@ from keras.optimizers import SGD
 #
 # Each model uses ReLU activations, SGD optimizer with momentum 0.9, 
 # and categorical crossentropy loss.
+# v 1.2
 
 def basic_block(input_tensor, filters, stride=1):
     """
@@ -62,7 +63,7 @@ def experimental_architecture1():
     x = basic_block(x, 64)
     
     # Block 2 (Downsample)
-    x = basic_block(x, 128, stride=2)
+    x = basic_block(x, 128)
     x = basic_block(x, 128)
 
     # Block 3 (Downsample)
@@ -82,3 +83,4 @@ def experimental_architecture1():
     model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
     return model
+

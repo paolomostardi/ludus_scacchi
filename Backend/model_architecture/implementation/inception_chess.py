@@ -15,7 +15,6 @@ from keras.optimizers import SGD
 # https://github.com/keras-team/keras/blob/v3.6.0/keras/src/applications/inception_v3.py
 # reference paper https://arxiv.org/pdf/1512.00567
 
-
 # ADDING PADDING TO AVOID NEGATIVE SHAPE. MIGHT HAVE TO CHANGE THE SIZE OF THE KERNELS INSTEAD. 
 
 def inception(include_top = True, pooling = 'avg',classifier_activation="softmax"):    
