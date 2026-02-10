@@ -68,14 +68,15 @@ def get_weight_init(model):
 def insert_model_info(
     model_func,
     csv_path,
-    main_architecture,
     name_kaggle,
+    main_architecture = '',
     color_representation='full',
     brain_hand='brain',
     batch_size=64
 ):
     # Instantiate model to inspect it
     model = model_func()
+    
     
     df = pd.read_csv(csv_path)
     
