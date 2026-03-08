@@ -1,5 +1,7 @@
 import numpy as np
 import keras
+from keras import Model
+from typing import Optional
 
 from Backend.model_evaluation.pipeline import legal_moves_evaluation
 from Backend.model_evaluation.pipeline import simple_positions_test
@@ -26,9 +28,16 @@ https://www.kaggle.com/code/paolomostardi/evaluate-model
 
 """
 
-def evaluate_first_half_model(model_path : str, testing_dataset: np.array, y : np.array,  simple_position = ''):
+def evaluate_first_half_model(model_path : str,
+                              testing_dataset: np.array,
+                              y : np.array,
+                              simple_position = '',
+                              model: Optional[Model] = None):
 
-    model =  keras.models.load_model(model_path)    
+    if model is None:
+        if model_path is None:
+            raise ValueError('Either model_path or model must be provided')
+        model =  keras.models.load_model(model_path)
     simple = simple_positions_test.model1_assertion(model,simple_position)
     print('-----')
     print('testing if the move changes based on the bitboard color')
@@ -38,15 +47,18 @@ def evaluate_first_half_model(model_path : str, testing_dataset: np.array, y : n
     legal = legal_moves_evaluation.legal_evaluation(model,testing_dataset)
     print('-----')
     print('testing total accuracy on the given dataset')
-    result = total_accuracy(model_path, testing_dataset, y)
+    result = total_accuracy(model_path, testing_dataset, y, model=model)
 
     print(result)
     return simple,white,legal,result
 
 
-def total_accuracy(model_path : str, testing_dataset : np.array, y):
+def total_accuracy(model_path : str, testing_dataset : np.array, y, model: Optional[Model] = None):
 
-        model = keras.models.load_model(model_path)
+        if model is None:
+            if model_path is None:
+                raise ValueError('Either model_path or model must be provided')
+            model = keras.models.load_model(model_path)
 
         # fixing the shape if its wrong 
 
