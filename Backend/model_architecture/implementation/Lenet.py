@@ -5,7 +5,7 @@ from keras import Input
 
 from keras.models import Model
 
-from keras.layers import Conv2D, Reshape
+from keras.layers import Conv2D
 from keras.layers import Dense
 from keras.layers import Flatten
 
@@ -26,8 +26,6 @@ def LeNet(input_layer, kernel_size=(2, 2), pool_size=(2, 2), conv_size=64):
     X = Dense(64, 'relu')(X)
     X = Dense(64, 'relu')(X)
     from_output_layer = Dense(2*8*8, activation='softmax')(X)
-
-    from_output_layer = Reshape((2, 8, 8))(from_output_layer)
 
     model = Model(inputs=input_layer, outputs=[from_output_layer])
 
