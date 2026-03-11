@@ -25,7 +25,7 @@ def LeNet(input_layer, kernel_size=(2, 2), pool_size=(2, 2), conv_size=64):
     X = Flatten()(X)
     X = Dense(64, 'relu')(X)
     X = Dense(64, 'relu')(X)
-    from_output_layer = Dense(2*8*8, activation='softmax')(X)
+    from_output_layer = Dense(8*8, activation='softmax')(X)
 
     model = Model(inputs=input_layer, outputs=[from_output_layer])
 
