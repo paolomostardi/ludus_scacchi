@@ -40,17 +40,11 @@ def evaluate_first_half_model(model_path : str,
         model =  keras.models.load_model(model_path)
     simple = simple_positions_test.model1_assertion(model,simple_position)
     print('-----')
-    print('testing if the move changes based on the bitboard color')
-    white = white_board_evaluation.white_evaluation(model,testing_dataset)
-    print('-----')
-    print('testing percentage of legal moves')
-    legal = legal_moves_evaluation.legal_evaluation(model,testing_dataset)
-    print('-----')
     print('testing total accuracy on the given dataset')
     result = total_accuracy(model_path, testing_dataset, y, model=model)
 
     print(result)
-    return simple,white,legal,result
+    return simple,result
 
 
 def total_accuracy(model_path : str, testing_dataset : np.array, y, model: Optional[Model] = None):
