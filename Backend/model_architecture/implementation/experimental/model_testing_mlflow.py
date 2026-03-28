@@ -58,7 +58,6 @@ def model_testing_mlflow(conv_filters=32, upsample_factor=4):
     x = layers.Activation("relu")(x)
 
     x = basic_block(x, conv_filters * 2, stride=2, bn_axis=bn_axis)
-    x = basic_block(x, conv_filters * 2, bn_axis=bn_axis)
 
     x = layers.GlobalAveragePooling2D()(x)
     x = layers.Dense(conv_filters * 2, activation="relu", name="dense_head")(x)
