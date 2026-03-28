@@ -43,7 +43,7 @@ def basic_block(input_tensor, filters, stride=1, bn_axis=-1):
 def model_testing_mlflow(conv_filters=32, upsample_factor=4):
     """Compact experimental-style model for fast MLflow pipeline testing."""
     bn_axis = -1
-    input_layer = Input(shape=(8, 8, 15), name="input_1")
+    input_layer = Input(shape=(15,8,8), name="input_1")
 
     x = layers.UpSampling2D(size=(upsample_factor, upsample_factor))(input_layer)
     x = layers.Conv2D(
