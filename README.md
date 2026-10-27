@@ -57,6 +57,8 @@ your saving path will most likely be the one above.
 
 ## Pipeline
 
+For the current data and model training flow and the overnight-run roadmap, see [Training pipeline](docs/training_pipeline.md).
+
 ![plot](./img/chess_pipeline.png)
 
 Above is a diagram of the current pipeline. <br>
