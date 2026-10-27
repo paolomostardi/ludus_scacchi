@@ -3,25 +3,31 @@
 ## Current Structure
 
 ### Data Pipeline Flow
-1. **PGN Download**: Games are downloaded from Lichess API and stored in `Backend/data/pgn_games/pgn_games_{rating}/`
-2. **Bitboard Generation**: PGN files are converted to bitboards and stored in `Backend/data/bit_boards/bit_boards_{rating}/{username}/`
-3. **User Tracking**: User information and game counts are tracked in `Backend/data/user_record.csv`
+1. **PGN Download**: Games are downloaded from Lichess monthly database archives (compressed .zst files) and processed on Kaggle
+2. **Bitboard Generation**: PGN files are converted to bitboards in Kaggle notebooks and uploaded as Kaggle datasets
+3. **Dataset Hosting**: Processed datasets are hosted on Kaggle for free storage and access
 
-### Current File Structure
+### Data Sources
+- **Lichess Monthly Databases**: Downloaded directly from Lichess archives (https://database.lichess.org/)
+- **Kaggle Notebooks**: Processing happens in Kaggle notebooks using the cloned GitHub repository
+- **Kaggle Datasets**: Final datasets are uploaded to Kaggle (https://www.kaggle.com/datasets/paolomostardi/model-evaluation-combined)
+
+### Current File Structure (Kaggle)
+```
+Kaggle Datasets/
+└── model-evaluation-combined/
+    ├── dataset_month_year/
+    │   ├── x.npy          # Input bitboards (15, 8, 8)
+    │   ├── x2.npy         # Transformed input bitboards
+    │   ├── y.npy          # Output move bitboards (2, 8, 8)
+    │   └── y2.npy         # Transformed output bitboards
+```
+
+### Local Development Structure
 ```
 Backend/data/
-├── pgn_games/
-│   └── pgn_games_{rating}/
-│       └── pgn_games_{username}.json
-├── bit_boards/
-│   └── bit_boards_{rating}/
-│       └── {username}/
-│           ├── x.npy          # Input bitboards (15, 8, 8)
-│           ├── x2.npy         # Transformed input bitboards
-│           ├── y.npy          # Output move bitboards (2, 8, 8)
-│           ├── y2.npy         # Transformed output bitboards
-│           └── white_bitboard.npy  # Boolean array for player color
-└── user_record.csv            # User metadata and game counts
+├── pgn_games/  # Only for API-based pipeline (not currently used)
+└── user_record.csv  # Only for API-based pipeline (not currently used)
 ```
 
 ### Current Bitboard Format
@@ -38,10 +44,10 @@ Backend/data/
 3. No duplicate positions across datasets (using FEN as unique identifier)
 4. FEN indexing for position deduplication
 
-### New Directory Structure
+### New Directory Structure (Kaggle)
 ```
-Backend/data/
-├── datasets/
+Kaggle Datasets/
+├── model-evaluation-combined/
 │   ├── dataset_v1/
 │   │   ├── train/
 │   │   │   ├── x.npy
@@ -59,8 +65,6 @@ Backend/data/
 │   ├── dataset_v2/
 │   │   └── [same structure]
 │   └── global_fen_registry.json  # Registry of all FENs across all datasets
-├── pgn_games/  # [unchanged]
-└── user_record.csv  # [unchanged]
 ```
 
 ### Metadata JSON Structure

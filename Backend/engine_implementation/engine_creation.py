@@ -33,12 +33,13 @@ def return_top_piece_to_move(fen: str, model: models.Model):
 
     return sorted_indices, sorted_percentages
 
+def source_index_to_chess_square(index: int) -> chess.Square:
+    """Convert a flattened source label back to its chess square."""
+    return gen.source_index_to_chess_square(index)
+
+
 def has_legal_moves(board : chess.Board, square):
-
-    from_square = square
-    from_square = (from_square - (from_square % 8)) + (7 - from_square % 8)
-
-    square = from_square
+    square = source_index_to_chess_square(square)
 
     piece = board.piece_at(square)
     if piece is None:

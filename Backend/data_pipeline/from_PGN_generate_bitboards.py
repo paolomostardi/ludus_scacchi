@@ -12,6 +12,21 @@ def number_of_square_to_bitboard_index(square):
     y = square // 8
     return x, y
 
+
+def chess_square_to_source_index(square: int) -> int:
+    """Map a python-chess square to the vertically flipped 64-class label."""
+    square = int(square)
+    return (7 - (square // 8)) * 8 + (square % 8)
+
+
+def source_index_to_chess_square(index: int) -> chess.Square:
+    """Convert a 64-class label back to its python-chess square."""
+    index = int(index)
+    if not 0 <= index < 64:
+        raise ValueError(f"Source index must be in [0, 63], got {index}.")
+    row, file = divmod(index, 8)
+    return chess.square(file, 7 - row)
+
 def transform_index(index):
     dict = {
         7: -7,

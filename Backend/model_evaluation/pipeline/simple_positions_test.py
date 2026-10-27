@@ -3,6 +3,7 @@ import chess
 import pandas as pd
 
 from Backend.model_evaluation import create_dataset_for_simple_positions as create_simple
+from Backend.data_pipeline import from_PGN_generate_bitboards as gen
 from Backend.engine_implementation import engine_creation as engine
 
 
@@ -27,10 +28,11 @@ import os
 def model1_assertion(model1, df_str = '') -> float:
 
     if (df_str == ''):
-        if (not os.path.exists(os.getcwd() + 'Backend/model_evaluation/simple_positions.csv')):
-            # creates the dataset with the positions 
+        simple_positions_path = os.path.join(os.getcwd(), 'Backend', 'model_evaluation', 'simple_positions.csv')
+        if not os.path.exists(simple_positions_path):
+            # creates the dataset with the positions
             create_simple.main()
-        df = pd.read_csv(os.getcwd() + '/Backend/model_evaluation/simple_positions.csv')
+        df = pd.read_csv(simple_positions_path)
         
     else:
         df = pd.read_csv(df_str)
@@ -46,7 +48,8 @@ def model1_assertion(model1, df_str = '') -> float:
         position,move = i[1][0],i[1][1]
         
         index = engine.return_best_legal_piece(position,model1)
-        if index == move:
+        expected_index = gen.chess_square_to_source_index(move)
+        if index == expected_index:
             counter += 1
         print(position,'------------ Expected move: ',move,' Acutal move: ',index)
 

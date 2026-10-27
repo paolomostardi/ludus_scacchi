@@ -95,7 +95,7 @@ def main(filename : str, saving_path = None ):
 
     print('generating bitboards')
 
-    df = pandas.read_csv(saving_path + 'df.csv')
+    df = pandas.read_csv(saving_path + 'df.csv', header=None, names=['position', 'move'])
     pipe.create_all_chunk(df,saving_path=saving_path)
     pipe.create_all_y_chunk(df,saving_path=saving_path)
 

@@ -25,9 +25,12 @@ def move_and_position_to_bitboard(move : str, position):
 
 
 def from_df_create_move_bitboard(size, df : pandas.DataFrame, start, chunk_number, saving_path = ''):
+    if size <= 0:
+        raise ValueError("size must be positive")
+
     bitboard_save = []
 
-    df_copy = df[start:start+size]
+    df_copy = df.iloc[start:start + size]
 
     c = 0
     for i in df_copy.iterrows():
@@ -69,14 +72,15 @@ def from_pgn_fens_and_moves(pgn : str):
 
 # magic function 
 
-def create_all_chunk( df : pandas.DataFrame, chunk_size = 1_000_000, start = 0, saving_path = ''):
-    print('starting: ')
-    df = df.iloc[start:]
-    total_size = len(df) - start
-    for i in range(int ( total_size/chunk_size)):
-        create_chunk(chunk_size,df['position'],chunk_size * i, i, saving_path)
-        print(i, ' AMOUNT OF CHUNK CHUNK')
-
+def create_all_chunk(df: pandas.DataFrame, chunk_size=1_000_000, start=0, saving_path=''):
+    if chunk_size <= 0:
+        raise ValueError("chunk_size must be positive")
+    positions = df['position'].iloc[start:]
+    total_size = len(positions)
+    for chunk_number, offset in enumerate(range(0, total_size, chunk_size)):
+        current_size = min(chunk_size, total_size - offset)
+        create_chunk(current_size, positions, offset, chunk_number, saving_path)
+        print(chunk_number, 'AMOUNT OF CHUNK')
 
 
 def pgn_string_to_list_moves(pgn : str):
@@ -109,19 +113,17 @@ def append_to_file(filename,rows):
 # this functions adds to a given filename a set of moves and position fen
 # it expects a pandas df with only a column containing a string with all the moves of the game.
 
-def create_all_y_chunk(df, size = 1_000_000, saving_path = ''):
+def create_all_y_chunk(df, size=1_000_000, saving_path=''):
+    if size <= 0:
+        raise ValueError("size must be positive")
 
-    positions = df['position']
-    moves = df['move']
-
-    total_chunks = len(df) // size
-
-    for i in range(total_chunks):
+    for chunk_number, start in enumerate(range(0, len(df), size)):
         print()
-        print('generating for chunk number ',i)
-
-        start = i * size 
-        from_df_create_move_bitboard( size,df,start=start,chunk_number=i, saving_path = saving_path )
+        print('generating for chunk number', chunk_number)
+        current_size = min(size, len(df) - start)
+        from_df_create_move_bitboard(
+            current_size, df, start=start, chunk_number=chunk_number, saving_path=saving_path
+        )
 
 
 def from_list_of_pgns_append_to_file(filename,pgn_list : pandas.DataFrame):

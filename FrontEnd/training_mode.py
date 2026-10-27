@@ -412,6 +412,7 @@ def download_and_process_data_of_user(username):
     
     print(folder_path)    
     get_games.get_pgn_games_from_username(username,folder_path,number_of_games=100)    
+    # TODO: Pass username so the encoder selects the correct player moves.
     generate_bitboards.generate_from_filename('',0,file_path,0,saving_path)
     return 
 

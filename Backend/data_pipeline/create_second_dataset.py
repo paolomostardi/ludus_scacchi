@@ -2,6 +2,8 @@
 
 import numpy as np
 
+
+# TODO FIX SHAPE IF NEEEDED
 def transform_from_first_dataset_to_second(x, y, saving = False, saving_path = None):
     array = []
     for index, element in enumerate(x):

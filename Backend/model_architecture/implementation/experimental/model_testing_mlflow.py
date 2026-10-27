@@ -45,7 +45,8 @@ def model_testing_mlflow(conv_filters=32, upsample_factor=4):
     bn_axis = -1
     input_layer = Input(shape=(15,8,8), name="input_1")
 
-    x = layers.UpSampling2D(size=(upsample_factor, upsample_factor))(input_layer)
+    x = layers.Permute((2, 3, 1), name="board_to_channels_last")(input_layer)
+    x = layers.UpSampling2D(size=(upsample_factor, upsample_factor))(x)
     x = layers.Conv2D(
         conv_filters,
         (3, 3),
