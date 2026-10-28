@@ -2,3 +2,5 @@ __pycache__
 *.npy
 data
 *.csv
+# Local Kaggle staging folders, logs, and downloaded run outputs
+/.tmp-*/
