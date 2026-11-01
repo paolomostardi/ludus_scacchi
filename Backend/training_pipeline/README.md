@@ -53,3 +53,27 @@ The VPS is the orchestration and MLflow host; model training and evaluation exec
 Fit exports `model_config.json` beside its model and `mlflow_ids.txt`, and logs it as an MLflow configuration artifact. It records the supported factory, constructor parameters, model filename, and training run/experiment IDs. Evaluation validates those IDs and reconstructs the model with the recorded parameters before loading its weights. Existing fit outputs without the JSON file use their recorded MLflow parameters; missing settings or unsupported factories fail explicitly. Add new architectures to the evaluation factory mapping when introducing them.
 
 Fit also exports `training_manifest.json` and logs it under `configuration` in MLflow. It records the mounted dataset name/path, architecture parameters, actual row counts for each chunk before and after holdout, array shapes, total training rows, epochs, and batch size. The settings used in `fit()` are the same variables logged to MLflow. Dataset versions/checksums and a game-level split remain separate provenance work.
+
+## Small pipeline validation
+
+Use `--pipeline-mode validation` to exercise the same smoke → fit → evaluation sequence with a bounded workload. Fit uses the first configured chunk, at most 50,000 positions, and one epoch; the large evaluation dataset is capped at 1,000 positions while the eight simple positions remain included. Arrays are memory-mapped and sliced before label conversion. This checks execution and logging, not model quality. The existing smoke stage remains a 256-position check in both modes.
+
+From the VPS checkout:
+
+```bash
+python3 -m Backend.training_pipeline.run_batch --pipeline-mode validation --plan-only
+python3 -m Backend.training_pipeline.run_batch --pipeline-mode validation --preflight-only
+python3 -m Backend.training_pipeline.run_batch --pipeline-mode validation
+```
+
+From the Windows SSH launcher:
+
+```powershell
+.\scripts\run_training_batch_over_ssh.ps1 -Mode plan -PipelineMode validation
+.\scripts\run_training_batch_over_ssh.ps1 -Mode preflight -PipelineMode validation
+.\scripts\run_training_batch_over_ssh.ps1 -Mode run -PipelineMode validation
+```
+
+`--validation-fit-rows` and `--validation-eval-rows` (SSH: `-ValidationFitRows` and `-ValidationEvalRows`) customize the sample caps. These limits apply only to validation mode. The default `--pipeline-mode training` / `-PipelineMode training` retains all configured fit chunks, three epochs per chunk, the existing final-chunk holdout, and the full evaluation dataset. Opening either notebook directly also defaults to training mode; the batch runner adds an explicit execution-settings cell to its staged copies.
+
+The selected mode and limits appear in `batch-summary.json`; fit records its mode and actual row counts in MLflow and `training_manifest.json`, and evaluation records its mode and sample counts in `evaluation_report.json`. Validation uses the same Kaggle kernel IDs and existing secrets as training, so it creates new kernel versions and replaces their latest outputs. Model/run IDs and recorded mode distinguish its results from training results.

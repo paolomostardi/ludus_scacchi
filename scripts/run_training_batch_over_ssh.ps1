@@ -5,6 +5,12 @@
         [string]$RemoteOutputPath = '~/ludus-artifacts/training-batches',
         [ValidateSet('run', 'preflight', 'plan')]
         [string]$Mode = 'run',
+        [ValidateSet('training', 'validation')]
+        [string]$PipelineMode = 'training',
+        [ValidateRange(1, 2147483647)]
+        [int]$ValidationFitRows = 50000,
+        [ValidateRange(1, 2147483647)]
+        [int]$ValidationEvalRows = 1000,
         [int]$PollSeconds = 30
     )
 
@@ -27,6 +33,7 @@
     }
 
     $remoteArgs = @('--repo-root', $RemoteRepoPath, '--output-dir', $RemoteOutputPath, '--poll-seconds', "$PollSeconds")
+    $remoteArgs += @('--pipeline-mode', $PipelineMode, '--validation-fit-rows', "$ValidationFitRows", '--validation-eval-rows', "$ValidationEvalRows")
     if ($Mode -eq 'preflight') { $remoteArgs += '--preflight-only' }
     if ($Mode -eq 'plan') { $remoteArgs += '--plan-only' }
     $quotedArgs = ($remoteArgs | ForEach-Object { "'$_'" }) -join ' '

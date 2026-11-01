@@ -32,3 +32,7 @@ Lichess monthly PGN -> game/position CSV -> aligned NumPy bitboard chunks
 ## First milestone
 
 Run one small monthly archive end to end from a single command, with a fixed evaluation split, a recoverable checkpoint, a complete MLflow record, and a morning summary. Only then enable recurring overnight execution.
+
+## Validation versus training
+
+The batch runner and SSH launcher accept separate validation and training modes. Validation runs the same sequence with one fit chunk, up to 50,000 fit rows, one epoch, and up to 1,000 rows from the large evaluation set plus the simple positions set. Training remains the default full configured workload. See the [batch instructions](../Backend/training_pipeline/README.md#small-pipeline-validation) for commands and adjustable validation caps. Implementation and offline checks are complete; a live Kaggle run of this mode remains to be verified.

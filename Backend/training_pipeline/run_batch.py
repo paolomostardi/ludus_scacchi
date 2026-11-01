@@ -43,7 +43,7 @@ def set_notebook_source(cell: dict[str, Any], source: str) -> None:
     cell["source"] = source.splitlines(keepends=True)
 
 
-def stage_notebook(source_path: Path, destination: Path, branch: str, owner: str, fit_slug: str) -> None:
+def stage_notebook(source_path: Path, destination: Path, branch: str, owner: str, fit_slug: str, runtime_settings: dict[str, str] | None = None) -> None:
     if not source_path.is_file():
         raise BatchError(f"Notebook source is missing: {source_path}")
     if source_path.suffix.lower() == ".py":
@@ -71,6 +71,12 @@ def stage_notebook(source_path: Path, destination: Path, branch: str, owner: str
         if cell.get("cell_type") == "code":
             cell["outputs"] = []
             cell["execution_count"] = None
+    if runtime_settings:
+        notebook["cells"].insert(0, {
+            "cell_type": "code", "execution_count": None, "metadata": {}, "outputs": [],
+            "source": ["# Batch execution settings\n", "import os\n",
+                       f"os.environ.update({runtime_settings!r})\n"],
+        })
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(json.dumps(notebook, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
@@ -102,6 +108,11 @@ def kernel_metadata(
 
 
 def stage_kernels(args: argparse.Namespace, run_dir: Path) -> dict[str, dict[str, Any]]:
+    runtime_settings = {
+        "LUDUS_PIPELINE_MODE": args.pipeline_mode,
+        "LUDUS_VALIDATION_FIT_ROWS": str(args.validation_fit_rows),
+        "LUDUS_VALIDATION_EVAL_ROWS": str(args.validation_eval_rows),
+    }
     owner = args.kaggle_owner
     fit_id = f"{owner}/{args.fit_slug}"
     eval_id = f"{owner}/{args.eval_slug}"
@@ -138,7 +149,7 @@ def stage_kernels(args: argparse.Namespace, run_dir: Path) -> dict[str, dict[str
     staged: dict[str, dict[str, Any]] = {}
     for name, spec in specs.items():
         kernel_dir = run_dir / "staged" / name
-        stage_notebook(spec["source"], kernel_dir / spec["code"], args.repository_branch, owner, args.fit_slug)
+        stage_notebook(spec["source"], kernel_dir / spec["code"], args.repository_branch, owner, args.fit_slug, runtime_settings)
         metadata = kernel_metadata(
             owner, spec["id"].split("/", 1)[1], spec["title"], spec["code"],
             spec["datasets"], spec["kernels"], spec["gpu"],
@@ -286,6 +297,10 @@ def submit_and_download(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--pipeline-mode", choices=("training", "validation"), default="training",
+                        help="Validation runs one fit chunk for one epoch and caps fit/evaluation rows.")
+    parser.add_argument("--validation-fit-rows", type=int, default=50000)
+    parser.add_argument("--validation-eval-rows", type=int, default=1000)
     parser.add_argument("--repo-root", type=Path, default=REPO_ROOT)
     parser.add_argument("--output-dir", type=Path, default=Path("~/ludus-artifacts/training-batches"))
     parser.add_argument("--kaggle-owner", default=os.environ.get("KAGGLE_USERNAME", "paolomostardi"))
@@ -305,6 +320,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = build_parser().parse_args()
+    if args.validation_fit_rows < 1 or args.validation_eval_rows < 1:
+        raise SystemExit("Validation row limits must be positive.")
     repo_root = args.repo_root.expanduser().resolve()
     args.output_dir = args.output_dir.expanduser().resolve()
     if args.poll_seconds < 1 or args.timeout_seconds < 1 or args.kernel_timeout_seconds < 1:
@@ -326,6 +343,11 @@ def main() -> int:
     run_dir.mkdir(parents=True, exist_ok=False)
     summary: dict[str, Any] = {
         "batch_id": batch_id,
+        "pipeline_mode": args.pipeline_mode,
+        "validation_limits": ({"fit_rows": args.validation_fit_rows,
+                               "evaluation_rows": args.validation_eval_rows,
+                               "fit_chunks": 1, "epochs": 1}
+                              if args.pipeline_mode == "validation" else None),
         "started_at": utc_now(),
         "repository_root": str(repo_root),
         "repository_branch": args.repository_branch,
