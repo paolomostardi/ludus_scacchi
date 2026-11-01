@@ -47,3 +47,9 @@ Kaggle's CLI `kernels push` submits and runs a notebook, `kernels status` report
 Kaggle CLI authentication succeeded from the workstation. The smoke, fit, and evaluation kernels completed; evaluation metrics and its report were recorded under the fit run in MLflow. The current fit configuration is intentionally still a large run over five chunks, three epochs per chunk, so use a reduced sample configuration for quick iteration.
 
 The VPS is the orchestration and MLflow host; model training and evaluation execute on Kaggle. MLflow is running from `/opt/mlflow/venv` behind Nginx. A complete end-to-end invocation through `run_batch.py` and recurring VPS scheduling still need validation. Keep the local Kaggle outputs and temporary staging folders out of commits; the root `.gitignore` excludes `.tmp-*` folders.
+
+## Model configuration handoff
+
+Fit exports `model_config.json` beside its model and `mlflow_ids.txt`, and logs it as an MLflow configuration artifact. It records the supported factory, constructor parameters, model filename, and training run/experiment IDs. Evaluation validates those IDs and reconstructs the model with the recorded parameters before loading its weights. Existing fit outputs without the JSON file use their recorded MLflow parameters; missing settings or unsupported factories fail explicitly. Add new architectures to the evaluation factory mapping when introducing them.
+
+Fit also exports `training_manifest.json` and logs it under `configuration` in MLflow. It records the mounted dataset name/path, architecture parameters, actual row counts for each chunk before and after holdout, array shapes, total training rows, epochs, and batch size. The settings used in `fit()` are the same variables logged to MLflow. Dataset versions/checksums and a game-level split remain separate provenance work.
