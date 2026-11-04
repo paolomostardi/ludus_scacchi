@@ -400,7 +400,17 @@ def main() -> int:
                 report = validate_smoke_report(report_path)
                 summary["smoke_run"] = report
             elif name == "fit":
-                model_path = find_output(output_dir, "model_testing_mlflow.keras")
+                config_path = find_output(output_dir, "model_config.json")
+                artifact_file = json.loads(config_path.read_text(encoding="utf-8")).get("artifact_file")
+                if (
+                    not isinstance(artifact_file, str)
+                    or not artifact_file.endswith(".keras")
+                    or any(char in artifact_file for char in ("/", "\\", ":"))
+                ):
+                    raise BatchError("Fit configuration must name a .keras file within its output.")
+                model_path = config_path.parent / artifact_file
+                if not model_path.is_file():
+                    raise BatchError(f"Expected training model was not downloaded: {model_path}")
                 ids_path = find_output(output_dir, "mlflow_ids.txt")
                 training_ids = parse_training_ids(ids_path)
                 summary["training_run"] = training_ids
