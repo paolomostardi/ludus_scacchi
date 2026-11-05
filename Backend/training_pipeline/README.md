@@ -77,3 +77,24 @@ From the Windows SSH launcher:
 `--validation-fit-rows` and `--validation-eval-rows` (SSH: `-ValidationFitRows` and `-ValidationEvalRows`) customize the sample caps. These limits apply only to validation mode. The default `--pipeline-mode training` / `-PipelineMode training` retains all configured fit chunks, three epochs per chunk, the existing final-chunk holdout, and the full evaluation dataset. Opening either notebook directly also defaults to training mode; the batch runner adds an explicit execution-settings cell to its staged copies.
 
 The selected mode and limits appear in `batch-summary.json`; fit records its mode and actual row counts in MLflow and `training_manifest.json`, and evaluation records its mode and sample counts in `evaluation_report.json`. Validation uses the same Kaggle kernel IDs and existing secrets as training, so it creates new kernel versions and replaces their latest outputs. Model/run IDs and recorded mode distinguish its results from training results.
+
+### Run configuration
+
+The default workload is defined in `Backend/training_pipeline/run_config.json`.
+It contains the architecture factory and parameters, Kaggle dataset IDs, starting
+chunk and chunk count, optional row cap, epochs per chunk, batch size, seed,
+final-chunk holdout, and dataset month. The supported training factory is
+`source_resnet`. Input datasets must retain the existing chunk filenames and
+encoding. Evaluation retains its existing chunk layout and eight simple cases.
+
+Use `--config /path/to/run-config.json` to select another complete configuration.
+Existing dataset CLI options override the corresponding configuration values.
+Validation mode uses one chunk, one epoch, and the validation row limits.
+Each batch saves `run-config.json` and embeds the configuration in staged
+notebooks. Fit includes it in its training manifest.
+
+Inspect a future run without submitting jobs:
+
+```bash
+python -m Backend.training_pipeline.run_batch --config Backend/training_pipeline/run_config.json --pipeline-mode training --plan-only
+```

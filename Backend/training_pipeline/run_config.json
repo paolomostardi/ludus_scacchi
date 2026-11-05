@@ -1,0 +1,19 @@
+{
+  "architecture": {
+    "factory": "source_resnet",
+    "parameters": {
+      "conv_filters": 64,
+      "residual_blocks": 4
+    }
+  },
+  "training_dataset": "paolomostardi/lichess-bitboards-2013-01",
+  "evaluation_dataset": "paolomostardi/eval-training-2013-chunk-9",
+  "start_chunk": 0,
+  "chunk_count": 5,
+  "max_training_rows_per_chunk": null,
+  "epochs_per_chunk": 3,
+  "batch_size": 64,
+  "seed": 42,
+  "final_chunk_holdout": 10000,
+  "year_month": "2013-01"
+}

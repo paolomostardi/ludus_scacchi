@@ -35,8 +35,10 @@ os.environ['MLFLOW_TRACKING_PASSWORD'] = secrets.get_secret('PASSWORD_MLFLOW')
 mlflow.set_tracking_uri(os.environ['MLFLOW_TRACKING_URI'])
 mlflow.set_experiment('ludus_cnn')
 
+run_config = json.loads(os.environ.get('LUDUS_RUN_CONFIG', '{}'))
+training_dataset_name = run_config.get('training_dataset', 'paolomostardi/lichess-bitboards-2013-01').split('/')[-1]
 input_root = Path('/kaggle/input')
-x_candidates = [p for p in input_root.rglob('chunk_0.npy') if p.parent.name == 'lichess-bitboards-2013-01']
+x_candidates = [p for p in input_root.rglob('chunk_0.npy') if p.parent.name == training_dataset_name]
 if not x_candidates:
     mounted_inputs = sorted(p.name for p in input_root.iterdir())
     raise FileNotFoundError(

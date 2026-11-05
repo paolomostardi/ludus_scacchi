@@ -14,6 +14,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from Backend.training_pipeline.configuration import DEFAULT_CONFIG, load_config
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FIT_NOTEBOOK = REPO_ROOT / "fit-model.ipynb"
 EVAL_NOTEBOOK = REPO_ROOT / "Backend" / "kaggle" / "notebooks" / "evaluate-model.ipynb"
@@ -110,6 +112,7 @@ def kernel_metadata(
 def stage_kernels(args: argparse.Namespace, run_dir: Path) -> dict[str, dict[str, Any]]:
     runtime_settings = {
         "LUDUS_PIPELINE_MODE": args.pipeline_mode,
+        "LUDUS_RUN_CONFIG": json.dumps(args.run_config),
         "LUDUS_VALIDATION_FIT_ROWS": str(args.validation_fit_rows),
         "LUDUS_VALIDATION_EVAL_ROWS": str(args.validation_eval_rows),
     }
@@ -297,6 +300,8 @@ def submit_and_download(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG,
+                        help="JSON file defining the architecture, datasets and training workload.")
     parser.add_argument("--pipeline-mode", choices=("training", "validation"), default="training",
                         help="Validation runs one fit chunk for one epoch and caps fit/evaluation rows.")
     parser.add_argument("--validation-fit-rows", type=int, default=50000)
@@ -304,8 +309,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--repo-root", type=Path, default=REPO_ROOT)
     parser.add_argument("--output-dir", type=Path, default=Path("~/ludus-artifacts/training-batches"))
     parser.add_argument("--kaggle-owner", default=os.environ.get("KAGGLE_USERNAME", "paolomostardi"))
-    parser.add_argument("--training-dataset", default="paolomostardi/lichess-bitboards-2013-01")
-    parser.add_argument("--evaluation-dataset", default="paolomostardi/eval-training-2013-chunk-9")
+    parser.add_argument("--training-dataset", default=None)
+    parser.add_argument("--evaluation-dataset", default=None)
     parser.add_argument("--smoke-slug", default="ludus-first-model-smoke")
     parser.add_argument("--fit-slug", default="fit-model")
     parser.add_argument("--eval-slug", default="evaluate-model")
@@ -320,6 +325,15 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = build_parser().parse_args()
+    args.run_config = load_config(args.config)
+    for key in ("training_dataset", "evaluation_dataset"):
+        override = getattr(args, key)
+        if override is not None:
+            args.run_config[key] = override
+        setattr(args, key, args.run_config[key])
+    if args.pipeline_mode == "validation":
+        cap = args.run_config["max_training_rows_per_chunk"]
+        args.run_config["max_training_rows_per_chunk"] = min(cap, args.validation_fit_rows) if cap else args.validation_fit_rows
     if args.validation_fit_rows < 1 or args.validation_eval_rows < 1:
         raise SystemExit("Validation row limits must be positive.")
     repo_root = args.repo_root.expanduser().resolve()
@@ -349,12 +363,14 @@ def main() -> int:
                                "fit_chunks": 1, "epochs": 1}
                               if args.pipeline_mode == "validation" else None),
         "started_at": utc_now(),
+        "run_configuration": args.run_config,
         "repository_root": str(repo_root),
         "repository_branch": args.repository_branch,
         "status": "preparing",
         "stages": {},
     }
     summary_path = run_dir / "batch-summary.json"
+    write_json(run_dir / "run-config.json", args.run_config)
     write_json(summary_path, summary)
 
     try:
@@ -370,7 +386,7 @@ def main() -> int:
             summary["status"] = "plan_ready"
             summary["kernel_ids"] = {name: spec["id"] for name, spec in staged.items()}
             write_json(summary_path, summary)
-            print(json.dumps({"status": summary["status"], "run_dir": str(run_dir), "kernel_ids": summary["kernel_ids"]}, indent=2))
+            print(json.dumps({"status": summary["status"], "run_dir": str(run_dir), "run_configuration": args.run_config, "kernel_ids": summary["kernel_ids"]}, indent=2))
             return 0
 
         kaggle = shutil.which("kaggle")
