@@ -98,3 +98,27 @@ Inspect a future run without submitting jobs:
 ```bash
 python -m Backend.training_pipeline.run_batch --config Backend/training_pipeline/run_config.json --pipeline-mode training --plan-only
 ```
+
+### Runtime provenance and evaluation recovery
+
+Install the known working VPS CLI with
+\`python -m pip install -r Backend/training_pipeline/requirements-runner.txt\`.
+New submissions record the Git revision and check it out inside Kaggle before
+importing project code. Training and evaluation export package-version snapshots
+and record key versions in MLflow. Kaggle library pins require the versions from
+a successful runtime before a compatible lock can be finalized.
+
+To recover evaluation after fit completed, use
+\`python -m Backend.training_pipeline.run_batch --resume-dir /path/to/batch\`.
+Resume retains the staged notebooks and training IDs. It reattaches to evaluation
+when its saved state is running, or submits evaluation again after failure.
+If a running evaluation has failed, the first resume records that failure and
+the next invocation retries it. Completed training is reused. Resume requires
+downloaded fit outputs and never submits training. Old batches are supported
+when their staged evaluation contains the expected run-ID cell.
+New CLI invocations use a host-wide process lock. Already-running older runners
+do not hold that lock, so wait for them to finish before using the new runner.
+
+Arrays are checked in bounded-size slices for aligned lengths, expected shapes,
+finite values, and one-hot targets. Fit histories and evaluation metrics must
+be finite. The runner also validates downloaded report metrics and run IDs.

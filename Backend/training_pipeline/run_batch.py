@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
+import platform
 import os
 import re
 import shutil
@@ -61,6 +63,17 @@ def stage_notebook(source_path: Path, destination: Path, branch: str, owner: str
     for cell in notebook.get("cells", []):
         source = notebook_source(cell)
         source = source.replace("__LUDUS_GIT_BRANCH__", branch)
+        revision = (runtime_settings or {}).get("LUDUS_REPOSITORY_REVISION")
+        if revision:
+            if not re.fullmatch(r"[a-f0-9]{40}", revision):
+                raise BatchError("Invalid repository revision.")
+            if source_path.suffix == ".py":
+                source = source.replace("sys.path.insert(0, str(repo_path))",
+                    f"subprocess.run(['git', '-C', str(repo_path), 'checkout', '{revision}'], check=True)\n"
+                    "sys.path.insert(0, str(repo_path))")
+            else:
+                source = re.sub(r"(!git clone[^\n]* /tmp/ludus_scacchi)",
+                    lambda match: match.group(0) + f" && git -C /tmp/ludus_scacchi checkout {revision}", source)
         source = source.replace(
             f"git clone {GITHUB_CLONE}",
             f"git clone --branch {branch} {GITHUB_CLONE}",
@@ -111,6 +124,7 @@ def kernel_metadata(
 
 def stage_kernels(args: argparse.Namespace, run_dir: Path) -> dict[str, dict[str, Any]]:
     runtime_settings = {
+        "LUDUS_REPOSITORY_REVISION": args.repository_revision,
         "LUDUS_PIPELINE_MODE": args.pipeline_mode,
         "LUDUS_RUN_CONFIG": json.dumps(args.run_config),
         "LUDUS_VALIDATION_FIT_ROWS": str(args.validation_fit_rows),
@@ -257,6 +271,8 @@ def validate_smoke_report(path: Path) -> dict[str, Any]:
         raise BatchError("Smoke report does not confirm a recorded MLflow run.")
     if not report.get("metrics"):
         raise BatchError("Smoke report contains no training/evaluation metrics.")
+    if any(not math.isfinite(float(value)) for value in report["metrics"].values()):
+        raise BatchError("Smoke report contains non-finite metrics.")
     return report
 
 
@@ -268,6 +284,15 @@ def validate_evaluation_report(path: Path, training_ids: dict[str, str]) -> dict
         raise BatchError("Evaluation report experiment_id does not match the training experiment.")
     if not report.get("mlflow_logged") or not report.get("datasets"):
         raise BatchError("Evaluation report does not confirm logged per-dataset metrics.")
+    for metrics in report["datasets"].values():
+        for key in ("accuracy", "loss"):
+            value = metrics.get(key)
+            if not isinstance(value, (int, float)) or not math.isfinite(value):
+                raise BatchError(f"Invalid evaluation metric: {key}")
+        if not 0 <= metrics["accuracy"] <= 1 or metrics["loss"] < 0:
+            raise BatchError("Evaluation metric outside its valid range.")
+        if type(metrics.get("sample_count")) is not int or metrics["sample_count"] <= 0:
+            raise BatchError("Invalid evaluation sample count.")
     return report
 
 
@@ -300,6 +325,7 @@ def submit_and_download(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--resume-dir", type=Path, help="Resume a saved batch using its staged notebooks and completed outputs.")
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG,
                         help="JSON file defining the architecture, datasets and training workload.")
     parser.add_argument("--pipeline-mode", choices=("training", "validation"), default="training",
@@ -323,8 +349,89 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def resume_batch(args: argparse.Namespace) -> int:
+    """Reuse completed fit outputs and resume or retry evaluation without training."""
+    run_dir = args.resume_dir.expanduser().resolve()
+    summary_path = run_dir / "batch-summary.json"
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    if summary.get("stages", {}).get("fit", {}).get("status") != "complete":
+        raise BatchError("Resume requires completed fit outputs. Training is never resubmitted by resume.")
+    training_ids = parse_training_ids(find_output(run_dir / "outputs" / "fit", "mlflow_ids.txt"))
+    if training_ids != summary.get("training_run"):
+        raise BatchError("Saved training IDs do not match the batch summary.")
+    if summary.get("status") == "complete":
+        report = validate_evaluation_report(
+            find_output(Path(summary.get("evaluation_output_dir", str(run_dir / "outputs" / "evaluate"))), "evaluation_report.json"), training_ids
+        )
+        print(f"Batch already complete: {summary_path}")
+        return 0
+    kaggle = shutil.which("kaggle")
+    if not kaggle:
+        raise BatchError("Kaggle CLI is not installed.")
+    kernel_dir = run_dir / "staged" / "evaluate"
+    metadata = json.loads((kernel_dir / "kernel-metadata.json").read_text(encoding="utf-8"))
+    # Freeze evaluation's expected IDs before it can write metrics to MLflow.
+    notebook_path = kernel_dir / metadata["code_file"]
+    notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+    id_cells = [cell for cell in notebook["cells"]
+                if "EXPERIMENT_ID = run_metadata[" in notebook_source(cell)]
+    if len(id_cells) != 1:
+        raise BatchError("Cannot safely identify the evaluation run-ID cell.")
+    guard = (
+        "\nif MLFLOW_RUN_ID != " + repr(training_ids["run_id"])
+        + " or EXPERIMENT_ID != " + repr(training_ids["experiment_id"])
+        + ":\n    raise ValueError('Attached fit output does not match the resumed batch.')\n"
+    )
+    set_notebook_source(id_cells[0], notebook_source(id_cells[0]) + guard)
+    write_json(notebook_path, notebook)
+    kernel_id = metadata["id"]
+    logs = run_dir / "logs" / "resume"
+    state = state_from_status(run_command(
+        [kaggle, "kernels", "status", kernel_id], logs / "status.log"
+    ))
+    existing_evaluation = summary.get("stages", {}).get("evaluate", {}).get("status") == "running"
+    output_dir = run_dir / "outputs" / ("evaluate-retry-" + uuid.uuid4().hex[:8])
+    try:
+        if existing_evaluation:
+            # The previous submission may still be running after SSH disconnected.
+            wait_for_kernel(kaggle, kernel_id, logs, args.timeout_seconds, args.poll_seconds)
+            output_dir.mkdir(parents=True)
+            run_command([kaggle, "kernels", "output", kernel_id, "-p", str(output_dir)],
+                        logs / "output.log", timeout=900)
+        else:
+            if state in {"RUNNING", "QUEUED", "STARTING", "INITIALIZING"}:
+                raise BatchError("Evaluation kernel is busy. Wait before retrying.")
+            summary["stages"]["evaluate"] = {"status": "running", "started_at": utc_now()}
+            write_json(summary_path, summary)
+            spec = {"name": "evaluate", "id": kernel_id, "directory": kernel_dir}
+            # Each retry downloads to a new folder to avoid accepting stale reports.
+            retry_dir = run_dir / ("retry-" + uuid.uuid4().hex[:8])
+            output_dir = submit_and_download(
+                kaggle, spec, retry_dir, args.timeout_seconds, args.poll_seconds,
+                args.kernel_timeout_seconds,
+            )
+        report = validate_evaluation_report(find_output(output_dir, "evaluation_report.json"), training_ids)
+        summary["evaluation"] = report
+        summary["stages"]["evaluate"] = {"status": "complete", "finished_at": utc_now()}
+        summary["status"] = "complete"
+        summary["finished_at"] = utc_now()
+        summary.pop("error", None)
+        summary["evaluation_output_dir"] = str(output_dir)
+        write_json(summary_path, summary)
+        print(f"Resumed batch completed: {summary_path}")
+        return 0
+    except Exception as exc:
+        summary["status"] = "failed"
+        summary["stages"]["evaluate"]["status"] = "failed"
+        summary["error"] = sanitize(str(exc))
+        write_json(summary_path, summary)
+        raise
+
+
 def main() -> int:
     args = build_parser().parse_args()
+    if args.resume_dir:
+        return resume_batch(args)
     args.run_config = load_config(args.config)
     for key in ("training_dataset", "evaluation_dataset"):
         override = getattr(args, key)
@@ -338,6 +445,9 @@ def main() -> int:
         raise SystemExit("Validation row limits must be positive.")
     repo_root = args.repo_root.expanduser().resolve()
     args.output_dir = args.output_dir.expanduser().resolve()
+    args.repository_revision = subprocess.check_output(
+        ["git", "-C", str(repo_root), "rev-parse", "HEAD"], text=True
+    ).strip()
     if args.poll_seconds < 1 or args.timeout_seconds < 1 or args.kernel_timeout_seconds < 1:
         raise SystemExit("Polling and timeout values must be positive.")
     if not re.fullmatch(r"[A-Za-z0-9_-]+", args.repository_branch):
@@ -366,6 +476,8 @@ def main() -> int:
         "run_configuration": args.run_config,
         "repository_root": str(repo_root),
         "repository_branch": args.repository_branch,
+        "repository_revision": args.repository_revision,
+        "runner_python": platform.python_version(),
         "status": "preparing",
         "stages": {},
     }
@@ -453,5 +565,28 @@ def main() -> int:
         return 1
 
 
+def locked_main() -> int:
+    lock_path = Path.home() / ".ludus-training-batch.lock"
+    with lock_path.open("a+b") as lock:
+        lock.seek(0)
+        if os.name == "nt":
+            import msvcrt
+            if lock_path.stat().st_size == 0:
+                lock.write(b"0")
+                lock.flush()
+            lock.seek(0)
+            try:
+                msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+            except OSError:
+                raise SystemExit("Another Ludus batch runner is active on this host.")
+        else:
+            import fcntl
+            try:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except OSError:
+                raise SystemExit("Another Ludus batch runner is active on this host.")
+        return main()
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(locked_main())
