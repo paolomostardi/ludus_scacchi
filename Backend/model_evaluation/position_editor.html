@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ludus · Simple positions</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f2eb;color:#26372f;font:16px system-ui,sans-serif}main{max-width:1140px;margin:35px auto;padding:0 22px}h1{font-size:34px;letter-spacing:-1px;margin:5px 0}p{color:#59665e;line-height:1.5}.layout{display:grid;grid-template-columns:minmax(300px,480px) 1fr;gap:32px;margin-top:26px}.card{background:#fff;border:1px solid #d9ded6;border-radius:14px;padding:22px}.board{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));aspect-ratio:1;border:3px solid #26372f;border-radius:4px;overflow:hidden}.square{min-width:0;min-height:0;display:grid;place-items:center;overflow:hidden;border:0;border-radius:0;margin:0;position:relative;padding:0;font:clamp(25px,4vw,49px) 'Segoe UI Symbol',serif;line-height:1;cursor:pointer;background:#ede8d6;color:#111}.square.dark{background:#94aa90}.square.selected{box-shadow:inset 0 0 0 4px #d67720}.square small{position:absolute;bottom:1px;left:3px;font:10px system-ui;color:#273a30}.palette{display:flex;flex-wrap:wrap;gap:4px;margin:12px 0}.palette button{font:27px 'Segoe UI Symbol';padding:3px 8px}.palette button.active{outline:3px solid #d67720}input,textarea,select{width:100%;padding:10px;border:1px solid #bac6bb;border-radius:6px;font:inherit;background:white}textarea{resize:vertical}label{display:block;font-size:13px;font-weight:650;margin:15px 0 6px}button{padding:10px 15px;border:1px solid #b8c3b8;border-radius:6px;background:#fff;cursor:pointer;color:#26372f;font:inherit}button.primary{background:#254f3b;color:white;border:0}button:hover{filter:brightness(.95)}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}.row label{margin:0}.row input{width:auto}#message{white-space:pre-wrap;line-height:1.5;padding:12px;background:#edf3ed;border-radius:8px;margin-top:16px;min-height:48px}#message.error{background:#fae8e3;color:#8b2f24}details{margin-top:22px}#saved{max-height:240px;overflow:auto}#saved button{display:block;width:100%;text-align:left;margin:4px 0;font-size:13px}.hint{font-size:13px}.position-nav{justify-content:space-between;margin:0 0 14px}.position-nav span{font-size:13px;font-weight:650}button:disabled{opacity:.4;cursor:default}#saved button.current{background:#edf3ed;border-color:#254f3b;box-shadow:inset 3px 0 #254f3b}a{color:#285840} @media(max-width:760px){.layout{grid-template-columns:1fr}.square{font-size:42px}}
+</style>
+<main><div class="hint">LUDUS SCACCHI / EVALUATION WORKBENCH</div><h1>Simple positions</h1>
+<p>Create an unmistakable move, check its solution, and save it to the benchmark.</p>
+<div class="layout"><section class="card"><nav class="row position-nav" aria-label="Saved position navigation"><button id="previous-position" aria-label="Previous position" title="Previous saved position" disabled>← Previous</button><span id="position-counter" role="status" aria-live="polite">Select a saved position</span><button id="next-position" aria-label="Next position" title="Next saved position" disabled>Next →</button></nav><div id="board" class="board" aria-label="Chess position"></div>
+<div class="row"><label><input id="setup" type="checkbox"> Edit pieces</label><button id="flip">Flip board</button><button id="clear">Clear board</button></div>
+<div id="palette" class="palette"></div><p class="hint">Move mode: click the source, then the destination. Edit mode: select a piece or eraser and click a square. Choose the promotion piece below before selecting a pawn move to the last rank.</p>
+<div class="row"><label for="turn">Side to move</label><select id="turn" style="width:auto"><option value="w">White</option><option value="b">Black</option></select></div>
+<label for="fen">FEN</label><textarea id="fen" rows="3">k7/6R1/7R/8/8/8/8/K7 w - - 0 1</textarea><div class="row"><button id="load">Load FEN</button></div>
+</section><section class="card"><label for="id">Position ID</label><input id="id" placeholder="ladder-mate-001">
+<label for="category">Theme</label><select id="category"><option value="mate_in_1">Checkmate in one</option><option value="free_queen">Capture an undefended queen</option><option value="other">Other · manually reviewed</option></select>
+<label for="promotion">Promotion piece</label><select id="promotion"><option value="q">Queen</option><option value="r">Rook</option><option value="b">Bishop</option><option value="n">Knight</option></select><p class="hint">Pawn moves to the last rank automatically include this choice, e.g. g7g8q. Explicit promotion suffixes and SAN moves are also accepted.</p>
+<label for="moves">Expected move(s)</label><input id="moves" placeholder="Rh8# or h6h8" value="h6h8">
+<p class="hint">Use SAN or UCI, separated by spaces. For mate and free-queen themes, validation includes every qualifying solution automatically.</p>
+<label for="rationale">Why is this move obvious?</label><textarea id="rationale" rows="3" placeholder="Rh8 is a ladder mate; the other rook cuts off the seventh rank."></textarea>
+<div class="row"><button id="preview">Validate solution</button><button id="save" class="primary">Save position</button></div>
+<div id="message" role="status" aria-live="polite">Enter an ID and explanation, then validate the move.</div>
+<p class="hint">This benchmark scores the first model's choice of source square. It cannot establish whether the model would choose the mating destination.</p>
+<details><summary id="count">Saved positions</summary><div id="saved"></div></details></section></div></main>
+<script>
+const $=id=>document.getElementById(id), symbols={K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+let pieces={},legal=[],selected=null,brush='Q',flipped=false,editExisting=false;
+let savedCases=[],savedIndex=-1,loadingPosition=false;
+function message(text,error=false){$('message').textContent=text;$('message').className=error?'error':''}
+async function api(path,body){const response=await fetch(path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});const value=await response.json();if(!response.ok)throw Error(value.error);return value}
+function render(){const board=$('board');board.replaceChildren();let squares=[];for(let r=8;r>=1;r--)for(const f of 'abcdefgh')squares.push(f+r);if(flipped)squares.reverse();for(const square of squares){const b=document.createElement('button');b.className='square'+(((square.charCodeAt(0)-97+Number(square[1]))%2===1)?' dark':'')+(selected===square?' selected':'');b.textContent=symbols[pieces[square]]||'';b.setAttribute('aria-label',square+' '+(pieces[square]||'empty'));const tag=document.createElement('small');tag.textContent=square;b.append(tag);b.onclick=()=>clickSquare(square);board.append(b)}}
+function updateFen(){let ranks=[];for(let rank=8;rank>=1;rank--){let line='',empty=0;for(const file of 'abcdefgh'){let p=pieces[file+rank];if(p){if(empty)line+=empty;empty=0;line+=p}else empty++}if(empty)line+=empty;ranks.push(line)}$('fen').value=ranks.join('/')+' '+$('turn').value+' - - 0 1';legal=[];editExisting=false;message('Board edited. Validate the solution before saving.');render()}
+function promotionMove(move,replaceExisting=false){
+  if(!/^[a-h][1-8][a-h][18][qrbn]?$/.test(move)||(!replaceExisting&&move.length===5))return move;
+  const ranks=$('fen').value.trim().split(/\s+/)[0].split('/'),rank=ranks[8-Number(move[1])];
+  if(!rank)return move;
+  let file=0,piece=null;
+  for(const symbol of rank){if(/[1-8]/.test(symbol))file+=Number(symbol);else{if(file===move.charCodeAt(0)-97){piece=symbol;break}file++}}
+  if((piece==='P'&&move[3]==='8')||(piece==='p'&&move[3]==='1'))return move.slice(0,4)+$('promotion').value;
+  return move;
+}
+function clickSquare(square){if($('setup').checked){if(brush==='erase')delete pieces[square];else pieces[square]=brush;selected=null;updateFen();return}if(!selected){selected=square;render();return}let move=promotionMove(selected+square);const candidate=legal.find(m=>m===move);$('moves').value=candidate||move;selected=null;render();message('Selected '+$('moves').value+'. Validate to check the move.');}
+async function load(){try{let data=await api('/api/board',{fen:$('fen').value});pieces=data.pieces;legal=data.legal_moves;$('fen').value=data.fen;$('turn').value=data.fen.split(' ')[1];selected=null;render();message(data.valid?'Position loaded. Choose the expected move.':'Position has illegal board conditions; edit it before saving.',!data.valid)}catch(error){message(error.message,true)}}
+function payload(){const moves=$('moves').value.trim().replaceAll(',', ' ').split(/\s+/).map(move=>promotionMove(move));$('moves').value=moves.join(' ');return{id:$('id').value.trim(),fen:$('fen').value.trim(),category:$('category').value,moves,rationale:$('rationale').value.trim()}}
+async function submit(save){try{if(save&&editExisting)throw Error('This is a saved position. Enter a new ID and a different board to add a new case.');const data=await api(save?'/api/add':'/api/preview',payload());$('moves').value=data.case.moves.join(' ');message((save?'Saved. ':'Valid solution. ')+data.san.join(', ')+'\nAccepted source squares: '+[...new Set(data.case.moves.map(m=>m.slice(0,2)))].join(', '));if(save){editExisting=true;await refresh()}}catch(error){message(error.message,true)}}
+function updatePositionNavigation(){
+  $('previous-position').disabled=loadingPosition||savedIndex<=0;
+  $('next-position').disabled=loadingPosition||savedIndex<0||savedIndex>=savedCases.length-1;
+  $('position-counter').textContent=savedIndex<0?'Select a saved position':`Position ${savedIndex+1} of ${savedCases.length}`;
+  [...$('saved').children].forEach((button,index)=>{button.classList.toggle('current',index===savedIndex);if(index===savedIndex)button.setAttribute('aria-current','true');else button.removeAttribute('aria-current')});
+}
+async function selectSavedPosition(index){
+  if(loadingPosition||index<0||index>=savedCases.length)return;
+  loadingPosition=true;savedIndex=index;updatePositionNavigation();
+  const c=savedCases[index];
+  for(const key of ['id','fen','category','rationale'])$(key).value=c[key];
+  $('moves').value=c.moves.join(' ');$('promotion').value=c.moves.find(m=>m.length===5)?.slice(-1)||'q';$('setup').checked=false;editExisting=true;
+  try{await load()}finally{loadingPosition=false;updatePositionNavigation()}
+}
+async function refresh(){
+  const data=await api('/api/catalog');savedCases=data.cases;
+  savedIndex=editExisting?savedCases.findIndex(c=>c.id===$('id').value):-1;
+  $('count').textContent=`${data.identity.sample_count} positions · ${data.identity.base_position_count} base positions`;
+  $('saved').replaceChildren();
+  savedCases.forEach((c,index)=>{const b=document.createElement('button');b.textContent=c.id+' · '+c.category;b.onclick=()=>selectSavedPosition(index);$('saved').append(b)});
+  updatePositionNavigation();
+}
+$('promotion').onchange=()=>{$('moves').value=$('moves').value.trim().replaceAll(',', ' ').split(/\s+/).map(move=>promotionMove(move,true)).join(' ')};
+$('previous-position').onclick=()=>selectSavedPosition(savedIndex-1);
+$('next-position').onclick=()=>selectSavedPosition(savedIndex+1);
+for(const piece of [...Object.keys(symbols),'erase']){const b=document.createElement('button');b.textContent=symbols[piece]||'⌫';b.title=piece;b.className=piece===brush?'active':'';b.onclick=()=>{brush=piece;for(const other of $('palette').children)other.classList.remove('active');b.classList.add('active');$('setup').checked=true};$('palette').append(b)}
+$('load').onclick=load;$('flip').onclick=()=>{flipped=!flipped;render()};$('clear').onclick=()=>{pieces={};$('setup').checked=true;updateFen()};$('turn').onchange=()=>{let fields=$('fen').value.trim().split(/\s+/);fields[1]=$('turn').value;$('fen').value=fields.join(' ');load()};$('preview').onclick=()=>submit(false);$('save').onclick=()=>submit(true);$('id').oninput=()=>{editExisting=false};load();refresh().catch(error=>message(error.message,true));
+</script></html>

@@ -42,11 +42,19 @@ Before the first full run, push the repository branch referenced by the notebook
 
 Kaggle's CLI `kernels push` submits and runs a notebook, `kernels status` reports its latest run, and `kernels output` downloads generated files; see the [official Kaggle kernel CLI reference](https://github.com/Kaggle/kaggle-cli/blob/main/docs/kernels.md) and [kernel metadata reference](https://github.com/Kaggle/kaggle-cli/blob/main/docs/kernels_metadata.md).
 
-## Current access status
+## Execution environment
 
-Kaggle CLI authentication succeeded from the workstation. The smoke, fit, and evaluation kernels completed; evaluation metrics and its report were recorded under the fit run in MLflow. The current fit configuration is intentionally still a large run over five chunks, three epochs per chunk, so use a reduced sample configuration for quick iteration.
+The orchestration machine submits jobs and collects results; model training
+and evaluation execute on Kaggle. Configure the MLflow tracking service and
+runner environment for the deployment. Keep local Kaggle outputs and temporary
+staging folders out of commits; the root `.gitignore` excludes `.tmp-*` folders.
 
-The VPS is the orchestration and MLflow host; model training and evaluation execute on Kaggle. MLflow is running from `/opt/mlflow/venv` behind Nginx. A complete end-to-end invocation through `run_batch.py` and recurring VPS scheduling still need validation. Keep the local Kaggle outputs and temporary staging folders out of commits; the root `.gitignore` excludes `.tmp-*` folders.
+## Documentation scope
+
+Keep deployment-specific server addresses, SSH aliases, installation paths,
+service settings, machine-health reports and operational command histories in
+private operator notes outside this public repository. Public instructions use
+placeholders and describe reusable project behavior.
 
 ## Model configuration handoff
 
@@ -58,7 +66,7 @@ Fit also exports `training_manifest.json` and logs it under `configuration` in M
 
 Use `--pipeline-mode validation` to exercise the same smoke → fit → evaluation sequence with a bounded workload. Fit uses the first configured chunk, at most 50,000 positions, and one epoch; the large evaluation dataset is capped at 1,000 positions while the eight simple positions remain included. Arrays are memory-mapped and sliced before label conversion. This checks execution and logging, not model quality. The existing smoke stage remains a 256-position check in both modes.
 
-From the VPS checkout:
+From a configured orchestration checkout:
 
 ```bash
 python3 -m Backend.training_pipeline.run_batch --pipeline-mode validation --plan-only
@@ -101,7 +109,7 @@ python -m Backend.training_pipeline.run_batch --config Backend/training_pipeline
 
 ### Runtime provenance and evaluation recovery
 
-Install the known working VPS CLI with
+Install the pinned orchestration CLI with
 \`python -m pip install -r Backend/training_pipeline/requirements-runner.txt\`.
 New submissions record the Git revision and check it out inside Kaggle before
 importing project code. Training and evaluation export package-version snapshots

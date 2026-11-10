@@ -1,0 +1,173 @@
+[
+  {
+    "id": "ladder_fen",
+    "fen": "k7/6R1/7R/8/8/8/8/K7 w - - 0 1",
+    "target_square_number": 40,
+    "target_square": "a6",
+    "target_piece": "None",
+    "legal_moves_from_target": [],
+    "board_valid": true,
+    "mate_in_one_moves": [
+      "h6h8"
+    ],
+    "free_queen_moves": [],
+    "file_flipped_target": "h6",
+    "legal_moves_from_file_flipped_target": [
+      "h6h8",
+      "h6h7",
+      "h6g6",
+      "h6f6",
+      "h6e6",
+      "h6d6",
+      "h6c6",
+      "h6b6",
+      "h6a6",
+      "h6h5",
+      "h6h4",
+      "h6h3",
+      "h6h2",
+      "h6h1"
+    ]
+  },
+  {
+    "id": "queen_hang_fen",
+    "fen": "rnb1kb1r/ppp1pppp/5n2/3q4/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4",
+    "target_square_number": 21,
+    "target_square": "f3",
+    "target_piece": "None",
+    "legal_moves_from_target": [],
+    "board_valid": true,
+    "mate_in_one_moves": [],
+    "free_queen_moves": [],
+    "file_flipped_target": "c3",
+    "legal_moves_from_file_flipped_target": [
+      "c3d5",
+      "c3b5",
+      "c3e4",
+      "c3a4",
+      "c3e2",
+      "c3b1"
+    ]
+  },
+  {
+    "id": "french_fen",
+    "fen": "r1bqkbnr/pp3ppp/2n1p3/3pP3/3p4/2P2N2/PP3PPP/RNBQKB1R w KQkq - 0 6",
+    "target_square_number": 21,
+    "target_square": "f3",
+    "target_piece": "N",
+    "legal_moves_from_target": [
+      "f3g5",
+      "f3h4",
+      "f3d4",
+      "f3d2",
+      "f3g1"
+    ],
+    "board_valid": true,
+    "mate_in_one_moves": [],
+    "free_queen_moves": [],
+    "file_flipped_target": "c3",
+    "legal_moves_from_file_flipped_target": [
+      "c3d4",
+      "c3c4"
+    ]
+  },
+  {
+    "id": "scholars_fen",
+    "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+    "target_square_number": 32,
+    "target_square": "a5",
+    "target_piece": "None",
+    "legal_moves_from_target": [],
+    "board_valid": true,
+    "mate_in_one_moves": [
+      "h5f7"
+    ],
+    "free_queen_moves": [],
+    "file_flipped_target": "h5",
+    "legal_moves_from_file_flipped_target": [
+      "h5h7",
+      "h5f7",
+      "h5h6",
+      "h5g6",
+      "h5g5",
+      "h5f5",
+      "h5e5",
+      "h5h4",
+      "h5g4",
+      "h5h3",
+      "h5f3",
+      "h5e2",
+      "h5d1"
+    ]
+  },
+  {
+    "id": "exchange_french_fen",
+    "fen": "rnbqkbnr/ppp2ppp/4p3/3P4/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3",
+    "target_square_number": 43,
+    "target_square": "d6",
+    "target_piece": "None",
+    "legal_moves_from_target": [],
+    "board_valid": true,
+    "mate_in_one_moves": [],
+    "free_queen_moves": [],
+    "file_flipped_target": "e6",
+    "legal_moves_from_file_flipped_target": [
+      "e6d5",
+      "e6e5"
+    ]
+  },
+  {
+    "id": "queen_hang2_fen",
+    "fen": "rn1qkbnr/pp1bpppp/8/1QPp4/8/8/PPP1PPPP/RNB1KBNR b KQkq - 0 4",
+    "target_square_number": 52,
+    "target_square": "e7",
+    "target_piece": "p",
+    "legal_moves_from_target": [
+      "e7e6",
+      "e7e5"
+    ],
+    "board_valid": true,
+    "mate_in_one_moves": [],
+    "free_queen_moves": [
+      "d7b5"
+    ],
+    "file_flipped_target": "d7",
+    "legal_moves_from_file_flipped_target": [
+      "d7c6",
+      "d7b5"
+    ]
+  },
+  {
+    "id": "unsound_sacrifice",
+    "fen": "r1bqk1nr/pppp1Bpp/2n5/2b1p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4",
+    "target_square_number": 59,
+    "target_square": "d8",
+    "target_piece": "q",
+    "legal_moves_from_target": [],
+    "board_valid": true,
+    "mate_in_one_moves": [],
+    "free_queen_moves": [],
+    "file_flipped_target": "e8",
+    "legal_moves_from_file_flipped_target": [
+      "e8f8",
+      "e8f7",
+      "e8e7"
+    ]
+  },
+  {
+    "id": "latvian_gambit",
+    "fen": "rnb1kbnr/ppp3pp/3p1q2/5p2/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 1 5",
+    "target_square_number": 34,
+    "target_square": "c5",
+    "target_piece": "None",
+    "legal_moves_from_target": [],
+    "board_valid": true,
+    "mate_in_one_moves": [],
+    "free_queen_moves": [],
+    "file_flipped_target": "f5",
+    "legal_moves_from_file_flipped_target": [
+      "f5e4",
+      "f5f4"
+    ]
+  }
+]

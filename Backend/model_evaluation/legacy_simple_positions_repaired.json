@@ -1,0 +1,94 @@
+{
+  "schema_version": 2,
+  "version": "legacy-eight-repaired",
+  "cases": [
+    {
+      "id": "ladder_fen",
+      "base_id": "ladder_fen",
+      "variant": "file-label-corrected",
+      "fen": "k7/6R1/7R/8/8/8/8/K7 w - - 0 1",
+      "category": "other",
+      "moves": [
+        "h6h8"
+      ],
+      "rationale": "Historical source label repaired by a file reflection; this preserves the original position and does not certify a uniquely best move."
+    },
+    {
+      "id": "queen_hang_fen",
+      "base_id": "queen_hang_fen",
+      "variant": "file-label-corrected",
+      "fen": "rnb1kb1r/ppp1pppp/5n2/3q4/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4",
+      "category": "other",
+      "moves": [
+        "c3d5"
+      ],
+      "rationale": "Historical source label repaired by a file reflection; this preserves the original position and does not certify a uniquely best move."
+    },
+    {
+      "id": "french_fen",
+      "base_id": "french_fen",
+      "variant": "file-label-corrected",
+      "fen": "r1bqkbnr/pp3ppp/2n1p3/3pP3/3p4/2P2N2/PP3PPP/RNBQKB1R w KQkq - 0 6",
+      "category": "other",
+      "moves": [
+        "c3d4"
+      ],
+      "rationale": "Historical source label repaired by a file reflection; this preserves the original position and does not certify a uniquely best move."
+    },
+    {
+      "id": "scholars_fen",
+      "base_id": "scholars_fen",
+      "variant": "file-label-corrected",
+      "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+      "category": "other",
+      "moves": [
+        "h5f7"
+      ],
+      "rationale": "Historical source label repaired by a file reflection; this preserves the original position and does not certify a uniquely best move."
+    },
+    {
+      "id": "exchange_french_fen",
+      "base_id": "exchange_french_fen",
+      "variant": "file-label-corrected",
+      "fen": "rnbqkbnr/ppp2ppp/4p3/3P4/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3",
+      "category": "other",
+      "moves": [
+        "e6d5"
+      ],
+      "rationale": "Historical source label repaired by a file reflection; this preserves the original position and does not certify a uniquely best move."
+    },
+    {
+      "id": "queen_hang2_fen",
+      "base_id": "queen_hang2_fen",
+      "variant": "file-label-corrected",
+      "fen": "rn1qkbnr/pp1bpppp/8/1QPp4/8/8/PPP1PPPP/RNB1KBNR b KQkq - 0 4",
+      "category": "other",
+      "moves": [
+        "d7b5"
+      ],
+      "rationale": "Historical source label repaired by a file reflection; this preserves the original position and does not certify a uniquely best move."
+    },
+    {
+      "id": "unsound_sacrifice",
+      "base_id": "unsound_sacrifice",
+      "variant": "file-label-corrected",
+      "fen": "r1bqk1nr/pppp1Bpp/2n5/2b1p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4",
+      "category": "other",
+      "moves": [
+        "e8f7"
+      ],
+      "rationale": "Historical source label repaired by a file reflection; this preserves the original position and does not certify a uniquely best move."
+    },
+    {
+      "id": "latvian_gambit",
+      "base_id": "latvian_gambit",
+      "variant": "file-label-corrected",
+      "fen": "rnb1kbnr/ppp3pp/3p1q2/5p2/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 1 5",
+      "category": "other",
+      "moves": [
+        "f5e4"
+      ],
+      "rationale": "Historical source label repaired by a file reflection; this preserves the original position and does not certify a uniquely best move."
+    }
+  ]
+}

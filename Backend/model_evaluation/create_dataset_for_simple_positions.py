@@ -1,29 +1,25 @@
-import pandas as pd
-import os 
+"""Export validated positions for older CSV consumers; author the JSON catalog."""
+import csv
+from pathlib import Path
 
-def main():
-    ladder_fen = 'k7/6R1/7R/8/8/8/8/K7 w - - 0 1',40
-    queen_hang_fen = 'rnb1kb1r/ppp1pppp/5n2/3q4/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4', 21
-    french_fen = 'r1bqkbnr/pp3ppp/2n1p3/3pP3/3p4/2P2N2/PP3PPP/RNBQKB1R w KQkq - 0 6', 21
-    scholars_fen = 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',32
-    exchange_french_fen = 'rnbqkbnr/ppp2ppp/4p3/3P4/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3', 43
-    queen_hang2_fen = 'rn1qkbnr/pp1bpppp/8/1QPp4/8/8/PPP1PPPP/RNB1KBNR b KQkq - 0 4', 52
-    unsound_sacrifice = 'r1bqk1nr/pppp1Bpp/2n5/2b1p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4', 59
-    latvian_gambit = 'rnb1kbnr/ppp3pp/3p1q2/5p2/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 1 5', 34
+import chess
 
-    fen_list = [ladder_fen,queen_hang_fen,french_fen,scholars_fen,
-                exchange_french_fen,queen_hang2_fen,unsound_sacrifice,
-                latvian_gambit]
-    
-    output_directory = os.path.join(os.getcwd(), "Backend", "model_evaluation")
-    os.makedirs(output_directory, exist_ok=True)
-    path_to_save = os.path.join(output_directory, "simple_positions.csv")
-    print("Saving the DF in  the directory : ", path_to_save )
+from Backend.model_evaluation.simple_positions import load_catalog
 
-    # generate dataframe from the list, column one is the string, column 2 is the number rapresenting the appropriate square. 
-    
-    df = pd.DataFrame(fen_list, columns=["FEN", "TargetSquare"])
-    print("Saving the following dataset: ",  df)   
 
-    df.to_csv(path_to_save, index=False)
+def main(output_path=None):
+    path = Path(output_path) if output_path else Path.cwd() / "Backend/model_evaluation/simple_positions.csv"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    catalog = load_catalog()
+    with path.open("w", encoding="utf-8", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=["FEN", "TargetSquare", "ID", "Category", "ExpectedMoves"])
+        writer.writeheader()
+        for case in catalog["cases"]:
+            writer.writerow({"FEN": case["fen"], "TargetSquare": chess.Move.from_uci(case["moves"][0]).from_square,
+                             "ID": case["id"], "Category": case["category"], "ExpectedMoves": " ".join(case["moves"])})
+    print(f"Exported {len(catalog['cases'])} validated positions to {path}")
+    return path
 
+
+if __name__ == "__main__":
+    main()

@@ -1,10 +1,4 @@
-# Next comparison: source_resnet 6x64
-
-The Nov 5 batch `20261105T082917Z-d51bd7cc` downloaded fit checkpoints for chunks
-0–4 and its final model. Its pasted summary still marks evaluation running, no
-evaluation files were listed, and no runner process was found. Recover that
-evaluation before submitting new work to the shared Kaggle slugs. File sizes
-and successful fitting do not establish model quality or independent test accuracy.
+# Architecture comparison: source_resnet 4x64 and 6x64
 
 The candidate configuration is
 `Backend/training_pipeline/configs/source_resnet_6x64.json`. It changes only the
@@ -28,39 +22,33 @@ a finite training step followed by save/reconstruction with matching predictions
 on the Keras Torch CPU backend. This does not replace validation in Kaggle's
 TensorFlow runtime or a comparison on independent evaluation data.
 
-## VPS sequence
+## Run the comparison
 
-Commit and push the required local changes before pulling; the runner pins
-Kaggle imports to the VPS checkout's commit. Recover the old batch first:
+Use the same datasets, seed and training budget to isolate the effect of depth.
+Before a new submission, finish or recover evaluation from any prior batch that
+uses the same Kaggle kernel IDs. A new fit replaces the latest kernel output.
 
-```bash
-source /opt/ludus-runner-venv/bin/activate
-cd /opt/ludus_scacchi
-git pull --ff-only origin main
-kaggle kernels status paolomostardi/evaluate-model
-python -m Backend.training_pipeline.run_batch --resume-dir /root/ludus-artifacts/training-batches/20261105T082917Z-d51bd7cc
-```
-
-If resume reports a failed evaluation, inspect the error before retrying. An old
-saved `running` state is first changed to `failed`; a second resume can retry
-evaluation without retraining. Do not overwrite the fit slug before recovery.
-Accept recovery only with a complete summary and report referring to fit run
-`212a6ef6444948fe9561cb3cfda52d7b`.
-
-Preview and launch the comparison after successful recovery:
+From a configured project checkout, preview and then run:
 
 ```bash
 python -m Backend.training_pipeline.run_batch --config Backend/training_pipeline/configs/source_resnet_6x64.json --pipeline-mode training --plan-only
-mkdir -p /root/ludus-artifacts/runner-logs
-nohup /opt/ludus-runner-venv/bin/python -u -m Backend.training_pipeline.run_batch --config Backend/training_pipeline/configs/source_resnet_6x64.json --pipeline-mode training > /root/ludus-artifacts/runner-logs/source-resnet-6x64-$(date -u +%Y%m%dT%H%M%SZ).log 2>&1 < /dev/null &
-pgrep -af '[B]ackend.training_pipeline.run_batch'
+python -m Backend.training_pipeline.run_batch --config Backend/training_pipeline/configs/source_resnet_6x64.json --pipeline-mode training
 ```
 
-`nohup` protects this runner from SSH hangups; it does not survive a VPS reboot.
-Review general and simple-set accuracy/loss, available top-3 accuracy, sample
-counts and training time for both runs. Missing older metrics must be recorded
-as unavailable, not zero. Confirm evaluation samples are independent of training
-before treating their scores as generalization evidence.
+To recover a completed fit's evaluation, use the saved batch directory:
 
-Prepare the [endgame dataset](endgame_dataset.md) independently; do not change
-both the architecture and training distribution in this depth comparison.
+```bash
+python -m Backend.training_pipeline.run_batch --resume-dir /path/to/saved-batch
+```
+
+Keep host addresses, environment activation commands, service configuration,
+background execution commands and operational batch histories in private operator
+notes. Use a process supervisor appropriate to the deployment for unattended runs.
+
+Compare general and simple-set accuracy/loss, available top-3 accuracy, sample
+counts and training time. Record missing older metrics as unavailable. Confirm
+that evaluation samples are independent of training before interpreting scores
+as generalization evidence.
+
+Prepare the [endgame dataset](endgame_dataset.md) independently so the effect of
+a data change can be distinguished from the effect of changing model depth.

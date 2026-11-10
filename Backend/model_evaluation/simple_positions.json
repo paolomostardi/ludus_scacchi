@@ -1,0 +1,2446 @@
+{
+  "schema_version": 2,
+  "version": "simple-v2",
+  "description": "Validated mate-in-one and undefended-queen source-square tests; mirrored variants are correlated.",
+  "cases": [
+    {
+      "id": "corrected-ladder-fen-original",
+      "fen": "k7/6R1/7R/8/8/8/8/K7 w - - 0 1",
+      "moves": [
+        "h6h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "Deliver checkmate immediately.",
+      "origin": "corrected legacy position",
+      "base_id": "corrected-ladder-fen",
+      "variant": "original"
+    },
+    {
+      "id": "corrected-ladder-fen-file-mirror",
+      "fen": "7k/1R6/R7/8/8/8/8/7K w - - 0 1",
+      "moves": [
+        "a6a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "Deliver checkmate immediately.",
+      "origin": "corrected legacy position",
+      "base_id": "corrected-ladder-fen",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "corrected-ladder-fen-color-mirror",
+      "fen": "k7/8/8/8/8/7r/6r1/K7 b - - 0 1",
+      "moves": [
+        "h3h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "Deliver checkmate immediately.",
+      "origin": "corrected legacy position",
+      "base_id": "corrected-ladder-fen",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "corrected-ladder-fen-file-color-mirror",
+      "fen": "7k/8/8/8/8/r7/1r6/7K b - - 0 1",
+      "moves": [
+        "a3a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "Deliver checkmate immediately.",
+      "origin": "corrected legacy position",
+      "base_id": "corrected-ladder-fen",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "corrected-scholars-fen-original",
+      "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+      "moves": [
+        "h5f7"
+      ],
+      "category": "mate_in_1",
+      "rationale": "Deliver checkmate immediately.",
+      "origin": "corrected legacy position",
+      "base_id": "corrected-scholars-fen",
+      "variant": "original"
+    },
+    {
+      "id": "corrected-scholars-fen-file-mirror",
+      "fen": "r1bkqb1r/ppp1pppp/2n2n2/Q2p4/3P1B2/8/PPP1PPPP/RN1K1BNR w - - 4 4",
+      "moves": [
+        "a5c7"
+      ],
+      "category": "mate_in_1",
+      "rationale": "Deliver checkmate immediately.",
+      "origin": "corrected legacy position",
+      "base_id": "corrected-scholars-fen",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "corrected-scholars-fen-color-mirror",
+      "fen": "rnb1k1nr/pppp1ppp/8/2b1p3/4P2q/2N2N2/PPPP1PPP/R1BQKB1R b KQkq - 4 4",
+      "moves": [
+        "h4f2"
+      ],
+      "category": "mate_in_1",
+      "rationale": "Deliver checkmate immediately.",
+      "origin": "corrected legacy position",
+      "base_id": "corrected-scholars-fen",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "corrected-scholars-fen-file-color-mirror",
+      "fen": "rn1k1bnr/ppp1pppp/8/3p1b2/q2P4/2N2N2/PPP1PPPP/R1BKQB1R b - - 4 4",
+      "moves": [
+        "a4c2"
+      ],
+      "category": "mate_in_1",
+      "rationale": "Deliver checkmate immediately.",
+      "origin": "corrected legacy position",
+      "base_id": "corrected-scholars-fen",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "corrected-queen-hang2-fen-original",
+      "fen": "rn1qkbnr/pp1bpppp/8/1QPp4/8/8/PPP1PPPP/RNB1KBNR b KQkq - 0 4",
+      "moves": [
+        "d7b5"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the undefended queen without losing the capturing piece immediately.",
+      "origin": "corrected legacy position",
+      "base_id": "corrected-queen-hang2-fen",
+      "variant": "original"
+    },
+    {
+      "id": "corrected-queen-hang2-fen-file-mirror",
+      "fen": "rnbkq1nr/ppppb1pp/8/4pPQ1/8/8/PPPP1PPP/RNBK1BNR b - - 0 4",
+      "moves": [
+        "e7g5"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the undefended queen without losing the capturing piece immediately.",
+      "origin": "corrected legacy position",
+      "base_id": "corrected-queen-hang2-fen",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "corrected-queen-hang2-fen-color-mirror",
+      "fen": "rnb1kbnr/ppp1pppp/8/8/1qpP4/8/PP1BPPPP/RN1QKBNR w KQkq - 0 4",
+      "moves": [
+        "d2b4"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the undefended queen without losing the capturing piece immediately.",
+      "origin": "corrected legacy position",
+      "base_id": "corrected-queen-hang2-fen",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "corrected-queen-hang2-fen-file-color-mirror",
+      "fen": "rnbk1bnr/pppp1ppp/8/8/4Ppq1/8/PPPPB1PP/RNBKQ1NR w - - 0 4",
+      "moves": [
+        "e2g4"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the undefended queen without losing the capturing piece immediately.",
+      "origin": "corrected legacy position",
+      "base_id": "corrected-queen-hang2-fen",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-a1-2-original",
+      "fen": "k7/6R1/8/8/8/8/7R/K7 w - - 0 1",
+      "moves": [
+        "h2h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-2",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-a1-2-file-mirror",
+      "fen": "7k/1R6/8/8/8/8/R7/7K w - - 0 1",
+      "moves": [
+        "a2a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-2",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-a1-2-color-mirror",
+      "fen": "k7/7r/8/8/8/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h7h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-2",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-a1-2-file-color-mirror",
+      "fen": "7k/r7/8/8/8/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a7a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-2",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-a1-3-original",
+      "fen": "k7/6R1/8/8/8/7R/8/K7 w - - 0 1",
+      "moves": [
+        "h3h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-3",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-a1-3-file-mirror",
+      "fen": "7k/1R6/8/8/8/R7/8/7K w - - 0 1",
+      "moves": [
+        "a3a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-3",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-a1-3-color-mirror",
+      "fen": "k7/8/7r/8/8/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h6h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-3",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-a1-3-file-color-mirror",
+      "fen": "7k/8/r7/8/8/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a6a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-3",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-a1-4-original",
+      "fen": "k7/6R1/8/8/7R/8/8/K7 w - - 0 1",
+      "moves": [
+        "h4h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-4",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-a1-4-file-mirror",
+      "fen": "7k/1R6/8/8/R7/8/8/7K w - - 0 1",
+      "moves": [
+        "a4a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-4",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-a1-4-color-mirror",
+      "fen": "k7/8/8/7r/8/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h5h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-4",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-a1-4-file-color-mirror",
+      "fen": "7k/8/8/r7/8/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a5a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-4",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-a1-5-original",
+      "fen": "k7/6R1/8/7R/8/8/8/K7 w - - 0 1",
+      "moves": [
+        "h5h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-5",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-a1-5-file-mirror",
+      "fen": "7k/1R6/8/R7/8/8/8/7K w - - 0 1",
+      "moves": [
+        "a5a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-5",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-a1-5-color-mirror",
+      "fen": "k7/8/8/8/7r/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h4h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-5",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-a1-5-file-color-mirror",
+      "fen": "7k/8/8/8/r7/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a4a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-a1-5",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-c1-2-original",
+      "fen": "k7/6R1/8/8/8/8/7R/2K5 w - - 0 1",
+      "moves": [
+        "h2h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-2",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-c1-2-file-mirror",
+      "fen": "7k/1R6/8/8/8/8/R7/5K2 w - - 0 1",
+      "moves": [
+        "a2a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-2",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-c1-2-color-mirror",
+      "fen": "2k5/7r/8/8/8/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h7h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-2",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-c1-2-file-color-mirror",
+      "fen": "5k2/r7/8/8/8/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a7a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-2",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-c1-3-original",
+      "fen": "k7/6R1/8/8/8/7R/8/2K5 w - - 0 1",
+      "moves": [
+        "h3h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-3",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-c1-3-file-mirror",
+      "fen": "7k/1R6/8/8/8/R7/8/5K2 w - - 0 1",
+      "moves": [
+        "a3a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-3",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-c1-3-color-mirror",
+      "fen": "2k5/8/7r/8/8/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h6h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-3",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-c1-3-file-color-mirror",
+      "fen": "5k2/8/r7/8/8/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a6a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-3",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-c1-4-original",
+      "fen": "k7/6R1/8/8/7R/8/8/2K5 w - - 0 1",
+      "moves": [
+        "h4h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-4",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-c1-4-file-mirror",
+      "fen": "7k/1R6/8/8/R7/8/8/5K2 w - - 0 1",
+      "moves": [
+        "a4a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-4",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-c1-4-color-mirror",
+      "fen": "2k5/8/8/7r/8/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h5h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-4",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-c1-4-file-color-mirror",
+      "fen": "5k2/8/8/r7/8/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a5a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-4",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-c1-5-original",
+      "fen": "k7/6R1/8/7R/8/8/8/2K5 w - - 0 1",
+      "moves": [
+        "h5h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-5",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-c1-5-file-mirror",
+      "fen": "7k/1R6/8/R7/8/8/8/5K2 w - - 0 1",
+      "moves": [
+        "a5a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-5",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-c1-5-color-mirror",
+      "fen": "2k5/8/8/8/7r/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h4h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-5",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-c1-5-file-color-mirror",
+      "fen": "5k2/8/8/8/r7/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a4a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-c1-5",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-e1-2-original",
+      "fen": "k7/6R1/8/8/8/8/7R/4K3 w - - 0 1",
+      "moves": [
+        "h2h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-2",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-e1-2-file-mirror",
+      "fen": "7k/1R6/8/8/8/8/R7/3K4 w - - 0 1",
+      "moves": [
+        "a2a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-2",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-e1-2-color-mirror",
+      "fen": "4k3/7r/8/8/8/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h7h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-2",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-e1-2-file-color-mirror",
+      "fen": "3k4/r7/8/8/8/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a7a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-2",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-e1-3-original",
+      "fen": "k7/6R1/8/8/8/7R/8/4K3 w - - 0 1",
+      "moves": [
+        "h3h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-3",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-e1-3-file-mirror",
+      "fen": "7k/1R6/8/8/8/R7/8/3K4 w - - 0 1",
+      "moves": [
+        "a3a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-3",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-e1-3-color-mirror",
+      "fen": "4k3/8/7r/8/8/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h6h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-3",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-e1-3-file-color-mirror",
+      "fen": "3k4/8/r7/8/8/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a6a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-3",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-e1-4-original",
+      "fen": "k7/6R1/8/8/7R/8/8/4K3 w - - 0 1",
+      "moves": [
+        "h4h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-4",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-e1-4-file-mirror",
+      "fen": "7k/1R6/8/8/R7/8/8/3K4 w - - 0 1",
+      "moves": [
+        "a4a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-4",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-e1-4-color-mirror",
+      "fen": "4k3/8/8/7r/8/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h5h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-4",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-e1-4-file-color-mirror",
+      "fen": "3k4/8/8/r7/8/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a5a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-4",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-e1-5-original",
+      "fen": "k7/6R1/8/7R/8/8/8/4K3 w - - 0 1",
+      "moves": [
+        "h5h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-5",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-e1-5-file-mirror",
+      "fen": "7k/1R6/8/R7/8/8/8/3K4 w - - 0 1",
+      "moves": [
+        "a5a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-5",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-e1-5-color-mirror",
+      "fen": "4k3/8/8/8/7r/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h4h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-5",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-e1-5-file-color-mirror",
+      "fen": "3k4/8/8/8/r7/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a4a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-e1-5",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-g1-2-original",
+      "fen": "k7/6R1/8/8/8/8/7R/6K1 w - - 0 1",
+      "moves": [
+        "h2h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-2",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-g1-2-file-mirror",
+      "fen": "7k/1R6/8/8/8/8/R7/1K6 w - - 0 1",
+      "moves": [
+        "a2a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-2",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-g1-2-color-mirror",
+      "fen": "6k1/7r/8/8/8/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h7h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-2",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-g1-2-file-color-mirror",
+      "fen": "1k6/r7/8/8/8/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a7a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-2",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-g1-3-original",
+      "fen": "k7/6R1/8/8/8/7R/8/6K1 w - - 0 1",
+      "moves": [
+        "h3h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-3",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-g1-3-file-mirror",
+      "fen": "7k/1R6/8/8/8/R7/8/1K6 w - - 0 1",
+      "moves": [
+        "a3a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-3",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-g1-3-color-mirror",
+      "fen": "6k1/8/7r/8/8/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h6h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-3",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-g1-3-file-color-mirror",
+      "fen": "1k6/8/r7/8/8/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a6a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-3",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-g1-4-original",
+      "fen": "k7/6R1/8/8/7R/8/8/6K1 w - - 0 1",
+      "moves": [
+        "h4h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-4",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-g1-4-file-mirror",
+      "fen": "7k/1R6/8/8/R7/8/8/1K6 w - - 0 1",
+      "moves": [
+        "a4a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-4",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-g1-4-color-mirror",
+      "fen": "6k1/8/8/7r/8/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h5h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-4",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-g1-4-file-color-mirror",
+      "fen": "1k6/8/8/r7/8/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a5a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-4",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "ladder-g1-5-original",
+      "fen": "k7/6R1/8/7R/8/8/8/6K1 w - - 0 1",
+      "moves": [
+        "h5h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-5",
+      "variant": "original"
+    },
+    {
+      "id": "ladder-g1-5-file-mirror",
+      "fen": "7k/1R6/8/R7/8/8/8/1K6 w - - 0 1",
+      "moves": [
+        "a5a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-5",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "ladder-g1-5-color-mirror",
+      "fen": "6k1/8/8/8/7r/8/6r1/K7 b - - 0 1",
+      "moves": [
+        "h4h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-5",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "ladder-g1-5-file-color-mirror",
+      "fen": "1k6/8/8/8/r7/8/1r6/7K b - - 0 1",
+      "moves": [
+        "a4a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "One rook cuts off the seventh rank; the other gives mate on the eighth.",
+      "origin": "constructed",
+      "base_id": "ladder-g1-5",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "two-rook-solutions-original",
+      "fen": "k7/6RR/1K6/8/8/8/8/8 w - - 0 1",
+      "moves": [
+        "g7g8",
+        "h7h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "Both rooks have mating moves; accept either source rather than marking one correct solution wrong.",
+      "origin": "constructed",
+      "base_id": "two-rook-solutions",
+      "variant": "original"
+    },
+    {
+      "id": "two-rook-solutions-file-mirror",
+      "fen": "7k/RR6/6K1/8/8/8/8/8 w - - 0 1",
+      "moves": [
+        "a7a8",
+        "b7b8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "Both rooks have mating moves; accept either source rather than marking one correct solution wrong.",
+      "origin": "constructed",
+      "base_id": "two-rook-solutions",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "two-rook-solutions-color-mirror",
+      "fen": "8/8/8/8/8/1k6/6rr/K7 b - - 0 1",
+      "moves": [
+        "g2g1",
+        "h2h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "Both rooks have mating moves; accept either source rather than marking one correct solution wrong.",
+      "origin": "constructed",
+      "base_id": "two-rook-solutions",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "two-rook-solutions-file-color-mirror",
+      "fen": "8/8/8/8/8/6k1/rr6/7K b - - 0 1",
+      "moves": [
+        "a2a1",
+        "b2b1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "Both rooks have mating moves; accept either source rather than marking one correct solution wrong.",
+      "origin": "constructed",
+      "base_id": "two-rook-solutions",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "queen-mate-f6-g5-original",
+      "fen": "7k/8/5K2/6Q1/8/8/8/8 w - - 0 1",
+      "moves": [
+        "g5g7"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f6-g5",
+      "variant": "original"
+    },
+    {
+      "id": "queen-mate-f6-g5-file-mirror",
+      "fen": "k7/8/2K5/1Q6/8/8/8/8 w - - 0 1",
+      "moves": [
+        "b5b7"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f6-g5",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "queen-mate-f6-g5-color-mirror",
+      "fen": "8/8/8/8/6q1/5k2/8/7K b - - 0 1",
+      "moves": [
+        "g4g2"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f6-g5",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "queen-mate-f6-g5-file-color-mirror",
+      "fen": "8/8/8/8/1q6/2k5/8/K7 b - - 0 1",
+      "moves": [
+        "b4b2"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f6-g5",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "queen-mate-f6-g6-original",
+      "fen": "7k/8/5KQ1/8/8/8/8/8 w - - 0 1",
+      "moves": [
+        "g6g7"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f6-g6",
+      "variant": "original"
+    },
+    {
+      "id": "queen-mate-f6-g6-file-mirror",
+      "fen": "k7/8/1QK5/8/8/8/8/8 w - - 0 1",
+      "moves": [
+        "b6b7"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f6-g6",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "queen-mate-f6-g6-color-mirror",
+      "fen": "8/8/8/8/8/5kq1/8/7K b - - 0 1",
+      "moves": [
+        "g3g2"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f6-g6",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "queen-mate-f6-g6-file-color-mirror",
+      "fen": "8/8/8/8/8/1qk5/8/K7 b - - 0 1",
+      "moves": [
+        "b3b2"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f6-g6",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "queen-mate-f6-e7-original",
+      "fen": "7k/4Q3/5K2/8/8/8/8/8 w - - 0 1",
+      "moves": [
+        "e7g7"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f6-e7",
+      "variant": "original"
+    },
+    {
+      "id": "queen-mate-f6-e7-file-mirror",
+      "fen": "k7/3Q4/2K5/8/8/8/8/8 w - - 0 1",
+      "moves": [
+        "d7b7"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f6-e7",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "queen-mate-f6-e7-color-mirror",
+      "fen": "8/8/8/8/8/5k2/4q3/7K b - - 0 1",
+      "moves": [
+        "e2g2"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f6-e7",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "queen-mate-f6-e7-file-color-mirror",
+      "fen": "8/8/8/8/8/2k5/3q4/K7 b - - 0 1",
+      "moves": [
+        "d2b2"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f6-e7",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "queen-mate-f7-g5-original",
+      "fen": "7k/5K2/8/6Q1/8/8/8/8 w - - 0 1",
+      "moves": [
+        "g5g7",
+        "g5g8",
+        "g5h4",
+        "g5h5",
+        "g5h6"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-g5",
+      "variant": "original"
+    },
+    {
+      "id": "queen-mate-f7-g5-file-mirror",
+      "fen": "k7/2K5/8/1Q6/8/8/8/8 w - - 0 1",
+      "moves": [
+        "b5a4",
+        "b5a5",
+        "b5a6",
+        "b5b7",
+        "b5b8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-g5",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "queen-mate-f7-g5-color-mirror",
+      "fen": "8/8/8/8/6q1/8/5k2/7K b - - 0 1",
+      "moves": [
+        "g4g1",
+        "g4g2",
+        "g4h3",
+        "g4h4",
+        "g4h5"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-g5",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "queen-mate-f7-g5-file-color-mirror",
+      "fen": "8/8/8/8/1q6/8/2k5/K7 b - - 0 1",
+      "moves": [
+        "b4a3",
+        "b4a4",
+        "b4a5",
+        "b4b1",
+        "b4b2"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-g5",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "queen-mate-f7-g6-original",
+      "fen": "7k/5K2/6Q1/8/8/8/8/8 w - - 0 1",
+      "moves": [
+        "g6g7",
+        "g6g8",
+        "g6h5",
+        "g6h6"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-g6",
+      "variant": "original"
+    },
+    {
+      "id": "queen-mate-f7-g6-file-mirror",
+      "fen": "k7/2K5/1Q6/8/8/8/8/8 w - - 0 1",
+      "moves": [
+        "b6a5",
+        "b6a6",
+        "b6b7",
+        "b6b8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-g6",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "queen-mate-f7-g6-color-mirror",
+      "fen": "8/8/8/8/8/6q1/5k2/7K b - - 0 1",
+      "moves": [
+        "g3g1",
+        "g3g2",
+        "g3h3",
+        "g3h4"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-g6",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "queen-mate-f7-g6-file-color-mirror",
+      "fen": "8/8/8/8/8/1q6/2k5/K7 b - - 0 1",
+      "moves": [
+        "b3a3",
+        "b3a4",
+        "b3b1",
+        "b3b2"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-g6",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "queen-mate-f7-e7-original",
+      "fen": "7k/4QK2/8/8/8/8/8/8 w - - 0 1",
+      "moves": [
+        "e7h4"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-e7",
+      "variant": "original"
+    },
+    {
+      "id": "queen-mate-f7-e7-file-mirror",
+      "fen": "k7/2KQ4/8/8/8/8/8/8 w - - 0 1",
+      "moves": [
+        "d7a4"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-e7",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "queen-mate-f7-e7-color-mirror",
+      "fen": "8/8/8/8/8/8/4qk2/7K b - - 0 1",
+      "moves": [
+        "e2h5"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-e7",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "queen-mate-f7-e7-file-color-mirror",
+      "fen": "8/8/8/8/8/8/2kq4/K7 b - - 0 1",
+      "moves": [
+        "d2a5"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-e7",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "queen-mate-f7-e6-original",
+      "fen": "7k/5K2/4Q3/8/8/8/8/8 w - - 0 1",
+      "moves": [
+        "e6h3",
+        "e6h6"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-e6",
+      "variant": "original"
+    },
+    {
+      "id": "queen-mate-f7-e6-file-mirror",
+      "fen": "k7/2K5/3Q4/8/8/8/8/8 w - - 0 1",
+      "moves": [
+        "d6a3",
+        "d6a6"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-e6",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "queen-mate-f7-e6-color-mirror",
+      "fen": "8/8/8/8/8/4q3/5k2/7K b - - 0 1",
+      "moves": [
+        "e3h3",
+        "e3h6"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-e6",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "queen-mate-f7-e6-file-color-mirror",
+      "fen": "8/8/8/8/8/3q4/2k5/K7 b - - 0 1",
+      "moves": [
+        "d3a3",
+        "d3a6"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-f7-e6",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "queen-mate-g6-g5-original",
+      "fen": "7k/8/6K1/6Q1/8/8/8/8 w - - 0 1",
+      "moves": [
+        "g5d8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-g6-g5",
+      "variant": "original"
+    },
+    {
+      "id": "queen-mate-g6-g5-file-mirror",
+      "fen": "k7/8/1K6/1Q6/8/8/8/8 w - - 0 1",
+      "moves": [
+        "b5e8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-g6-g5",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "queen-mate-g6-g5-color-mirror",
+      "fen": "8/8/8/8/6q1/6k1/8/7K b - - 0 1",
+      "moves": [
+        "g4d1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-g6-g5",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "queen-mate-g6-g5-file-color-mirror",
+      "fen": "8/8/8/8/1q6/1k6/8/K7 b - - 0 1",
+      "moves": [
+        "b4e1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The king supports an immediate queen mate against the confined king.",
+      "origin": "constructed",
+      "base_id": "queen-mate-g6-g5",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "back-rank-a-original",
+      "fen": "6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1",
+      "moves": [
+        "a1a8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-a",
+      "variant": "original"
+    },
+    {
+      "id": "back-rank-a-file-mirror",
+      "fen": "1k6/ppp5/8/8/8/8/8/1K5R w - - 0 1",
+      "moves": [
+        "h1h8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-a",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "back-rank-a-color-mirror",
+      "fen": "r5k1/8/8/8/8/8/5PPP/6K1 b - - 0 1",
+      "moves": [
+        "a8a1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-a",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "back-rank-a-file-color-mirror",
+      "fen": "1k5r/8/8/8/8/8/PPP5/1K6 b - - 0 1",
+      "moves": [
+        "h8h1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-a",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "back-rank-b-original",
+      "fen": "6k1/5ppp/8/8/8/8/8/1R4K1 w - - 0 1",
+      "moves": [
+        "b1b8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-b",
+      "variant": "original"
+    },
+    {
+      "id": "back-rank-b-file-mirror",
+      "fen": "1k6/ppp5/8/8/8/8/8/1K4R1 w - - 0 1",
+      "moves": [
+        "g1g8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-b",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "back-rank-b-color-mirror",
+      "fen": "1r4k1/8/8/8/8/8/5PPP/6K1 b - - 0 1",
+      "moves": [
+        "b8b1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-b",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "back-rank-b-file-color-mirror",
+      "fen": "1k4r1/8/8/8/8/8/PPP5/1K6 b - - 0 1",
+      "moves": [
+        "g8g1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-b",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "back-rank-c-original",
+      "fen": "6k1/5ppp/8/8/8/8/8/2R3K1 w - - 0 1",
+      "moves": [
+        "c1c8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-c",
+      "variant": "original"
+    },
+    {
+      "id": "back-rank-c-file-mirror",
+      "fen": "1k6/ppp5/8/8/8/8/8/1K3R2 w - - 0 1",
+      "moves": [
+        "f1f8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-c",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "back-rank-c-color-mirror",
+      "fen": "2r3k1/8/8/8/8/8/5PPP/6K1 b - - 0 1",
+      "moves": [
+        "c8c1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-c",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "back-rank-c-file-color-mirror",
+      "fen": "1k3r2/8/8/8/8/8/PPP5/1K6 b - - 0 1",
+      "moves": [
+        "f8f1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-c",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "back-rank-d-original",
+      "fen": "6k1/5ppp/8/8/8/8/8/3R2K1 w - - 0 1",
+      "moves": [
+        "d1d8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-d",
+      "variant": "original"
+    },
+    {
+      "id": "back-rank-d-file-mirror",
+      "fen": "1k6/ppp5/8/8/8/8/8/1K2R3 w - - 0 1",
+      "moves": [
+        "e1e8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-d",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "back-rank-d-color-mirror",
+      "fen": "3r2k1/8/8/8/8/8/5PPP/6K1 b - - 0 1",
+      "moves": [
+        "d8d1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-d",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "back-rank-d-file-color-mirror",
+      "fen": "1k2r3/8/8/8/8/8/PPP5/1K6 b - - 0 1",
+      "moves": [
+        "e8e1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-d",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "back-rank-e-original",
+      "fen": "6k1/5ppp/8/8/8/8/8/4R1K1 w - - 0 1",
+      "moves": [
+        "e1e8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-e",
+      "variant": "original"
+    },
+    {
+      "id": "back-rank-e-file-mirror",
+      "fen": "1k6/ppp5/8/8/8/8/8/1K1R4 w - - 0 1",
+      "moves": [
+        "d1d8"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-e",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "back-rank-e-color-mirror",
+      "fen": "4r1k1/8/8/8/8/8/5PPP/6K1 b - - 0 1",
+      "moves": [
+        "e8e1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-e",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "back-rank-e-file-color-mirror",
+      "fen": "1k1r4/8/8/8/8/8/PPP5/1K6 b - - 0 1",
+      "moves": [
+        "d8d1"
+      ],
+      "category": "mate_in_1",
+      "rationale": "The opponent's pawns block the king's escape; the rook gives back-rank mate.",
+      "origin": "constructed",
+      "base_id": "back-rank-e",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "free-queen-n-c3-original",
+      "fen": "7k/8/8/8/8/2N5/4q3/K7 w - - 0 1",
+      "moves": [
+        "c3e2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-n-c3",
+      "variant": "original"
+    },
+    {
+      "id": "free-queen-n-c3-file-mirror",
+      "fen": "k7/8/8/8/8/5N2/3q4/7K w - - 0 1",
+      "moves": [
+        "f3d2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-n-c3",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "free-queen-n-c3-color-mirror",
+      "fen": "k7/4Q3/2n5/8/8/8/8/7K b - - 0 1",
+      "moves": [
+        "c6e7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-n-c3",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "free-queen-n-c3-file-color-mirror",
+      "fen": "7k/3Q4/5n2/8/8/8/8/K7 b - - 0 1",
+      "moves": [
+        "f6d7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-n-c3",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "free-queen-n-e3-original",
+      "fen": "7k/8/8/8/8/4N3/2q5/K7 w - - 0 1",
+      "moves": [
+        "e3c2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-n-e3",
+      "variant": "original"
+    },
+    {
+      "id": "free-queen-n-e3-file-mirror",
+      "fen": "k7/8/8/8/8/3N4/5q2/7K w - - 0 1",
+      "moves": [
+        "d3f2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-n-e3",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "free-queen-n-e3-color-mirror",
+      "fen": "k7/2Q5/4n3/8/8/8/8/7K b - - 0 1",
+      "moves": [
+        "e6c7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-n-e3",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "free-queen-n-e3-file-color-mirror",
+      "fen": "7k/5Q2/3n4/8/8/8/8/K7 b - - 0 1",
+      "moves": [
+        "d6f7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-n-e3",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "free-queen-n-b4-original",
+      "fen": "7k/8/8/8/1N6/8/2q5/K7 w - - 0 1",
+      "moves": [
+        "b4c2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-n-b4",
+      "variant": "original"
+    },
+    {
+      "id": "free-queen-n-b4-file-mirror",
+      "fen": "k7/8/8/8/6N1/8/5q2/7K w - - 0 1",
+      "moves": [
+        "g4f2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-n-b4",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "free-queen-n-b4-color-mirror",
+      "fen": "k7/2Q5/8/1n6/8/8/8/7K b - - 0 1",
+      "moves": [
+        "b5c7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-n-b4",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "free-queen-n-b4-file-color-mirror",
+      "fen": "7k/5Q2/8/6n1/8/8/8/K7 b - - 0 1",
+      "moves": [
+        "g5f7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-n-b4",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "free-queen-b-b3-original",
+      "fen": "7k/8/8/8/8/1B6/2q5/K7 w - - 0 1",
+      "moves": [
+        "b3c2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-b-b3",
+      "variant": "original"
+    },
+    {
+      "id": "free-queen-b-b3-file-mirror",
+      "fen": "k7/8/8/8/8/6B1/5q2/7K w - - 0 1",
+      "moves": [
+        "g3f2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-b-b3",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "free-queen-b-b3-color-mirror",
+      "fen": "k7/2Q5/1b6/8/8/8/8/7K b - - 0 1",
+      "moves": [
+        "b6c7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-b-b3",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "free-queen-b-b3-file-color-mirror",
+      "fen": "7k/5Q2/6b1/8/8/8/8/K7 b - - 0 1",
+      "moves": [
+        "g6f7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-b-b3",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "free-queen-b-c4-original",
+      "fen": "7k/8/8/8/2B5/8/4q3/K7 w - - 0 1",
+      "moves": [
+        "c4e2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-b-c4",
+      "variant": "original"
+    },
+    {
+      "id": "free-queen-b-c4-file-mirror",
+      "fen": "k7/8/8/8/5B2/8/3q4/7K w - - 0 1",
+      "moves": [
+        "f4d2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-b-c4",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "free-queen-b-c4-color-mirror",
+      "fen": "k7/4Q3/8/2b5/8/8/8/7K b - - 0 1",
+      "moves": [
+        "c5e7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-b-c4",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "free-queen-b-c4-file-color-mirror",
+      "fen": "7k/3Q4/8/5b2/8/8/8/K7 b - - 0 1",
+      "moves": [
+        "f5d7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-b-c4",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "free-queen-b-e4-original",
+      "fen": "7k/8/8/8/4B3/8/2q5/K7 w - - 0 1",
+      "moves": [
+        "e4c2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-b-e4",
+      "variant": "original"
+    },
+    {
+      "id": "free-queen-b-e4-file-mirror",
+      "fen": "k7/8/8/8/3B4/8/5q2/7K w - - 0 1",
+      "moves": [
+        "d4f2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-b-e4",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "free-queen-b-e4-color-mirror",
+      "fen": "k7/2Q5/8/4b3/8/8/8/7K b - - 0 1",
+      "moves": [
+        "e5c7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-b-e4",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "free-queen-b-e4-file-color-mirror",
+      "fen": "7k/5Q2/8/3b4/8/8/8/K7 b - - 0 1",
+      "moves": [
+        "d5f7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-b-e4",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "free-queen-r-a4-original",
+      "fen": "7k/8/8/8/Rq6/8/8/K7 w - - 0 1",
+      "moves": [
+        "a4b4"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-r-a4",
+      "variant": "original"
+    },
+    {
+      "id": "free-queen-r-a4-file-mirror",
+      "fen": "k7/8/8/8/6qR/8/8/7K w - - 0 1",
+      "moves": [
+        "h4g4"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-r-a4",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "free-queen-r-a4-color-mirror",
+      "fen": "k7/8/8/rQ6/8/8/8/7K b - - 0 1",
+      "moves": [
+        "a5b5"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-r-a4",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "free-queen-r-a4-file-color-mirror",
+      "fen": "7k/8/8/6Qr/8/8/8/K7 b - - 0 1",
+      "moves": [
+        "h5g5"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-r-a4",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "free-queen-r-c4-original",
+      "fen": "7k/8/8/8/2R5/8/2q5/K7 w - - 0 1",
+      "moves": [
+        "c4c2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-r-c4",
+      "variant": "original"
+    },
+    {
+      "id": "free-queen-r-c4-file-mirror",
+      "fen": "k7/8/8/8/5R2/8/5q2/7K w - - 0 1",
+      "moves": [
+        "f4f2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-r-c4",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "free-queen-r-c4-color-mirror",
+      "fen": "k7/2Q5/8/2r5/8/8/8/7K b - - 0 1",
+      "moves": [
+        "c5c7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-r-c4",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "free-queen-r-c4-file-color-mirror",
+      "fen": "7k/5Q2/8/5r2/8/8/8/K7 b - - 0 1",
+      "moves": [
+        "f5f7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-r-c4",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "free-queen-r-d3-original",
+      "fen": "7k/8/8/8/8/3R4/3q4/K7 w - - 0 1",
+      "moves": [
+        "d3d2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-r-d3",
+      "variant": "original"
+    },
+    {
+      "id": "free-queen-r-d3-file-mirror",
+      "fen": "k7/8/8/8/8/4R3/4q3/7K w - - 0 1",
+      "moves": [
+        "e3e2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-r-d3",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "free-queen-r-d3-color-mirror",
+      "fen": "k7/3Q4/3r4/8/8/8/8/7K b - - 0 1",
+      "moves": [
+        "d6d7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-r-d3",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "free-queen-r-d3-file-color-mirror",
+      "fen": "7k/4Q3/4r3/8/8/8/8/K7 b - - 0 1",
+      "moves": [
+        "e6e7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-r-d3",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "free-queen-p-c4-original",
+      "fen": "7k/8/8/1q6/2P5/8/8/K7 w - - 0 1",
+      "moves": [
+        "c4b5"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-p-c4",
+      "variant": "original"
+    },
+    {
+      "id": "free-queen-p-c4-file-mirror",
+      "fen": "k7/8/8/6q1/5P2/8/8/7K w - - 0 1",
+      "moves": [
+        "f4g5"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-p-c4",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "free-queen-p-c4-color-mirror",
+      "fen": "k7/8/8/2p5/1Q6/8/8/7K b - - 0 1",
+      "moves": [
+        "c5b4"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-p-c4",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "free-queen-p-c4-file-color-mirror",
+      "fen": "7k/8/8/5p2/6Q1/8/8/K7 b - - 0 1",
+      "moves": [
+        "f5g4"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-p-c4",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "free-queen-p-e4-original",
+      "fen": "7k/8/8/3q4/4P3/8/8/K7 w - - 0 1",
+      "moves": [
+        "e4d5"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-p-e4",
+      "variant": "original"
+    },
+    {
+      "id": "free-queen-p-e4-file-mirror",
+      "fen": "k7/8/8/4q3/3P4/8/8/7K w - - 0 1",
+      "moves": [
+        "d4e5"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-p-e4",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "free-queen-p-e4-color-mirror",
+      "fen": "k7/8/8/4p3/3Q4/8/8/7K b - - 0 1",
+      "moves": [
+        "e5d4"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-p-e4",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "free-queen-p-e4-file-color-mirror",
+      "fen": "7k/8/8/3p4/4Q3/8/8/K7 b - - 0 1",
+      "moves": [
+        "d5e4"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-p-e4",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "free-queen-p-d4-original",
+      "fen": "7k/8/8/2q5/3P4/8/8/K7 w - - 0 1",
+      "moves": [
+        "d4c5"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-p-d4",
+      "variant": "original"
+    },
+    {
+      "id": "free-queen-p-d4-file-mirror",
+      "fen": "k7/8/8/5q2/4P3/8/8/7K w - - 0 1",
+      "moves": [
+        "e4f5"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-p-d4",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "free-queen-p-d4-color-mirror",
+      "fen": "k7/8/8/3p4/2Q5/8/8/7K b - - 0 1",
+      "moves": [
+        "d5c4"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-p-d4",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "free-queen-p-d4-file-color-mirror",
+      "fen": "7k/8/8/4p3/5Q2/8/8/K7 b - - 0 1",
+      "moves": [
+        "e5f4"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-p-d4",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "free-queen-q-b3-original",
+      "fen": "7k/8/8/8/8/1Q6/2q5/K7 w - - 0 1",
+      "moves": [
+        "b3c2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-q-b3",
+      "variant": "original"
+    },
+    {
+      "id": "free-queen-q-b3-file-mirror",
+      "fen": "k7/8/8/8/8/6Q1/5q2/7K w - - 0 1",
+      "moves": [
+        "g3f2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-q-b3",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "free-queen-q-b3-color-mirror",
+      "fen": "k7/2Q5/1q6/8/8/8/8/7K b - - 0 1",
+      "moves": [
+        "b6c7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-q-b3",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "free-queen-q-b3-file-color-mirror",
+      "fen": "7k/5Q2/6q1/8/8/8/8/K7 b - - 0 1",
+      "moves": [
+        "g6f7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-q-b3",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "free-queen-q-c3-original",
+      "fen": "7k/8/8/8/3q4/2Q5/8/K7 w - - 0 1",
+      "moves": [
+        "c3d4"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-q-c3",
+      "variant": "original"
+    },
+    {
+      "id": "free-queen-q-c3-file-mirror",
+      "fen": "k7/8/8/8/4q3/5Q2/8/7K w - - 0 1",
+      "moves": [
+        "f3e4"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-q-c3",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "free-queen-q-c3-color-mirror",
+      "fen": "k7/8/2q5/3Q4/8/8/8/7K b - - 0 1",
+      "moves": [
+        "c6d5"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-q-c3",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "free-queen-q-c3-file-color-mirror",
+      "fen": "7k/8/5q2/4Q3/8/8/8/K7 b - - 0 1",
+      "moves": [
+        "f6e5"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-q-c3",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "free-queen-q-d3-original",
+      "fen": "7k/8/8/8/8/3Q4/2q5/K7 w - - 0 1",
+      "moves": [
+        "d3c2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-q-d3",
+      "variant": "original"
+    },
+    {
+      "id": "free-queen-q-d3-file-mirror",
+      "fen": "k7/8/8/8/8/4Q3/5q2/7K w - - 0 1",
+      "moves": [
+        "e3f2"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-q-d3",
+      "variant": "file-mirror"
+    },
+    {
+      "id": "free-queen-q-d3-color-mirror",
+      "fen": "k7/2Q5/3q4/8/8/8/8/7K b - - 0 1",
+      "moves": [
+        "d6c7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-q-d3",
+      "variant": "color-mirror"
+    },
+    {
+      "id": "free-queen-q-d3-file-color-mirror",
+      "fen": "7k/5Q2/4q3/8/8/8/8/K7 b - - 0 1",
+      "moves": [
+        "e6f7"
+      ],
+      "category": "free_queen",
+      "rationale": "Capture the opponent's undefended queen; the capturing piece is safe on its destination.",
+      "origin": "constructed",
+      "base_id": "free-queen-q-d3",
+      "variant": "file-color-mirror"
+    },
+    {
+      "id": "h4-queen-hanging",
+      "fen": "rnb1k1nr/pppp1ppp/8/2b1p3/4P2q/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 4 4",
+      "category": "free_queen",
+      "moves": [
+        "f3h4"
+      ],
+      "rationale": "Capture the queen",
+      "base_id": "h4-queen-hanging",
+      "variant": "original"
+    },
+    {
+      "id": "promote to queen",
+      "fen": "8/6P1/5k2/8/6K1/8/8/8 w - - 0 1",
+      "category": "other",
+      "moves": [
+        "g7g8q"
+      ],
+      "rationale": "promote to a queen",
+      "base_id": "promote to queen",
+      "variant": "original"
+    },
+    {
+      "id": "capture the last pawn",
+      "fen": "8/3k4/8/5p2/6K1/8/8/8 w - - 0 1",
+      "category": "other",
+      "moves": [
+        "g4f5"
+      ],
+      "rationale": "capture the pawn",
+      "base_id": "capture the last pawn",
+      "variant": "original"
+    },
+    {
+      "id": "mate on c7",
+      "fen": "8/1k6/1b6/2q5/8/8/1PPPPPP1/5K2 b - - 0 1",
+      "category": "mate_in_1",
+      "moves": [
+        "c5f2"
+      ],
+      "rationale": "only mate in 1",
+      "base_id": "mate on c7",
+      "variant": "original"
+    },
+    {
+      "id": "save mate",
+      "fen": "8/1k6/1b6/2q5/8/3N4/1PPPPPP1/3B1K2 w - - 0 1",
+      "category": "other",
+      "moves": [
+        "d3c5"
+      ],
+      "rationale": "queen hanging",
+      "base_id": "save mate",
+      "variant": "original"
+    },
+    {
+      "id": "save mate 2",
+      "fen": "8/1k6/1b1p4/2q5/8/3N4/1PPPPPP1/3B1K2 w - - 0 1",
+      "category": "other",
+      "moves": [
+        "d3c5"
+      ],
+      "rationale": "queen hanging",
+      "base_id": "save mate 2",
+      "variant": "original"
+    },
+    {
+      "id": "save mate 3",
+      "fen": "8/1k2p3/1b1p4/2q5/8/3N4/1PPPPPP1/3B1K2 w - - 0 1",
+      "category": "other",
+      "moves": [
+        "d3c5"
+      ],
+      "rationale": "queen hanging",
+      "base_id": "save mate 3",
+      "variant": "original"
+    },
+    {
+      "id": "rook and king mate",
+      "fen": "8/k1K5/8/2R5/8/8/8/8 w - - 0 1",
+      "category": "mate_in_1",
+      "moves": [
+        "c5a5"
+      ],
+      "rationale": "mate in 1",
+      "base_id": "rook and king mate",
+      "variant": "original"
+    },
+    {
+      "id": "rook and king mate 2",
+      "fen": "8/k1K5/8/3R4/8/8/8/8 w - - 0 1",
+      "category": "mate_in_1",
+      "moves": [
+        "d5a5"
+      ],
+      "rationale": "mate in 1",
+      "base_id": "rook and king mate 2",
+      "variant": "original"
+    }
+  ]
+}

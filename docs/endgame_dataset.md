@@ -2,7 +2,7 @@
 
 This is a separate data-mining step. It does not train models or start Kaggle
 jobs. Run it where the source arrays are mounted, preferably on Kaggle or a
-workstation with storage, rather than downloading the large source onto the VPS.
+workstation with storage, rather than downloading the large source onto the orchestration host.
 
 `Backend/data_pipeline/build_endgames.py` selects positions with 3–6 pieces by
 default, including both kings and all pawns. It counts occupancy in planes 0–11;
