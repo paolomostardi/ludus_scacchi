@@ -20,6 +20,10 @@ python -m Backend.data_pipeline.build_endgames --input-dir /kaggle/input/lichess
 
 Each output shard contains `chunk_N.npy` (boolean board planes),
 `chunk_N_y.npy` (uint8 original target planes) and `chunk_N_source_rows.npy`.
+When the source shards include game keys, ply and promotion type, the builder
+also copies aligned `chunk_N_game_keys.npy`, `chunk_N_ply.npy` and
+`chunk_N_promotion.npy`. A zero promotion code means no promotion; 2–5 are
+python-chess's knight, bishop, rook and queen codes.
 The latter stores `(source_index, original_row)` pairs, with `source_index`
 referring to the manifest's `sources` list. Chunk boundaries may change; labels
 and board orientation do not. The last shard can be shorter than the default
@@ -55,5 +59,7 @@ full chess legality or validate the historical legal-destination plane encoding.
 - First run pipeline validation, then compare 4x64 on general versus endgame
   data. Test 6x64 separately to distinguish data changes from architecture changes.
 
-The builder is implemented and tested with synthetic arrays. A real endgame
-dataset has not yet been mined, published, or attached to the training pipeline.
+The builder has passed synthetic checks and a small real-data
+[April 2017 pilot](april_2017_pilot.md): 943 training and 260 independent-game
+evaluation positions, with zero exact encoded-input overlap. This prefix
+sample is not yet published or attached to the training pipeline.

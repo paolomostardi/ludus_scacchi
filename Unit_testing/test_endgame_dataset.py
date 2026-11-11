@@ -90,6 +90,23 @@ class EndgameDatasetTests(unittest.TestCase):
         with self.assertRaises(FileNotFoundError): self.build(chunks=[1])
         self.assertFalse(self.output.exists())
 
+    def test_optional_game_and_promotion_metadata_follows_selected_rows(self):
+        self.write()
+        keys = np.asarray([bytes([i + 1]) * 32 for i in range(6)], dtype="S32")
+        ply = np.arange(1, 7, dtype=np.uint16)
+        promotion = np.asarray([0, 0, 0, 5, 0, 0], dtype=np.uint8)
+        for suffix, values in (("_game_keys", keys), ("_ply", ply),
+                               ("_promotion", promotion)):
+            np.save(self.inputs / f"chunk_0{suffix}.npy", values)
+        result = self.build(shard_rows=3, block_rows=2)
+        self.assertEqual(result["selected_rows"], 4)
+        for shard in result["shards"]:
+            i = shard["index"]
+            rows = np.load(self.output / f"chunk_{i}_source_rows.npy")[:, 1]
+            for suffix, values in (("_game_keys", keys), ("_ply", ply),
+                                   ("_promotion", promotion)):
+                np.testing.assert_array_equal(np.load(self.output / f"chunk_{i}{suffix}.npy"), values[rows])
+
 
 if __name__ == "__main__":
     unittest.main()

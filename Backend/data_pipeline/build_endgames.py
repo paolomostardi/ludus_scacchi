@@ -65,11 +65,15 @@ def build_dataset(input_dir, output_dir, chunks, source_id, split,
         "label_policy": "unchanged played moves; plane 0 is the source square",
         "split_policy": "provided source partition; game independence not verified by this builder",
         "input_rows": 0, "selected_rows": 0, "piece_counts": {}, "sources": [], "shards": [],
+        "source_metadata_policy": "unknown until source chunks are inspected",
     }
     def save_manifest():
         (output_dir / "dataset_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
     buffers = [[], [], []]
+    extra_suffixes = ("_game_keys", "_ply", "_promotion")
+    extra_buffers = {suffix: [] for suffix in extra_suffixes}
+    extra_policy = None
     buffered = 0
     target_planes = None
 
@@ -82,6 +86,12 @@ def build_dataset(input_dir, output_dir, chunks, source_id, split,
             np.save(output_dir / name, np.concatenate(parts), allow_pickle=False)
             entry["files"][name] = {"sha256": sha256(output_dir / name)}
             parts.clear()
+        if extra_policy:
+            for suffix in extra_suffixes:
+                name = f"chunk_{index}{suffix}.npy"
+                np.save(output_dir / name, np.concatenate(extra_buffers[suffix]), allow_pickle=False)
+                entry["files"][name] = {"sha256": sha256(output_dir / name)}
+                extra_buffers[suffix].clear()
         manifest["shards"].append(entry)
         buffered = 0
 
@@ -90,16 +100,36 @@ def build_dataset(input_dir, output_dir, chunks, source_id, split,
         for source_index, (x_path, y_path) in enumerate(pairs):
             x = np.load(x_path, mmap_mode="r", allow_pickle=False)
             y = np.load(y_path, mmap_mode="r", allow_pickle=False)
+            extra_paths = {suffix: x_path.with_name(x_path.stem + suffix + ".npy")
+                           for suffix in extra_suffixes}
+            present = tuple(path.is_file() for path in extra_paths.values())
+            if len(set(present)) != 1 or (extra_policy is not None and present[0] != extra_policy):
+                raise ValueError("All source chunks must consistently include game, ply, and promotion metadata.")
+            extra_policy = present[0]
+            manifest["source_metadata_policy"] = ("game keys, ply and promotion preserved" if extra_policy
+                                                  else "legacy arrays without per-move metadata")
+            extra = {suffix: np.load(path, mmap_mode="r", allow_pickle=False)
+                     for suffix, path in extra_paths.items()} if extra_policy else {}
             if x.ndim != 4 or x.shape[1:] != (15, 8, 8):
                 raise ValueError(f"{x_path.name}: expected (N,15,8,8).")
             if y.ndim != 4 or y.shape[1] not in (1, 2) or y.shape[2:] != (8, 8) or len(x) != len(y):
                 raise ValueError(f"{y_path.name}: expected aligned (N,1 or 2,8,8) targets.")
             if target_planes is not None and y.shape[1] != target_planes:
                 raise ValueError("All source chunks must use the same number of target planes.")
+            if extra_policy:
+                if any(array.ndim != 1 or len(array) != len(x) for array in extra.values()):
+                    raise ValueError("Source metadata must have one value per position.")
+                if not np.isin(extra["_promotion"], (0, 2, 3, 4, 5)).all():
+                    raise ValueError("Promotion metadata must use 0 or a valid promoted-piece type.")
             target_planes = y.shape[1]
             record = {"chunk_index": chunks[source_index], "rows": len(x), "selected_rows": 0,
                       "input_file": str(x_path), "target_file": str(y_path),
                       "input_sha256": sha256(x_path), "target_sha256": sha256(y_path)}
+            if extra_policy:
+                record["metadata_files"] = {
+                    suffix: {"file": str(path), "sha256": sha256(path)}
+                    for suffix, path in extra_paths.items()
+                }
             manifest["sources"].append(record)
             manifest["input_rows"] += len(x)
             for start in range(0, len(x), block_rows):
@@ -116,11 +146,15 @@ def build_dataset(input_dir, output_dir, chunks, source_id, split,
                     buffers[0].append(xb[take].astype(np.bool_))
                     buffers[1].append(yb[take].astype(np.uint8))
                     buffers[2].append(np.column_stack((np.full(len(take), source_index, dtype=np.int64), start + take)))
+                    if extra_policy:
+                        for suffix in extra_suffixes:
+                            extra_buffers[suffix].append(extra[suffix][start + take])
                     buffered += len(take)
                     chosen = chosen[len(take):]
                     if buffered == shard_rows:
                         flush()
             del x, y
+            del extra
         if buffered:
             flush()
         if not manifest["selected_rows"]:

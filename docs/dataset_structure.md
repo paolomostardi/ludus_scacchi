@@ -1,5 +1,11 @@
 # Dataset Structure Documentation
 
+The current Kaggle uploads and the proposed 1500-rated collection are tracked
+in [dataset_inventory.md](dataset_inventory.md). The "Proposed New Structure"
+and global FEN registry below are historical design notes; that registry is not
+implemented. A game-level split and a bounded exact-position overlap audit are
+required before treating future training/evaluation partitions as independent.
+
 ## Current Structure
 
 ### Data Pipeline Flow
@@ -36,7 +42,11 @@ Backend/data/
 - **x2**: Alternative transformed input format
 - **y2**: Alternative transformed output format
 
-## Proposed New Structure
+## Historical proposal (superseded)
+
+The following global-JSON design is retained for context, not as an
+implementation plan. Use the versioned inventory and bounded overlap checks in
+[dataset_inventory.md](dataset_inventory.md) for new work.
 
 ### Requirements
 1. Each dataset should have training and evaluation parts
@@ -162,7 +172,7 @@ Kaggle Datasets/
 
 ## Key Benefits
 
-1. **No Data Leakage**: FEN deduplication ensures positions don't appear in multiple datasets
+1. **Intended leakage check**: FEN deduplication would catch some exact overlaps, but would not establish game-level independence or cover all encoded-input duplicates
 2. **Reproducibility**: Metadata files track dataset provenance
 3. **Flexibility**: Easy to create multiple datasets for different experiments
 4. **Transparency**: Clear tracking of data sources and transformations
