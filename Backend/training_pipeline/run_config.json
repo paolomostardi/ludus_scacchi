@@ -7,7 +7,7 @@
     }
   },
   "training_dataset": "paolomostardi/lichess-bitboards-2013-01",
-  "evaluation_dataset": "paolomostardi/eval-training-2013-chunk-9",
+  "evaluation_dataset": "paolomostardi/ludus-1500-2017-04-general-eval-v1",
   "start_chunk": 0,
   "chunk_count": 5,
   "max_training_rows_per_chunk": null,

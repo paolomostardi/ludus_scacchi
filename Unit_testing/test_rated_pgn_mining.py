@@ -9,7 +9,7 @@ import numpy as np
 
 from Backend.data_pipeline.audit_position_overlap import audit, chunk_paths
 from Backend.data_pipeline.download_lichess_prefix import download
-from Backend.data_pipeline.mine_rated_pgn import event_class, mine
+from Backend.data_pipeline.mine_rated_pgn import event_class, key_from_site, mine
 
 
 def game(site, event, white_elo, black_elo, time_control, moves):
@@ -78,6 +78,36 @@ class RatedPgnMiningTests(unittest.TestCase):
         result = mine(source, self.root / "partial", partial=True)
         self.assertEqual(result["counts"]["games_scanned"], 1)
         self.assertFalse(result["source_complete"])
+
+    def test_hash_sample_is_independent_of_game_split(self):
+        source = self.root / "sample.pgn"
+        sites = [f"Abcde{i:03d}" for i in range(100)]
+        source.write_text("".join(game(site, "Rated Blitz", 1500, 1500, "60+0",
+                                       "1. e4 { [%clk 0:00:50] }")
+                                  for site in sites), encoding="utf-8")
+        result = mine(source, self.root / "sampled", sample_percent=10)
+        expected = sum(int.from_bytes(key_from_site(f"https://lichess.org/{site}")[8:16], "big") % 100 < 10
+                       for site in sites)
+        self.assertEqual(result["counts"]["games_sampled_in"], expected)
+        self.assertEqual(result["counts"]["games_scanned"], 100)
+
+    def test_external_hashes_exclude_legacy_training_positions(self):
+        source = self.root / "sample.pgn"
+        source.write_text(game("Abcdef12", "Rated Blitz", 1500, 1500, "60+0",
+                               "1. e4 { [%clk 0:00:50] }"), encoding="utf-8")
+        mine(source, self.root / "mined")
+        split = next(s for s in ("training", "evaluation")
+                     if chunk_paths(self.root / "mined" / s))
+        x_path = chunk_paths(self.root / "mined" / split)[0]
+        digest = __import__("hashlib").sha256(np.load(x_path)[0].tobytes()).digest()
+        hash_path = self.root / "legacy.npy"
+        np.save(hash_path, np.asarray([np.void(digest)], dtype="V32"))
+        counts = audit([x_path], [x_path], self.root / "index.sqlite",
+                       external_training_hashes=hash_path, cleaned_dir=self.root / "clean")
+        self.assertEqual(counts["external_training_hashes"], 1)
+        self.assertEqual(counts["training_overlap_external_rows"], 1)
+        self.assertEqual(counts["training_duplicate_rows"], 0)
+        self.assertEqual(counts["evaluation_overlap_rows"], 1)
 
     def test_promotion_piece_is_preserved(self):
         source = self.root / "promotion.pgn"

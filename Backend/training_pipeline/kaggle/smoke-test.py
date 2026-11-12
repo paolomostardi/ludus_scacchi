@@ -42,7 +42,7 @@ x_candidates = [p for p in input_root.rglob('chunk_0.npy') if p.parent.name == t
 if not x_candidates:
     mounted_inputs = sorted(p.name for p in input_root.iterdir())
     raise FileNotFoundError(
-        f"Dataset 'lichess-bitboards-2013-01' is not mounted under {input_root}. Mounted inputs: {mounted_inputs}."
+        f"Dataset {training_dataset_name!r} is not mounted under {input_root}. Mounted inputs: {mounted_inputs}."
     )
 if len(x_candidates) > 1:
     raise RuntimeError(f"Found multiple matching training chunks: {x_candidates}")

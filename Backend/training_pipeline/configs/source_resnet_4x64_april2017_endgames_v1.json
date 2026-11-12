@@ -1,0 +1,19 @@
+{
+  "architecture": {
+    "factory": "source_resnet",
+    "parameters": {
+      "conv_filters": 64,
+      "residual_blocks": 4
+    }
+  },
+  "training_dataset": "paolomostardi/ludus-1500-2017-04-endgame-train-v1",
+  "evaluation_dataset": "paolomostardi/ludus-1500-2017-04-endgame-eval-v1",
+  "start_chunk": 0,
+  "chunk_count": 1,
+  "max_training_rows_per_chunk": null,
+  "epochs_per_chunk": 3,
+  "batch_size": 64,
+  "seed": 42,
+  "final_chunk_holdout": 0,
+  "year_month": "2017-04"
+}

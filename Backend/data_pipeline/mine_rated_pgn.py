@@ -10,6 +10,7 @@ import hashlib
 import io
 import json
 import re
+import urllib.request
 from collections import Counter
 from pathlib import Path
 
@@ -24,7 +25,32 @@ from Backend.data_pipeline.from_PGN_generate_bitboards import (
 
 SOURCE_NAME = "lichess_db_standard_rated_2017-04.pgn.zst"
 SOURCE_SHA256 = "559222b0e933bc02281643724fbd9bd46690074b10d784c4f264e0bff6c5992c"
+SOURCE_URL = "https://database.lichess.org/standard/lichess_db_standard_rated_2017-04.pgn.zst"
 CLOCK_PATTERN = re.compile(r"\[%clk\s+\d+:\d\d:\d\d(?:\.\d+)?\]")
+HEADER_PATTERN = re.compile(r'^\[([^ ]+) "(.*)"\]$', re.MULTILINE)
+
+
+class HashingReader:
+    def __init__(self, source):
+        self.source = source
+        self.digest = hashlib.sha256()
+        self.bytes_read = 0
+
+    def read(self, size=-1):
+        data = self.source.read(size)
+        self.digest.update(data)
+        self.bytes_read += len(data)
+        return data
+
+
+def block_headers(block: str) -> dict[str, str]:
+    return dict(HEADER_PATTERN.findall(block.split("\n\n", 1)[0]))
+
+
+def key_from_site(site: str) -> bytes:
+    if not re.fullmatch(r"https?://lichess\.org/[A-Za-z0-9]{8}(?:/[A-Za-z0-9]+)?", site):
+        raise ValueError(f"Missing or unsupported Lichess game Site: {site!r}")
+    return hashlib.sha256(site.split("/")[3][:8].encode("ascii")).digest()
 
 
 def file_sha256(path: Path) -> str:
@@ -81,9 +107,7 @@ def game_key(game: chess.pgn.Game) -> bytes:
     site = game.headers.get("Site", "")
     # Lichess's Site header contains the stable game ID. Reject missing IDs
     # rather than silently split on a mutable PGN body.
-    if not re.fullmatch(r"https?://lichess\.org/[A-Za-z0-9]{8}(?:/[A-Za-z0-9]+)?", site):
-        raise ValueError(f"Missing or unsupported Lichess game Site: {site!r}")
-    return hashlib.sha256(site.split("/")[3][:8].encode("ascii")).digest()
+    return key_from_site(site)
 
 
 def game_split(key: bytes, *, eval_percent: int) -> str:
@@ -130,30 +154,42 @@ class ShardWriter:
             buffer.clear()
 
 
-def mine(input_path: Path, output_dir: Path, *, partial: bool = False,
+def mine(input_path: Path | None, output_dir: Path, *, input_url: str | None = None,
+         partial: bool = False, sample_percent: int = 100,
          min_rating: int = 1450, max_rating: int = 1550,
          min_clock: float = 15, eval_percent: int = 20,
          shard_rows: int = 10000, max_games: int | None = None):
-    input_path = Path(input_path).resolve()
+    if (input_path is None) == (input_url is None):
+        raise ValueError("Provide exactly one local input or input URL")
+    if input_url is not None and (input_url != SOURCE_URL or partial or max_games is not None):
+        raise ValueError("URL streaming requires the complete known April 2017 archive")
+    input_path = Path(input_path).resolve() if input_path is not None else None
     output_dir = Path(output_dir).resolve()
-    if not input_path.is_file() or output_dir.exists():
-        raise FileNotFoundError(input_path) if not input_path.is_file() else FileExistsError(output_dir)
+    if input_path is not None and not input_path.is_file():
+        raise FileNotFoundError(input_path)
+    if output_dir.exists():
+        raise FileExistsError(output_dir)
     if not (0 < min_rating <= max_rating and min_clock >= 0 and shard_rows > 0):
         raise ValueError("Invalid filter or shard size")
     if max_games is not None and max_games < 1:
         raise ValueError("max_games must be positive")
     game_split(b"\0" * 32, eval_percent=eval_percent)
+    if not 1 <= sample_percent <= 100:
+        raise ValueError("sample_percent must be 1–100")
 
     output_dir.mkdir(parents=True)
     writers = {split: ShardWriter(output_dir, split, shard_rows)
                for split in ("training", "evaluation")}
     counts = Counter()
     manifest = {
-        "schema_version": 1, "status": "building", "source_file": input_path.name,
-        "source_bytes": input_path.stat().st_size, "source_sha256": file_sha256(input_path),
+        "schema_version": 2, "status": "building", "source_file": SOURCE_NAME if input_url else input_path.name,
+        "source_url": input_url,
+        "source_bytes": None if input_url else input_path.stat().st_size,
+        "source_sha256": None if input_url else file_sha256(input_path),
         "source_complete": not partial and max_games is None,
         "max_games": max_games,
-        "expected_full_archive_sha256": SOURCE_SHA256 if input_path.name.startswith(SOURCE_NAME) else None,
+        "expected_full_archive_sha256": SOURCE_SHA256 if input_url or input_path.name.startswith(SOURCE_NAME) else None,
+        "sample_policy": f"SHA-256(Lichess game ID), bytes 8:16 modulo 100; <{sample_percent} retained",
         "selection": {"min_rating": min_rating, "max_rating": max_rating,
                       "rating_is_mover": True, "exclude_bullet": True,
                       "min_before_move_clock_seconds": min_clock},
@@ -161,6 +197,9 @@ def mine(input_path: Path, output_dir: Path, *, partial: bool = False,
         "encoding": "Ludus 15x8x8 inputs and 2x8x8 played-move targets",
         "shard_rows": shard_rows, "counts": {}, "splits": {},
     }
+    if input_path is not None and input_path.name == SOURCE_NAME and not partial:
+        if manifest["source_sha256"] != SOURCE_SHA256:
+            raise ValueError("Full archive checksum did not match the published SHA-256")
 
     def save_manifest(status):
         manifest["status"] = status
@@ -172,8 +211,10 @@ def mine(input_path: Path, output_dir: Path, *, partial: bool = False,
 
     save_manifest("building")
     try:
-        with input_path.open("rb") as raw:
-            if ".zst" in input_path.suffixes:
+        source = urllib.request.urlopen(input_url, timeout=120) if input_url else input_path.open("rb")
+        with source as source_stream:
+            raw = HashingReader(source_stream) if input_url else source_stream
+            if input_url or ".zst" in input_path.suffixes:
                 import zstandard as zstd
                 binary = zstd.ZstdDecompressor().stream_reader(raw)
             else:
@@ -183,21 +224,35 @@ def mine(input_path: Path, output_dir: Path, *, partial: bool = False,
                     if max_games is not None and counts["games_scanned"] >= max_games:
                         break
                     counts["games_scanned"] += 1
-                    game = chess.pgn.read_game(io.StringIO(block))
-                    if game is None or game.errors:
-                        counts["games_parse_failed"] += 1
-                        continue
+                    headers = block_headers(block)
                     try:
-                        key = game_key(game)
+                        key = key_from_site(headers.get("Site", ""))
                     except ValueError:
                         counts["games_missing_id"] += 1
                         continue
-                    category = event_class(game.headers.get("Event", ""))
+                    if int.from_bytes(key[8:16], "big") % 100 >= sample_percent:
+                        counts["games_sampled_out"] += 1
+                        continue
+                    counts["games_sampled_in"] += 1
+                    category = event_class(headers.get("Event", ""))
                     if category in ("bullet", "ultrabullet"):
                         counts["games_bullet"] += 1
                         continue
                     if category is None:
                         counts["games_unknown_event"] += 1
+                        continue
+                    white_rating = rating(headers.get("WhiteElo"))
+                    black_rating = rating(headers.get("BlackElo"))
+                    if not any(value is not None and min_rating <= value <= max_rating
+                               for value in (white_rating, black_rating)):
+                        counts["games_rating_miss"] += 1
+                        continue
+                    if initial_clock(headers.get("TimeControl", "")) is None:
+                        counts["games_missing_initial_clock"] += 1
+                        continue
+                    game = chess.pgn.read_game(io.StringIO(block))
+                    if game is None or game.errors:
+                        counts["games_parse_failed"] += 1
                         continue
                     counts[f"games_event_{category}"] += 1
                     clock0 = initial_clock(game.headers.get("TimeControl", ""))
@@ -207,8 +262,7 @@ def mine(input_path: Path, output_dir: Path, *, partial: bool = False,
                     split = game_split(key, eval_percent=eval_percent)
                     counts[f"games_{split}"] += 1
                     last_clock = {chess.WHITE: clock0, chess.BLACK: clock0}
-                    mover_rating = {chess.WHITE: rating(game.headers.get("WhiteElo")),
-                                    chess.BLACK: rating(game.headers.get("BlackElo"))}
+                    mover_rating = {chess.WHITE: white_rating, chess.BLACK: black_rating}
                     board = game.board()
                     for ply, node in enumerate(game.mainline(), start=1):
                         color = board.turn
@@ -230,6 +284,11 @@ def mine(input_path: Path, output_dir: Path, *, partial: bool = False,
                                 counts[f"rows_{split}"] += 1
                         last_clock[color] = after
                         board.push(node.move)
+        if input_url:
+            manifest["source_bytes"] = raw.bytes_read
+            manifest["source_sha256"] = raw.digest.hexdigest()
+            if manifest["source_sha256"] != SOURCE_SHA256:
+                raise ValueError("Full archive checksum did not match the published SHA-256")
         for writer in writers.values():
             writer.flush()
         save_manifest("complete")
@@ -242,7 +301,9 @@ def mine(input_path: Path, output_dir: Path, *, partial: bool = False,
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input", type=Path, required=True)
+    source_group = parser.add_mutually_exclusive_group(required=True)
+    source_group.add_argument("--input", type=Path)
+    source_group.add_argument("--input-url", choices=[SOURCE_URL])
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--partial", action="store_true")
     parser.add_argument("--min-rating", type=int, default=1450)
@@ -251,8 +312,10 @@ def main():
     parser.add_argument("--eval-percent", type=int, default=20)
     parser.add_argument("--shard-rows", type=int, default=10000)
     parser.add_argument("--max-games", type=int)
+    parser.add_argument("--sample-percent", type=int, default=100)
     args = parser.parse_args()
-    result = mine(args.input, args.output_dir, partial=args.partial,
+    result = mine(args.input, args.output_dir, input_url=args.input_url,
+                  partial=args.partial, sample_percent=args.sample_percent,
                   min_rating=args.min_rating, max_rating=args.max_rating,
                   min_clock=args.min_clock, eval_percent=args.eval_percent,
                   shard_rows=args.shard_rows, max_games=args.max_games)

@@ -1,6 +1,6 @@
 # Dataset inventory
 
-Snapshot: 11 November 2026. The Kaggle IDs and current version numbers below
+Snapshot: 12 November 2026. The Kaggle IDs and current version numbers below
 were read from the account's dataset listing. They are an inventory of **existing
 uploads**, not a claim that their filters, game splits, or checksums have been
 verified. A Kaggle dataset name alone does not identify the exact source files
@@ -8,8 +8,12 @@ used by an older run; future runs should record the dataset version explicitly.
 
 | Kaggle dataset ID (`paolomostardi/…`) | Current version | Known role |
 | --- | ---: | --- |
-| `lichess-bitboards-2013-01` | 1 | Current first-model training input; five `chunk_0`–`chunk_4` input/target pairs inspected. |
-| `eval-training-2013-chunk-9` | 2 | Current general evaluation input; its 2013-01 files are actually named `my_processed_chunks/2013-01/chunk_6_x.npy` and `chunk_6_y.npy`. The slug does not describe that file number. |
+| `lichess-bitboards-2013-01` | 1 | Existing first-model training input; five `chunk_0`–`chunk_4` input/target pairs inspected. |
+| `eval-training-2013-chunk-9` | 2 | Contaminated legacy evaluation input; its 2013-01 files are actually `my_processed_chunks/2013-01/chunk_6_x.npy` and `chunk_6_y.npy`. |
+| `ludus-1500-2017-04-general-train-v1` | 1 | Full-April-source 1% sampled training games; 542,568 positions, with repeat positions retained. |
+| `ludus-1500-2017-04-general-eval-v1` | 1 | Game-held-out evaluation; 111,276 exact-unique positions after removing matches to new and legacy training inputs. |
+| `ludus-1500-2017-04-endgame-train-v1` | 1 | 3–6-piece training subset; 14,756 positions from 1,114 games. |
+| `ludus-1500-2017-04-endgame-eval-v1` | 1 | 3–6-piece held-out evaluation subset; 3,107 positions from 267 games. |
 | `lichess-raw-dataset-2013-01` | 1 | Raw monthly PGN upload; no per-move clock requirement can be met from this month. |
 | `lichess-raw-dataset-2015-01` | 1 | Raw monthly PGN upload; no standard monthly `%clk` annotations expected. |
 | `simple-chess-positions` | 1 | Older small upload; distinct from the current, versioned simple-position catalog in the repository. |
@@ -22,8 +26,8 @@ used by an older run; future runs should record the dataset version explicitly.
 | `pgn-games-1700` | 1 | Historical 1700-rated PGN upload; filters and source-game membership unverified. |
 | `1700-lichess-user-bitboards` | 4 | Historical 1700-rated bitboard upload; filters and source-game membership unverified. |
 
-The current run configurations point to `lichess-bitboards-2013-01` and
-`eval-training-2013-chunk-9`. The training notebook reports five million source
+The default run configuration now points to `lichess-bitboards-2013-01` and
+the new April 2017 general evaluation dataset. The training notebook reports five million source
 rows across its five selected chunks. A private Kaggle CPU audit on 11 November
 2026 hashed every 15-plane input in these mounted datasets. **705,726 of the
 1,000,000 evaluation rows (70.57%) exactly match a training input**. It also
@@ -33,24 +37,26 @@ The downloaded `legacy_overlap_report.json` is retained with the local pilot
 artifacts. This is an exact-input check, not a game or near-duplicate check:
 source game IDs are absent, so game independence remains unknown. Historical
 general-set model accuracies must not be presented as held-out performance.
-The few-piece builder writes a
-`dataset_manifest.json` for new outputs, but no real few-piece upload exists yet.
+The new 2017 datasets each include a `dataset_manifest.json` with source
+checksum, sampling/split rules, row counts, shard checksums, and intended role.
+The [full-source build review](april_2017_full_build.md) records the independent
+partition and local disk budget. The archived 2013 models have not yet been
+rescored on the new held-out general evaluation set.
 
-## Planned 1500-rated collection
+## 1500-rated collection
 
-Proposed family: `lichess-1500-clock15`, starting with version `v1`. This is a
-**specification**, not a published Kaggle dataset. A bounded
-[April 2017 pilot](april_2017_pilot.md) has been mined locally. Keep separate immutable training and
-evaluation outputs and allow a few-piece subset to refer back to the same
-source-game partition.
+Family: `lichess-1500-clock15`, starting with the four private Kaggle datasets
+above. A bounded [April 2017 pilot](april_2017_pilot.md) established the filters;
+the [full-source build](april_2017_full_build.md) sampled games across the whole
+month and checked the game split and exact input overlap.
 
 - Source: `lichess_db_standard_rated_2017-04.pgn.zst` from the
   [Lichess standard-game archive](https://database.lichess.org/). Lichess's
   [published checksum list](https://database.lichess.org/standard/sha256sums.txt)
   gives SHA-256
   `559222b0e933bc02281643724fbd9bd46690074b10d784c4f264e0bff6c5992c`.
-  This is the expected checksum for the **complete** archive; no local copy has
-  been checked against it yet. April 2017 is the first month Lichess documents
+  The complete compressed archive was downloaded to the local mining worker and
+  verified against this checksum. April 2017 is the first month Lichess documents
   `%clk` annotations, not
   a guarantee that every game or move has one. Measure actual coverage in the
   selected source before building the dataset.
@@ -78,7 +84,8 @@ The currently used 2013 PGNs/bitboards therefore cannot be retroactively
 filtered to this 15-second rule. The older notebook also drops rating and clock
 context before bitboard generation. The pilot miner
 `Backend/data_pipeline/mine_rated_pgn.py` retains per-game and per-move
-metadata through filtering; a full-source build and publication remain open.
+metadata through filtering. The full-source sample was reviewed and published
+as separate private training/evaluation datasets.
 
 The April 2017 standard archive is listed at **3.48 GB compressed** and
 11,348,506 games; Lichess estimates decompressed PGNs at about 7.1 times the

@@ -29,6 +29,7 @@ def input_hash(row) -> bytes:
 
 def audit(training_inputs: list[Path], evaluation_inputs: list[Path],
           index_path: Path, *, cleaned_dir: Path | None = None,
+          external_training_hashes: Path | None = None,
           shard_rows: int = 10000, block_rows: int = 4096):
     if not training_inputs or not evaluation_inputs or index_path.exists():
         raise ValueError("Provide both input lists and a new SQLite index path")
@@ -37,14 +38,29 @@ def audit(training_inputs: list[Path], evaluation_inputs: list[Path],
     index_path.parent.mkdir(parents=True, exist_ok=True)
     db = sqlite3.connect(index_path)
     db.execute("CREATE TABLE train_hashes (hash BLOB PRIMARY KEY) WITHOUT ROWID")
+    db.execute("CREATE TABLE new_train_hashes (hash BLOB PRIMARY KEY) WITHOUT ROWID")
+    db.execute("CREATE TABLE external_hashes (hash BLOB PRIMARY KEY) WITHOUT ROWID")
     db.execute("CREATE TABLE eval_hashes (hash BLOB PRIMARY KEY) WITHOUT ROWID")
     db.execute("CREATE TABLE train_games (game_key BLOB PRIMARY KEY) WITHOUT ROWID")
     counts = {"training_rows": 0, "training_duplicate_rows": 0,
+              "external_training_hashes": 0,
+              "training_overlap_external_rows": 0,
               "evaluation_rows": 0, "evaluation_overlap_rows": 0,
               "evaluation_duplicate_rows": 0, "evaluation_kept_rows": 0,
               "evaluation_game_overlap_rows": 0}
     writer = ShardWriter(cleaned_dir, "evaluation", shard_rows) if cleaned_dir else None
     try:
+        if external_training_hashes is not None:
+            legacy = np.load(external_training_hashes, mmap_mode="r", allow_pickle=False)
+            if legacy.ndim != 1 or legacy.dtype.kind not in ("S", "V") or legacy.dtype.itemsize != 32:
+                raise ValueError("External hashes must be a one-dimensional S32 or V32 array")
+            legacy = legacy.view("V32")
+            for start in range(0, len(legacy), block_rows):
+                block = [(bytes(digest),) for digest in legacy[start:start + block_rows]]
+                db.executemany("INSERT OR IGNORE INTO train_hashes VALUES (?)", block)
+                db.executemany("INSERT OR IGNORE INTO external_hashes VALUES (?)", block)
+                db.commit()
+            counts["external_training_hashes"] = len(legacy)
         for path in training_inputs:
             x = np.load(path, mmap_mode="r", allow_pickle=False)
             if x.ndim != 4 or x.shape[1:] != (15, 8, 8):
@@ -56,10 +72,14 @@ def audit(training_inputs: list[Path], evaluation_inputs: list[Path],
             for start in range(0, len(x), block_rows):
                 for offset, row in enumerate(x[start:start + block_rows]):
                     counts["training_rows"] += 1
+                    digest = input_hash(row)
+                    if db.execute("SELECT 1 FROM external_hashes WHERE hash=?", (digest,)).fetchone():
+                        counts["training_overlap_external_rows"] += 1
                     before = db.total_changes
-                    db.execute("INSERT OR IGNORE INTO train_hashes VALUES (?)", (input_hash(row),))
+                    db.execute("INSERT OR IGNORE INTO new_train_hashes VALUES (?)", (digest,))
                     if db.total_changes == before:
                         counts["training_duplicate_rows"] += 1
+                    db.execute("INSERT OR IGNORE INTO train_hashes VALUES (?)", (digest,))
                     if keys is not None:
                         db.execute("INSERT OR IGNORE INTO train_games VALUES (?)", (bytes(keys[start + offset]),))
                 db.commit()
@@ -99,6 +119,7 @@ def audit(training_inputs: list[Path], evaluation_inputs: list[Path],
             report = {"status": "complete", "counts": counts,
                       "evaluation_shards": writer.shards,
                       "training_inputs": [str(p) for p in training_inputs],
+                      "external_training_hashes": str(external_training_hashes) if external_training_hashes else None,
                       "evaluation_inputs": [str(p) for p in evaluation_inputs]}
             (cleaned_dir / "overlap_report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
         return counts
@@ -112,10 +133,13 @@ def main():
     parser.add_argument("--evaluation-dir", type=Path, required=True)
     parser.add_argument("--index", type=Path, required=True)
     parser.add_argument("--cleaned-dir", type=Path)
+    parser.add_argument("--external-training-hashes", type=Path)
     parser.add_argument("--shard-rows", type=int, default=10000)
     args = parser.parse_args()
     result = audit(chunk_paths(args.training_dir), chunk_paths(args.evaluation_dir),
-                   args.index, cleaned_dir=args.cleaned_dir, shard_rows=args.shard_rows)
+                   args.index, cleaned_dir=args.cleaned_dir,
+                   external_training_hashes=args.external_training_hashes,
+                   shard_rows=args.shard_rows)
     print(json.dumps(result, indent=2))
 
 

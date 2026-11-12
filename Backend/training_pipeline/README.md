@@ -12,10 +12,10 @@ This package owns training and evaluation orchestration. It does not download mo
 4. Pushes and monitors the evaluation notebook, then checks its report uses the same MLflow run and experiment IDs and contains metrics for each evaluation set.
 5. Writes `batch-summary.json` and command logs under the configured output directory for the morning review.
 
-The notebook inputs are staged from the repository's root `fit-model.ipynb` and `Backend/kaggle/notebooks/evaluate-model.ipynb`. Kaggle metadata is generated per run so the evaluation kernel depends on the fit kernel output. The notebooks currently expect these Kaggle datasets:
+The notebook inputs are staged from the repository's root `fit-model.ipynb` and `Backend/kaggle/notebooks/evaluate-model.ipynb`. Kaggle metadata is generated per run so the evaluation kernel depends on the fit kernel output. The default configuration uses these Kaggle datasets:
 
 - `paolomostardi/lichess-bitboards-2013-01` for smoke and training.
-- `paolomostardi/eval-training-2013-chunk-9` for the separate evaluation chunk.
+- `paolomostardi/ludus-1500-2017-04-general-eval-v1` for game-held-out evaluation. The former 2013 evaluation dataset remains available only as a legacy diagnostic because 70.57% of its inputs match training inputs.
 
 The smoke, fit, and evaluation kernels use the same MLflow experiment name, `ludus_cnn`; the full evaluation must log under the fit run ID. MLflow credentials remain Kaggle notebook secrets named `IP_MLFLOW`, `USERNAME_MLFLOW`, and `PASSWORD_MLFLOW`.
 
@@ -64,7 +64,7 @@ Fit also exports `training_manifest.json` and logs it under `configuration` in M
 
 ## Small pipeline validation
 
-Use `--pipeline-mode validation` to exercise the same smoke → fit → evaluation sequence with a bounded workload. Fit uses the first configured chunk, at most 50,000 positions, and one epoch; the large evaluation dataset is capped at 1,000 positions while the eight simple positions remain included. Arrays are memory-mapped and sliced before label conversion. This checks execution and logging, not model quality. The existing smoke stage remains a 256-position check in both modes.
+Use `--pipeline-mode validation` to exercise the same smoke → fit → evaluation sequence with a bounded workload. Fit uses the first configured chunk, at most 50,000 positions, and one epoch; the configured held-out evaluation dataset is capped at 1,000 positions while the versioned simple-position benchmark remains included. Arrays are memory-mapped and evaluation runs in bounded blocks. This checks execution and logging, not model quality. The existing smoke stage remains a 256-position check in both modes.
 
 From a configured orchestration checkout:
 
@@ -93,7 +93,12 @@ It contains the architecture factory and parameters, Kaggle dataset IDs, startin
 chunk and chunk count, optional row cap, epochs per chunk, batch size, seed,
 final-chunk holdout, and dataset month. The supported training factory is
 `source_resnet`. Input datasets must retain the existing chunk filenames and
-encoding. Evaluation retains its existing chunk layout and eight simple cases.
+encoding. Evaluation discovers either versioned root-level `chunk_N.npy` /
+`chunk_N_y.npy` pairs or the legacy nested 2013 layout. It records the evaluated
+dataset ID in its report and MLflow tag. The independent few-piece experiment
+uses `configs/source_resnet_4x64_april2017_endgames_v1.json`. The existing
+Kaggle kernel slugs already have the required MLflow secret access; a new slug
+must be granted those secrets in Kaggle before a batch can use it.
 
 Use `--config /path/to/run-config.json` to select another complete configuration.
 Existing dataset CLI options override the corresponding configuration values.
