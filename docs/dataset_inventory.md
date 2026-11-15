@@ -6,25 +6,25 @@ uploads**, not a claim that their filters, game splits, or checksums have been
 verified. A Kaggle dataset name alone does not identify the exact source files
 used by an older run; future runs should record the dataset version explicitly.
 
-| Kaggle dataset ID (`paolomostardi/…`) | Current version | Known role |
-| --- | ---: | --- |
-| `lichess-bitboards-2013-01` | 1 | Existing first-model training input; five `chunk_0`–`chunk_4` input/target pairs inspected. |
-| `eval-training-2013-chunk-9` | 2 | Contaminated legacy evaluation input; its 2013-01 files are actually `my_processed_chunks/2013-01/chunk_6_x.npy` and `chunk_6_y.npy`. |
-| `ludus-1500-2017-04-general-train-v1` | 1 | Full-April-source 1% sampled training games; 542,568 positions, with repeat positions retained. |
-| `ludus-1500-2017-04-general-eval-v1` | 1 | Game-held-out evaluation; 111,276 exact-unique positions after removing matches to new and legacy training inputs. |
-| `ludus-1500-2017-04-endgame-train-v1` | 1 | 3–6-piece training subset; 14,756 positions from 1,114 games. |
-| `ludus-1500-2017-04-endgame-eval-v1` | 1 | 3–6-piece held-out evaluation subset; 3,107 positions from 267 games. |
-| `lichess-raw-dataset-2013-01` | 1 | Raw monthly PGN upload; no per-move clock requirement can be met from this month. |
-| `lichess-raw-dataset-2015-01` | 1 | Raw monthly PGN upload; no standard monthly `%clk` annotations expected. |
-| `simple-chess-positions` | 1 | Older small upload; distinct from the current, versioned simple-position catalog in the repository. |
-| `model-evaluation-combined` | 6 | Older evaluation/metadata CSV upload; not the current general evaluation input. |
-| `lichess-bitboards-2013-04` | 4 | Historical bitboard upload; current run use unverified. |
-| `lichess-bitboards-2014-07` | 3 | Historical bitboard upload; current run use unverified. |
-| `lichess-2013-01` | 2 | Historical Lichess upload; content and run use unverified. |
-| `masters-game-in-bitboards` | 6 | Historical master-game upload; content and run use unverified. |
-| `chess-grandmasters-moves` | 2 | Historical grandmaster upload; content and run use unverified. |
-| `pgn-games-1700` | 1 | Historical 1700-rated PGN upload; filters and source-game membership unverified. |
-| `1700-lichess-user-bitboards` | 4 | Historical 1700-rated bitboard upload; filters and source-game membership unverified. |
+| Kaggle dataset ID (`paolomostardi/…`) | Current version | Data points | Known role |
+| --- | ---: | ---: | --- |
+| `lichess-bitboards-2013-01` | 1 | 5,000,000 | Existing first-model training input; five `chunk_0`–`chunk_4` input/target pairs inspected. |
+| `eval-training-2013-chunk-9` | 2 | — | Contaminated legacy evaluation input; its 2013-01 files are actually `my_processed_chunks/2013-01/chunk_6_x.npy` and `chunk_6_y.npy`. |
+| `ludus-1500-2017-04-general-train-v1` | 1 | 542,568 | Full-April-source 1% sampled training games; 542,568 positions, with repeat positions retained. |
+| `ludus-1500-2017-04-general-eval-v1` | 1 | 111,276 | Game-held-out evaluation; 111,276 exact-unique positions after removing matches to new and legacy training inputs. |
+| `ludus-1500-2017-04-endgame-train-v1` | 1 | 14,756 | 3–6-piece training subset; 14,756 positions from 1,114 games. |
+| `ludus-1500-2017-04-endgame-eval-v1` | 1 | 3,107 | 3–6-piece held-out evaluation subset; 3,107 positions from 267 games. |
+| `lichess-raw-dataset-2013-01` | 1 | — | Raw monthly PGN upload; no per-move clock requirement can be met from this month. |
+| `lichess-raw-dataset-2015-01` | 1 | — | Raw monthly PGN upload; no standard monthly `%clk` annotations expected. |
+| `simple-chess-positions` | 1 | — | Older small upload; distinct from the current, versioned simple-position catalog in the repository. |
+| `model-evaluation-combined` | 6 | — | Older evaluation/metadata CSV upload; not the current general evaluation input. |
+| `lichess-bitboards-2013-04` | 4 | — | Historical bitboard upload; current run use unverified. |
+| `lichess-bitboards-2014-07` | 3 | — | Historical bitboard upload; current run use unverified. |
+| `lichess-2013-01` | 2 | — | Historical Lichess upload; content and run use unverified. |
+| `masters-game-in-bitboards` | 6 | — | Historical master-game upload; content and run use unverified. |
+| `chess-grandmasters-moves` | 2 | — | Historical grandmaster upload; content and run use unverified. |
+| `pgn-games-1700` | 1 | — | Historical 1700-rated PGN upload; filters and source-game membership unverified. |
+| `1700-lichess-user-bitboards` | 4 | — | Historical 1700-rated bitboard upload; filters and source-game membership unverified. |
 
 The default run configuration now points to `lichess-bitboards-2013-01` and
 the new April 2017 general evaluation dataset. The training notebook reports five million source

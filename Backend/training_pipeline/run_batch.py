@@ -157,7 +157,7 @@ def stage_kernels(args: argparse.Namespace, run_dir: Path) -> dict[str, dict[str
             "id": eval_id,
             "source": EVAL_NOTEBOOK,
             "code": "evaluate-model.ipynb",
-            "datasets": [args.evaluation_dataset],
+            "datasets": args.run_config["evaluation_datasets"],
             "kernels": [fit_id],
             "gpu": False,
             "title": args.eval_slug,
@@ -336,7 +336,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-dir", type=Path, default=Path("~/ludus-artifacts/training-batches"))
     parser.add_argument("--kaggle-owner", default=os.environ.get("KAGGLE_USERNAME", "paolomostardi"))
     parser.add_argument("--training-dataset", default=None)
-    parser.add_argument("--evaluation-dataset", default=None)
+    parser.add_argument("--evaluation-dataset", action="append", default=None,
+                        help="Kaggle evaluation dataset ID. Repeat for multiple datasets.")
     parser.add_argument("--smoke-slug", default="ludus-first-model-smoke")
     parser.add_argument("--fit-slug", default="fit-model")
     parser.add_argument("--eval-slug", default="evaluate-model")
@@ -433,11 +434,17 @@ def main() -> int:
     if args.resume_dir:
         return resume_batch(args)
     args.run_config = load_config(args.config)
-    for key in ("training_dataset", "evaluation_dataset"):
-        override = getattr(args, key)
-        if override is not None:
-            args.run_config[key] = override
-        setattr(args, key, args.run_config[key])
+    override = args.training_dataset
+    if override is not None:
+        args.run_config["training_dataset"] = override
+    args.training_dataset = args.run_config["training_dataset"]
+    evaluation_datasets = args.evaluation_dataset or args.run_config.get("evaluation_datasets")
+    if evaluation_datasets is None:
+        evaluation_datasets = [args.run_config["evaluation_dataset"]]
+    if not evaluation_datasets:
+        raise SystemExit("At least one evaluation dataset is required.")
+    args.evaluation_datasets = list(dict.fromkeys(evaluation_datasets))
+    args.run_config["evaluation_datasets"] = args.evaluation_datasets
     if args.pipeline_mode == "validation":
         cap = args.run_config["max_training_rows_per_chunk"]
         args.run_config["max_training_rows_per_chunk"] = min(cap, args.validation_fit_rows) if cap else args.validation_fit_rows
@@ -457,7 +464,7 @@ def main() -> int:
     for slug in (args.smoke_slug, args.fit_slug, args.eval_slug):
         if not re.fullmatch(r"[A-Za-z0-9_-]+", slug):
             raise SystemExit(f"Invalid Kaggle kernel slug: {slug!r}")
-    for dataset in (args.training_dataset, args.evaluation_dataset):
+    for dataset in [args.training_dataset, *args.evaluation_datasets]:
         if not re.fullmatch(r"[A-Za-z0-9_-]+/[A-Za-z0-9_-]+", dataset):
             raise SystemExit(f"Invalid Kaggle dataset ID: {dataset!r}")
 

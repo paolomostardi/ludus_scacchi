@@ -10,6 +10,8 @@ DEFAULT_CONFIG = Path(__file__).with_name("run_config.json")
 def load_config(path=DEFAULT_CONFIG):
     config = json.loads(Path(path).read_text(encoding="utf-8"))
     defaults = json.loads(DEFAULT_CONFIG.read_text(encoding="utf-8"))
+    if "evaluation_dataset" in config and "evaluation_datasets" not in config:
+        config["evaluation_datasets"] = [config.pop("evaluation_dataset")]
     if set(config) != set(defaults):
         raise ValueError("Run configuration must contain exactly the fields in run_config.json.")
     architecture = config["architecture"]
@@ -31,9 +33,15 @@ def load_config(path=DEFAULT_CONFIG):
     limit = config["max_training_rows_per_chunk"]
     if limit is not None and (type(limit) is not int or limit < 1):
         raise ValueError("Training row cap must be null or a positive integer.")
-    for key in ("training_dataset", "evaluation_dataset"):
-        if not isinstance(config[key], str) or not re.fullmatch(r"[A-Za-z0-9_-]+/[A-Za-z0-9_-]+", config[key]):
-            raise ValueError(f"Invalid Kaggle dataset: {key}")
+    datasets = config["evaluation_datasets"]
+    if (not isinstance(datasets, list) or not datasets
+            or any(not isinstance(dataset, str)
+                   or not re.fullmatch(r"[A-Za-z0-9_-]+/[A-Za-z0-9_-]+", dataset)
+                   for dataset in datasets)):
+        raise ValueError("evaluation_datasets must contain Kaggle dataset IDs.")
+    if not isinstance(config["training_dataset"], str) or not re.fullmatch(
+            r"[A-Za-z0-9_-]+/[A-Za-z0-9_-]+", config["training_dataset"]):
+        raise ValueError("Invalid Kaggle dataset: training_dataset")
     if not isinstance(config["year_month"], str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}", config["year_month"]):
         raise ValueError("year_month must use YYYY-MM format.")
     return config

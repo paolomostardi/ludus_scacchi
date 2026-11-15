@@ -1,10 +1,12 @@
 {
   "architecture": {
     "factory": "source_resnet",
-    "parameters": {"conv_filters": 64, "residual_blocks": 6}
+    "parameters": {
+      "conv_filters": 64,
+      "residual_blocks": 6
+    }
   },
   "training_dataset": "paolomostardi/lichess-bitboards-2013-01",
-  "evaluation_dataset": "paolomostardi/ludus-1500-2017-04-general-eval-v1",
   "start_chunk": 0,
   "chunk_count": 5,
   "max_training_rows_per_chunk": null,
@@ -12,5 +14,9 @@
   "batch_size": 64,
   "seed": 42,
   "final_chunk_holdout": 10000,
-  "year_month": "2013-01"
+  "year_month": "2013-01",
+  "evaluation_datasets": [
+    "paolomostardi/ludus-1500-2017-04-general-eval-v1",
+    "paolomostardi/ludus-1500-2017-04-endgame-eval-v1"
+  ]
 }

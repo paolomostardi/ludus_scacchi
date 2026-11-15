@@ -22,7 +22,6 @@ class ComparisonConfigTests(unittest.TestCase):
         args.run_config = comparison
         args.repository_revision = "a" * 40
         args.training_dataset = comparison["training_dataset"]
-        args.evaluation_dataset = comparison["evaluation_dataset"]
         with tempfile.TemporaryDirectory() as directory:
             specs = run_batch.stage_kernels(args, Path(directory))
             for spec in specs.values():
@@ -31,6 +30,7 @@ class ComparisonConfigTests(unittest.TestCase):
                 env = ast.literal_eval(tree.body[-1].value.args[0])
                 self.assertEqual(json.loads(env["LUDUS_RUN_CONFIG"]), comparison)
                 self.assertEqual(env["LUDUS_PIPELINE_MODE"], "training")
+            self.assertEqual(specs["evaluate"]["metadata"]["dataset_sources"], comparison["evaluation_datasets"])
             self.assertEqual(specs["fit"]["metadata"]["dataset_sources"], [comparison["training_dataset"]])
 
 
