@@ -135,3 +135,16 @@ do not hold that lock, so wait for them to finish before using the new runner.
 Arrays are checked in bounded-size slices for aligned lengths, expected shapes,
 finite values, and one-hot targets. Fit histories and evaluation metrics must
 be finite. The runner also validates downloaded report metrics and run IDs.
+## Continue training from a report row
+
+Run the commands from the Ludus repository root. The launcher needs Python 3.11 or later, Node, access to MLflow, and an authenticated Kaggle CLI for submission. Set `MLFLOW_TRACKING_URI` and, if your SSH tunnel requires a Host override, `LUDUS_MLFLOW_HOST`.
+
+```powershell
+python -m Backend.training_pipeline.continue_model --report ./ludus-report.html --refresh-report
+python -m Backend.training_pipeline.continue_model 1 --dataset general --checkpoint-dir ./checkpoints --report ./ludus-report.html --plan
+python -m Backend.training_pipeline.continue_model 1 --dataset general --checkpoint-dir ./checkpoints --report ./ludus-report.html
+```
+
+Open the refreshed HTML and use the ID shown on the row you want. The ID is resolved against that same HTML snapshot, so subsequent MLflow runs and table sorting cannot change the selected checkpoint. Use `--checkpoint-dir` to point to a directory containing saved weights alongside their `model_config.json` files. A row needs a finished run and a matching checkpoint. If the CLI is outside PATH, use `--kaggle` with its executable path.
+
+Choose `general`, `endgame` or `january` explicitly. A private Kaggle job fits the checkpoint for one pass with a fresh SGD optimizer, then evaluates it on April general, April endgame, cleaned January and the simple position catalog. The launcher waits for the job, downloads results, logs them to MLflow, saves the new checkpoint by its permanent run ID and refreshes the HTML. The job directory preserves the staged settings, logs and downloads under `ludus-jobs` by default. Each submission also creates a private Kaggle dataset for its input checkpoint.

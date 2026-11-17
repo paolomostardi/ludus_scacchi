@@ -1,6 +1,7 @@
 import { createServer, request as httpRequest } from 'node:http';
 import { request as httpsRequest } from 'node:https';
 import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 
 const inventory = new URL('../../docs/dataset_inventory.md', import.meta.url);
 const uri = process.env.MLFLOW_TRACKING_URI?.replace(/\/+$/, '');
@@ -101,6 +102,7 @@ function evaluations(run, datasetNames) {
     if (input && input === oldInput) {
       version = run.tags.evaluation_dataset_version || run.params.evaluation_dataset_version;
     }
+    version = run.tags['evaluation_dataset_version.' + suffix] || version;
     if (suffix === 'simple_v2') {
       name = simpleCatalog;
       version = run.tags.simple_v2_version || run.params.simple_v2_version;
@@ -200,11 +202,18 @@ function trainingRows(runs, results, datasets) {
   }
   const trainingColumns = datasets.training.map(dataset => dataset.name);
   const evaluationColumns = [...new Set(datasets.evaluation.map(dataset => dataset.name))];
-  const headers = ['Run date', 'Run', 'Architecture', 'Total parameters', ...trainingColumns, ...evaluationColumns];
-  const groups = [['Run details', 4], ['Training datasets', trainingColumns.length],
+  const runFields = [
+    ['Optimizer', 'optimizer'], ['Momentum', 'momentum'], ['Learning rate', 'learning_rate'],
+    ['LR schedule', 'lr_schedule'], ['Weight decay', 'weight_decay'], ['Batch size', 'batch_size'],
+    ['Epochs', 'epochs'], ['Seed', 'seed'], ['Starting run', 'initialization_run_id'],
+  ];
+  const runHeaders = ['ID', 'Run date', 'Run', 'Architecture', 'Total parameters', ...runFields.map(([label]) => label)];
+  const headers = [...runHeaders, ...trainingColumns, ...evaluationColumns];
+  const groups = [['Run details', runHeaders.length], ['Training datasets', trainingColumns.length],
     ['Evaluation datasets', evaluationColumns.length]];
   const rows = runs.flatMap(run => {
     const p = run.params;
+    const legacyOptimizer = /^(SGD) with momentum (\d+(?:\.\d+)?)$/i.exec(p.optimizer ?? '');
     const runResults = byTrainingRun.get(run.id);
     if (runIds.has(run.tags['mlflow.parentRunId']) && !p.training_dataset && !runResults) return [];
     const architecture = p.architecture_variant || p.model_name || p.architecture_name || p.model_factory;
@@ -215,6 +224,10 @@ function trainingRows(runs, results, datasets) {
       escape(date && Number.isFinite(date.getTime()) ? runDate.format(date) : undefined),
       escape(displayModelName(run.name)),
       escape(displayModelName(architecture)), number(total),
+      ...runFields.map(([, key]) => {
+        if (key === 'optimizer' && legacyOptimizer) return escape(legacyOptimizer[1]);
+        return escape(p[key] ?? run.tags[key] ?? (key === 'momentum' ? legacyOptimizer?.[2] : undefined));
+      }),
       ...trainingColumns.map(name => trainedOn.size ? String(trainedOn.has(name))
         : '<span title="Training datasets unrecorded">—</span>'),
     ];
@@ -222,22 +235,92 @@ function trainingRows(runs, results, datasets) {
     const metricCells = evaluationColumns.map(name => {
       const result = evaluationsByName.get(name);
       if (!result) return '<span title="Not evaluated">—</span>';
-      return '<span title="Top-1 accuracy">Top-1 ' + percent(result.metrics.accuracy)
+      const score = result.metrics.accuracy;
+      return '<span title="Top-1 accuracy"' + (Number.isFinite(score) ? ' data-top1="' + score + '"' : '')
+        + '>Top-1 ' + percent(score)
         + '</span><br><span title="Top-3 accuracy">Top-3 ' + percent(result.metrics.top3_accuracy) + '</span>';
     });
-    return [[...cells, ...metricCells]];
+    return [{ runId: run.id, cells: [...cells, ...metricCells] }];
   });
-  return {headers, rows, groups};
+  return {headers, rows: rows.map(({ runId, cells }, index) => ({
+    runId, cells: [String(index + 1), ...cells],
+  })), groups};
 }
 
-function table(headers, rows, groups = []) {
+function table(headers, rows, groups = [], sortFrom = Infinity) {
   const groupHeader = groups.filter(([, count]) => count > 0).map(([label, count]) =>
     '<th scope="colgroup" colspan="' + count + '">' + escape(label) + '</th>').join('');
-  return '<table><thead>' + (groupHeader ? '<tr>' + groupHeader + '</tr>' : '') + '<tr>' + headers.map(value => '<th scope="col">' + escape(value) + '</th>').join('') +
+  const columnHeaders = headers.map((value, index) => '<th scope="col">' +
+    (index < sortFrom ? escape(value) :
+      '<button type="button" data-sort-accuracy title="Sort by Top-1 accuracy">' + escape(value) + '</button>') +
+    '</th>').join('');
+  return '<table><thead>' + (groupHeader ? '<tr>' + groupHeader + '</tr>' : '') + '<tr>' + columnHeaders +
     '</tr></thead><tbody>' + (rows.length ? rows.map(row =>
-      '<tr>' + row.map(cell => '<td>' + cell + '</td>').join('') + '</tr>').join('')
+      '<tr>' + (row.cells || row).map((cell, index) =>
+        (index === 0 && row.runId ? '<td data-run-id="' + escape(row.runId) + '">' : '<td>')
+        + cell + '</td>').join('') + '</tr>').join('')
       : '<tr><td colspan="' + headers.length + '">No records found.</td></tr>') + '</tbody></table>';
 }
+
+function architectureRows(runs) {
+  const architectures = new Map();
+  for (const run of runs) {
+    if (run.tags['mlflow.parentRunId'] && !run.params.training_dataset) continue;
+    const p = run.params;
+    const architecture = p.architecture_variant || p.model_name || p.architecture_name || p.model_factory;
+    if (!architecture) continue;
+
+    const resnet = /^(?:Ludus-)?source[-_]resnet[-_](\d+)x(\d+)$/i.exec(architecture);
+    const compact = architecture === 'model_testing_mlflow';
+    const blocks = resnet?.[1] || (compact ? 1 : p.residual_blocks);
+    const filters = resnet?.[2] || p.conv_filters;
+    const upsample = p.upsample_factor;
+    const name = resnet ? 'ResNet ' + blocks + '×' + filters
+      : compact && filters && upsample ? 'Compact CNN (' + filters + ' filters, ' + upsample + '× upsampling)'
+        : displayModelName(architecture);
+    const key = compact ? JSON.stringify([architecture, filters, upsample]) : name;
+    const total = p.total_parameters ?? p.total_params ?? p.model_parameter_count
+      ?? (resnet ? totals.get('source_resnet_' + blocks + 'x' + filters) : undefined)
+      ?? (compact && Number(filters) === 12 ? 12304 : undefined);
+    const input = resnet || compact ? '15 × 8 × 8 board planes' : p.input_shape;
+    const head = resnet ? '1 × 1 convolution on the 8 × 8 board; 64-way softmax'
+      : compact ? 'Global average pooling, dense layer, 64-way softmax' : p.head_type;
+    const backbone = resnet ? '3 × 3 convolution; two 3 × 3 convolutions per residual block; batch normalization and ReLU'
+      : compact ? 'Upsampling, 3 × 3 convolution, then one residual block with stride 2' : p.architecture_family;
+    const output = resnet || compact ? 'Source square (64 classes)' : p.output_shape;
+    const entry = [name, number(total), blocks, filters, resnet ? 0 : compact ? 2 : undefined, input, backbone, head, output];
+    const existing = architectures.get(key);
+    architectures.set(key, existing ? existing.map((value, index) =>
+      value == null || value === '—' ? entry[index] : value) : entry);
+  }
+  return [...architectures.values()].sort((left, right) => left[0].localeCompare(right[0]))
+    .map(row => row.map(escape));
+}
+
+const sortScript = `
+for (const button of document.querySelectorAll('[data-sort-accuracy]')) {
+  button.addEventListener('click', () => {
+    const header = button.closest('th');
+    const table = header.closest('table');
+    const column = header.cellIndex;
+    const ascending = header.getAttribute('aria-sort') === 'descending';
+    for (const sorted of table.querySelectorAll('th[aria-sort]')) sorted.removeAttribute('aria-sort');
+    header.setAttribute('aria-sort', ascending ? 'ascending' : 'descending');
+
+    const body = table.tBodies[0];
+    const score = row => row.cells[column]?.querySelector('[data-top1]')?.dataset.top1;
+    const rows = [...body.rows].sort((left, right) => {
+      const a = score(left);
+      const b = score(right);
+      if (a === undefined) return b === undefined ? 0 : 1;
+      if (b === undefined) return -1;
+      return ascending ? Number(a) - Number(b) : Number(b) - Number(a);
+    });
+    body.append(...rows);
+  });
+}
+`;
+const sortHash = createHash('sha256').update(sortScript).digest('base64');
 
 function render(runs, markdown) {
   runs = runs.filter(run => run.tags.ludus_report !== 'exclude'
@@ -248,36 +331,49 @@ function render(runs, markdown) {
   const datasets = datasetRows(inventoryRows, runs, results);
   const training = trainingRows(runs, results, datasets);
   const datasetHeaders = ['Dataset', 'Version', 'Data points', 'Content hash', 'Variation'];
+  const architectureHeaders = ['Architecture', 'Parameters', 'Residual blocks', 'Stem filters', 'Dense layers', 'Input', 'Backbone', 'Prediction head', 'Output'];
   const datasetCells = ({ name, version, count, hash, note }) => [name, version, number(count), hash, note].map(escape);
   return '<!doctype html><html lang="en"><meta charset="utf-8">' +
     '<meta name="viewport" content="width=device-width, initial-scale=1"><title>Ludus experiment report</title>' +
     '<style>body{font:15px/1.5 system-ui,sans-serif;margin:2rem auto;padding:0 1rem;max-width:90rem;color:#192126}' +
     'h1,h2{line-height:1.2}section{margin-bottom:2rem}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse}' +
+    '.training-scroll table{width:max-content;min-width:100%;white-space:nowrap}' +
     'td,th{text-align:left;vertical-align:top;padding:.65rem;border-bottom:1px solid #ccd7da;overflow-wrap:anywhere}' +
-    'th{background:#dae9f6}tbody tr:nth-child(odd){background:#eef6fd}tbody tr:nth-child(even){background:#fbfdff}</style>' +
-    '<h1>Ludus experiment report</h1><section><h2>Training runs</h2><div class="scroll">' +
-    table(training.headers, training.rows, training.groups) +
+    'th{background:#dae9f6}tbody tr:nth-child(odd){background:#eef6fd}tbody tr:nth-child(even){background:#fbfdff}' +
+    'th button{font:inherit;color:inherit;text-align:left;background:none;border:0;padding:0;cursor:pointer;overflow-wrap:anywhere}' +
+    'th button:after{content:" ↕"}th[aria-sort="ascending"] button:after{content:" ↑"}th[aria-sort="descending"] button:after{content:" ↓"}</style>' +
+    '<h1>Ludus experiment report</h1><section><h2 id="training-runs">Training runs</h2><div class="scroll training-scroll" tabindex="0" role="region" aria-labelledby="training-runs">' +
+    table(training.headers, training.rows, training.groups, 5 + datasets.training.length) +
+    '</div></section><section><h2>Architectures</h2><div class="scroll">' +
+    table(architectureHeaders, architectureRows(runs)) +
     '</div></section><section><h2>Datasets</h2><h3>Training datasets</h3><div class="scroll">' +
     table(datasetHeaders, datasets.training.map(datasetCells)) +
     '</div><h3>Evaluation datasets</h3><div class="scroll">' +
-    table(datasetHeaders, datasets.evaluation.map(datasetCells)) + '</div></section></html>';
+    table(datasetHeaders, datasets.evaluation.map(datasetCells)) + '</div></section>' +
+    '<script>' + sortScript + '</script></html>';
 }
 
 if (!uri || !/^https?:\/\//i.test(uri)) {
   throw new Error('Set MLFLOW_TRACKING_URI to the HTTP(S) address of your tracking server.');
 }
 
-createServer(async (request, response) => {
+async function loadReport() {
+  return render(...await Promise.all([loadRuns(), readFile(inventory, 'utf8')]));
+}
+
+if (process.argv.includes('--snapshot')) {
+  process.stdout.write(await loadReport());
+} else createServer(async (request, response) => {
   response.setHeader('Cache-Control', 'no-store');
   response.setHeader('X-Content-Type-Options', 'nosniff');
-  response.setHeader('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'");
+  response.setHeader('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; script-src 'sha256-"
+    + sortHash + "'; frame-ancestors 'none'");
   if (request.method !== 'GET' || request.url !== '/report') {
     response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }).end('Use GET /report.\n');
     return;
   }
   try {
-    const [runs, markdown] = await Promise.all([loadRuns(), readFile(inventory, 'utf8')]);
-    const html = render(runs, markdown);
+    const html = await loadReport();
     response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }).end(html);
   } catch {
     response.writeHead(502, { 'Content-Type': 'text/plain; charset=utf-8' })

@@ -10,6 +10,7 @@ used by an older run; future runs should record the dataset version explicitly.
 | --- | ---: | ---: | --- |
 | `lichess-bitboards-2013-01` | 1 | 5,000,000 | Existing first-model training input; five `chunk_0`–`chunk_4` input/target pairs inspected. |
 | `eval-training-2013-chunk-9` | 2 | — | Contaminated legacy evaluation input; its 2013-01 files are actually `my_processed_chunks/2013-01/chunk_6_x.npy` and `chunk_6_y.npy`. |
+| `ludus-2013-01-overlap-clean-eval-v1` | 2 | 293,892 | January 2013 evaluation with exact matches to all three current training datasets removed. 291,828 unique inputs. Game IDs unavailable. |
 | `ludus-1500-2017-04-general-train-v1` | 1 | 542,568 | Full-April-source 1% sampled training games; 542,568 positions, with repeat positions retained. |
 | `ludus-1500-2017-04-general-eval-v1` | 1 | 111,276 | Game-held-out evaluation; 111,276 exact-unique positions after removing matches to new and legacy training inputs. |
 | `ludus-1500-2017-04-endgame-train-v1` | 1 | 14,756 | 3–6-piece training subset; 14,756 positions from 1,114 games. |
