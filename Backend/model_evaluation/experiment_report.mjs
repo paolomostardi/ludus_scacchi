@@ -20,6 +20,31 @@ const escape = value => String(value ?? '—').replace(/[&<>"']/g, character => 
 const fields = entries => Object.fromEntries((entries || []).map(({ key, value }) => [key, value]));
 const slug = name => name.split('/').at(-1);
 const displayModelName = name => name?.replace(/(^|[-_\s])source[-_\s]+/gi, '$1');
+const datasetLabels = new Map([
+  ['lichess-bitboards-2013-01', 'Jan 2013'],
+  ['ludus-1500-2017-04-general-train-v1', 'April general'],
+  ['ludus-1500-2017-04-general-eval-v1', 'April general'],
+  ['ludus-1500-2017-04-endgame-train-v1', 'April endgame'],
+  ['ludus-1500-2017-04-endgame-eval-v1', 'April endgame'],
+  ['ludus-1500-2017-04-endgame-train-v2', 'Endgame v2'],
+  ['ludus-1500-2017-04-endgame-eval-v2', 'Endgame v2'],
+  ['ludus-2013-01-overlap-clean-eval-v1', 'Jan 2013 clean'],
+  [simpleCatalog, 'Simple positions'],
+]);
+const shortArchitecture = name => {
+  const resnet = /^(?:Ludus[-_])?(?:source[-_])?resnet[-_](\d+)x(\d+)$/i.exec(name ?? '');
+  return resnet ? 'ResNet ' + resnet[1] + '×' + resnet[2] : displayModelName(name);
+};
+const shortRun = name => {
+  const label = displayModelName(name)
+    .replace(/^(?:Ludus[-_])?resnet[-_]\d+x\d+[ _-]+/i, '')
+    .replace(/\bfine-tune on (\S+)/i, (text, dataset) =>
+      datasetLabels.has(dataset) ? 'Fine-tune ' + datasetLabels.get(dataset) : text)
+    .replace(/\(LR ([^,]+), epoch (\d+)\)/gi, '· LR $1 · E$2');
+  return label.length > 42 ? label.slice(0, 41) + '…' : label;
+};
+const withTitle = (label, title) => title == null ? escape(label)
+  : '<span title="' + escape(title) + '">' + escape(label) + '</span>';
 
 async function mlflow(path, body) {
   const headers = { Accept: 'application/json' };
@@ -207,10 +232,15 @@ function trainingRows(runs, results, datasets) {
     ['LR schedule', 'lr_schedule'], ['Weight decay', 'weight_decay'], ['Batch size', 'batch_size'],
     ['Epochs', 'epochs'], ['Seed', 'seed'], ['Starting run', 'initialization_run_id'],
   ];
-  const runHeaders = ['ID', 'Run date', 'Run', 'Architecture', 'Total parameters', ...runFields.map(([label]) => label)];
-  const headers = [...runHeaders, ...trainingColumns, ...evaluationColumns];
-  const groups = [['Run details', runHeaders.length], ['Training datasets', trainingColumns.length],
-    ['Evaluation datasets', evaluationColumns.length]];
+  const identityHeaders = ['ID', 'Run Date', 'Run', 'Architecture'];
+  const detailHeaders = ['Total parameters', ...runFields.map(([label]) => label)];
+  const datasetHeader = (name, sortAccuracy = false) => ({
+    label: datasetLabels.get(name) ?? name, title: name, sortAccuracy,
+  });
+  const headers = [...identityHeaders, ...evaluationColumns.map(name => datasetHeader(name, true)),
+    ...trainingColumns.map(name => datasetHeader(name)), ...detailHeaders];
+  const groups = [['Run', identityHeaders.length], ['Evaluation datasets', evaluationColumns.length],
+    ['Training datasets', trainingColumns.length], ['Training settings', detailHeaders.length]];
   const rows = runs.flatMap(run => {
     const p = run.params;
     const legacyOptimizer = /^(SGD) with momentum (\d+(?:\.\d+)?)$/i.exec(p.optimizer ?? '');
@@ -220,17 +250,31 @@ function trainingRows(runs, results, datasets) {
     const total = p.total_parameters ?? p.total_params ?? p.model_parameter_count ?? totals.get(architecture);
     const trainedOn = new Set(trainingNames(run));
     const date = run.startTime == null ? undefined : new Date(Number(run.startTime));
-    const cells = [
+    const identityCells = [
       escape(date && Number.isFinite(date.getTime()) ? runDate.format(date) : undefined),
-      escape(displayModelName(run.name)),
-      escape(displayModelName(architecture)), number(total),
+      withTitle(shortRun(run.name), run.name),
+      withTitle(shortArchitecture(architecture), architecture),
+    ];
+    const detailCells = [
+      number(total),
       ...runFields.map(([, key]) => {
         if (key === 'optimizer' && legacyOptimizer) return escape(legacyOptimizer[1]);
-        return escape(p[key] ?? run.tags[key] ?? (key === 'momentum' ? legacyOptimizer?.[2] : undefined));
+        const value = p[key] ?? run.tags[key] ?? (key === 'momentum' ? legacyOptimizer?.[2] : undefined);
+        if (key === 'learning_rate' && value != null && String(value).trim() !== '') {
+          const rate = Number(value);
+          if (Number.isFinite(rate)) {
+            const label = rate !== 0 && Math.abs(rate) < 0.0001
+              ? rate.toExponential(3).replace(/\.?0+e/, 'e')
+              : rate.toFixed(4).replace(/\.?0+$/, '');
+            return withTitle(label, value);
+          }
+        }
+        return key === 'initialization_run_id' && /^[a-f0-9]{32}$/i.test(value ?? '')
+          ? withTitle(value.slice(0, 8) + '…', value) : escape(value);
       }),
-      ...trainingColumns.map(name => trainedOn.size ? String(trainedOn.has(name))
-        : '<span title="Training datasets unrecorded">—</span>'),
     ];
+    const trainingCells = trainingColumns.map(name => trainedOn.size ? String(trainedOn.has(name))
+      : '<span title="Training datasets unrecorded">—</span>');
     const evaluationsByName = runResults || new Map();
     const metricCells = evaluationColumns.map(name => {
       const result = evaluationsByName.get(name);
@@ -240,20 +284,24 @@ function trainingRows(runs, results, datasets) {
         + '>Top-1 ' + percent(score)
         + '</span><br><span title="Top-3 accuracy">Top-3 ' + percent(result.metrics.top3_accuracy) + '</span>';
     });
-    return [{ runId: run.id, cells: [...cells, ...metricCells] }];
+    return [{ runId: run.id, cells: [...identityCells, ...metricCells, ...trainingCells, ...detailCells] }];
   });
   return {headers, rows: rows.map(({ runId, cells }, index) => ({
     runId, cells: [String(index + 1), ...cells],
   })), groups};
 }
 
-function table(headers, rows, groups = [], sortFrom = Infinity) {
+function table(headers, rows, groups = []) {
   const groupHeader = groups.filter(([, count]) => count > 0).map(([label, count]) =>
     '<th scope="colgroup" colspan="' + count + '">' + escape(label) + '</th>').join('');
-  const columnHeaders = headers.map((value, index) => '<th scope="col">' +
-    (index < sortFrom ? escape(value) :
-      '<button type="button" data-sort-accuracy title="Sort by Top-1 accuracy">' + escape(value) + '</button>') +
-    '</th>').join('');
+  const columnHeaders = headers.map(header => {
+    const { label, title, sortAccuracy } = typeof header === 'string' ? { label: header } : header;
+    const content = sortAccuracy
+      ? '<button type="button" data-sort-accuracy title="' + escape(title + ' · Sort by Top-1 accuracy')
+        + '">' + escape(label) + '</button>'
+      : withTitle(label, title);
+    return '<th scope="col">' + content + '</th>';
+  }).join('');
   return '<table><thead>' + (groupHeader ? '<tr>' + groupHeader + '</tr>' : '') + '<tr>' + columnHeaders +
     '</tr></thead><tbody>' + (rows.length ? rows.map(row =>
       '<tr>' + (row.cells || row).map((cell, index) =>
@@ -343,7 +391,7 @@ function render(runs, markdown) {
     'th button{font:inherit;color:inherit;text-align:left;background:none;border:0;padding:0;cursor:pointer;overflow-wrap:anywhere}' +
     'th button:after{content:" ↕"}th[aria-sort="ascending"] button:after{content:" ↑"}th[aria-sort="descending"] button:after{content:" ↓"}</style>' +
     '<h1>Ludus experiment report</h1><section><h2 id="training-runs">Training runs</h2><div class="scroll training-scroll" tabindex="0" role="region" aria-labelledby="training-runs">' +
-    table(training.headers, training.rows, training.groups, 5 + datasets.training.length) +
+    table(training.headers, training.rows, training.groups) +
     '</div></section><section><h2>Architectures</h2><div class="scroll">' +
     table(architectureHeaders, architectureRows(runs)) +
     '</div></section><section><h2>Datasets</h2><h3>Training datasets</h3><div class="scroll">' +

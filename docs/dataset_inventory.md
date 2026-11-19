@@ -15,6 +15,8 @@ used by an older run; future runs should record the dataset version explicitly.
 | `ludus-1500-2017-04-general-eval-v1` | 1 | 111,276 | Game-held-out evaluation; 111,276 exact-unique positions after removing matches to new and legacy training inputs. |
 | `ludus-1500-2017-04-endgame-train-v1` | 1 | 14,756 | 3–6-piece training subset; 14,756 positions from 1,114 games. |
 | `ludus-1500-2017-04-endgame-eval-v1` | 1 | 3,107 | 3–6-piece held-out evaluation subset; 3,107 positions from 267 games. |
+| `ludus-1500-2017-04-endgame-train-v2` | 1 | 1,000,000 | 3–6-piece training set from 86,051 April games, with duplicate positions and reference-set matches removed. |
+| `ludus-1500-2017-04-endgame-eval-v2` | 1 | 10,000 | 3–6-piece evaluation set from 862 separate April games, with training and reference-set matches removed. |
 | `lichess-raw-dataset-2013-01` | 1 | — | Raw monthly PGN upload; no per-move clock requirement can be met from this month. |
 | `lichess-raw-dataset-2015-01` | 1 | — | Raw monthly PGN upload; no standard monthly `%clk` annotations expected. |
 | `simple-chess-positions` | 1 | — | Older small upload; distinct from the current, versioned simple-position catalog in the repository. |
