@@ -3,6 +3,8 @@ import json
 import re
 from pathlib import Path
 
+from Backend.model_evaluation.evaluation_suite import DATASETS
+
 
 DEFAULT_CONFIG = Path(__file__).with_name("run_config.json")
 
@@ -12,6 +14,8 @@ def load_config(path=DEFAULT_CONFIG):
     defaults = json.loads(DEFAULT_CONFIG.read_text(encoding="utf-8"))
     if "evaluation_dataset" in config and "evaluation_datasets" not in config:
         config["evaluation_datasets"] = [config.pop("evaluation_dataset")]
+    config.setdefault("evaluation_datasets", [dataset["id"] for dataset in DATASETS])
+    defaults.setdefault("evaluation_datasets", None)
     if set(config) != set(defaults):
         raise ValueError("Run configuration must contain exactly the fields in run_config.json.")
     architecture = config["architecture"]

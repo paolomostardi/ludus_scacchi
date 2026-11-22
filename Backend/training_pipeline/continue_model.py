@@ -13,6 +13,7 @@ from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+from Backend.model_evaluation.evaluation_suite import DATASETS, SIMPLE, SUITE_ID
 from Backend.training_pipeline.run_batch import (
     BatchError, GITHUB_CLONE, REPO_ROOT, kaggle_preflight, kernel_metadata,
     run_command, submit_and_download, write_json,
@@ -25,17 +26,9 @@ TRAINING = {
     "general": ("ludus-1500-2017-04-general-train-v1", 1, 542_568),
     "endgame": ("ludus-1500-2017-04-endgame-train-v1", 1, 14_756),
 }
-EVALUATION = (
-    ("ludus-1500-2017-04-general-eval-v1", 1, 111_276),
-    ("ludus-1500-2017-04-endgame-eval-v1", 1, 3_107),
-    ("ludus-2013-01-overlap-clean-eval-v1", 2, 293_892),
-)
 MANIFESTS = {
     "ludus-1500-2017-04-general-train-v1": "376f0dca724163359898bc18fb54d1e1d29a29879eb6f7d469f4985ff7a15c33",
     "ludus-1500-2017-04-endgame-train-v1": "21aebcadc571ccbb52fea8c249203ae7a0c1885b264d06a35666653f3bb0eff8",
-    "ludus-1500-2017-04-general-eval-v1": "978268932412f2926579d776b58cd1daa00ddd31332cc2d3db8ad5c63bc05269",
-    "ludus-1500-2017-04-endgame-eval-v1": "7a27c858adbb29efc673b6b1b87dea5b7848d5fc2140219a062e8dc2aaa2dfbf",
-    "ludus-2013-01-overlap-clean-eval-v1": "3eab28eb1c318c7af7fae504be38c9ca084d194d1cb06f6489fdc4c3d772f48d",
 }
 
 
@@ -115,7 +108,8 @@ def log_result(result, config, parent_params):
         parent_params.get("training_dataset_sequence")
     ) else [parent_params["training_dataset"]] if parent_params.get("training_dataset") else []
     architecture = config.get("architecture_metadata", {}).get("architecture_variant", config["factory"])
-    tags = {"initialization_run_id": settings["parent"]}
+    tags = {"initialization_run_id": settings["parent"], "evaluation_suite": settings["evaluation_suite"],
+            "evaluation_scope": "full"}
     metrics = []
     for name, evaluation in result["evaluations"].items():
         suffix = name.split("/")[-1].replace("-", "_")
@@ -195,7 +189,7 @@ def main():
         raise BatchError("The selected MLflow run is not finished.")
     config, weights, digest, params = checkpoint_for(args.checkpoint_dir, run)
     train = dataset(TRAINING[args.dataset])
-    evaluations = [dataset(spec) for spec in EVALUATION]
+    evaluations = list(DATASETS)
     print(f"Checkpoint: {weights}\nTraining: {train['id']} ({train['rows']:,} rows)", flush=True)
     print("Evaluation: " + ", ".join([item["id"] for item in evaluations] + ["simple_v2"]), flush=True)
     print(f"Training settings: {training}", flush=True)
@@ -210,7 +204,8 @@ def main():
         "kernel": kernel_id, "checkpoint_dataset": checkpoint_id,
         "repository": GITHUB_CLONE, "revision": REVISION, "source_sha256": digest,
         "parent": parent, "experiment_id": run["info"]["experiment_id"],
-        "train": train, "evaluation": evaluations, "training": training,
+        "train": train, "evaluation": evaluations, "training": training, "evaluation_suite": SUITE_ID,
+        "simple_evaluation": SIMPLE,
     }
     kaggle_preflight(args.kaggle, work)
     upload = work / "upload"

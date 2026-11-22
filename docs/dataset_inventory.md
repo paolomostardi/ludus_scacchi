@@ -17,6 +17,8 @@ used by an older run; future runs should record the dataset version explicitly.
 | `ludus-1500-2017-04-endgame-eval-v1` | 1 | 3,107 | 3–6-piece held-out evaluation subset; 3,107 positions from 267 games. |
 | `ludus-1500-2017-04-endgame-train-v2` | 1 | 1,000,000 | 3–6-piece training set from 86,051 April games, with duplicate positions and reference-set matches removed. |
 | `ludus-1500-2017-04-endgame-eval-v2` | 1 | 10,000 | 3–6-piece evaluation set from 862 separate April games, with training and reference-set matches removed. |
+| `ludus-2000-general-train-v1` | 1 | 5,000,000 | May 2017 positions from move 8 onward; mover Elo 1950–2050, non-Bullet, at least 15 seconds before the move; game-disjoint evaluation split and exact board+turn deduplication. |
+| `ludus-2000-general-eval-v1` | 1 | 10,000 | May 2017 held-out positions from 286 games under the same rating, clock, move and overlap filters as training. |
 | `lichess-raw-dataset-2013-01` | 1 | — | Raw monthly PGN upload; no per-move clock requirement can be met from this month. |
 | `lichess-raw-dataset-2015-01` | 1 | — | Raw monthly PGN upload; no standard monthly `%clk` annotations expected. |
 | `simple-chess-positions` | 1 | — | Older small upload; distinct from the current, versioned simple-position catalog in the repository. |
@@ -45,6 +47,28 @@ checksum, sampling/split rules, row counts, shard checksums, and intended role.
 The [full-source build review](april_2017_full_build.md) records the independent
 partition and local disk budget. The archived 2013 models have not yet been
 rescored on the new held-out general evaluation set.
+
+## 2000-rated May collection
+
+The private `ludus-2000-general-train-v1` and `ludus-2000-general-eval-v1`
+datasets were mined on Kaggle CPU and published on 21 November 2026. They use
+the full May 2017 standard archive, verified against SHA-256
+`c4b2e39a382fb8a9dc5e766bbae0201d123c5c0ccc27f6e852d9a69e6661ab2f`.
+Training contains 5,000,000 positions from 147,910 games; evaluation contains
+10,000 positions from 286 other games. The mover rating is 1950–2050 inclusive,
+Bullet games are excluded, positions start after the first seven full moves,
+and the mover must have at least 15 seconds before moving. Exact board+turn
+duplicates were removed across both new splits and all mounted reference sets.
+Manifest SHA-256 values are `cdfb671eb75a5805dfff3e543cf572e76000c28fd6dca72dff720b1b879f814a`
+for training and `52d441e10fc82d39acf88d9601a5b2e67aeee76413ba006c2a81523fec4d8dbe`
+for evaluation. No model has been trained or evaluated on this dataset yet.
+
+The canonical comparison suite is now `ludus-heldout-v2`. It contains the
+April general v1, April endgame v1 and v2, cleaned January v1, and May
+2000-rated evaluation set, plus the versioned simple-position catalog. Runs
+that predate this suite remain recorded with the inputs they actually used;
+queued dense-architecture runs need an evaluation-only pass on the additional
+sets before their results can be compared across the complete suite.
 
 ## 1500-rated collection
 

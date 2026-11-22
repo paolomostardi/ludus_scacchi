@@ -14,9 +14,5 @@
   "batch_size": 64,
   "seed": 42,
   "final_chunk_holdout": 0,
-  "year_month": "2017-04",
-  "evaluation_datasets": [
-    "paolomostardi/ludus-1500-2017-04-general-eval-v1",
-    "paolomostardi/ludus-1500-2017-04-endgame-eval-v1"
-  ]
+  "year_month": "2017-04"
 }

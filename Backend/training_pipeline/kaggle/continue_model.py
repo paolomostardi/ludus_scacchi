@@ -129,6 +129,10 @@ def evaluate_checkpoint(model, output, epoch, started, training_root, evaluation
         }
     catalog = load_catalog()
     identity = catalog_identity(catalog)
+    expected_simple = SETTINGS.get("simple_evaluation")
+    if expected_simple and (identity["sha256"] != expected_simple["sha256"]
+                            or identity["sample_count"] != expected_simple["rows"]):
+        raise ValueError("Simple positions catalog does not match the pinned suite")
     boards, _ = prepare(catalog)
     scores = score_predictions(catalog, model.predict(boards, batch_size=128, verbose=0))["metrics"]
     evaluations["simple_v2"] = {

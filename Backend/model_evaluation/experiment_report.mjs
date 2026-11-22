@@ -28,6 +28,8 @@ const datasetLabels = new Map([
   ['ludus-1500-2017-04-endgame-eval-v1', 'April endgame'],
   ['ludus-1500-2017-04-endgame-train-v2', 'Endgame v2'],
   ['ludus-1500-2017-04-endgame-eval-v2', 'Endgame v2'],
+  ['ludus-2000-general-train-v1', 'May 2000 training'],
+  ['ludus-2000-general-eval-v1', 'May 2000'],
   ['ludus-2013-01-overlap-clean-eval-v1', 'Jan 2013 clean'],
   [simpleCatalog, 'Simple positions'],
 ]);
@@ -232,7 +234,7 @@ function trainingRows(runs, results, datasets) {
     ['LR schedule', 'lr_schedule'], ['Weight decay', 'weight_decay'], ['Batch size', 'batch_size'],
     ['Epochs', 'epochs'], ['Seed', 'seed'], ['Starting run', 'initialization_run_id'],
   ];
-  const identityHeaders = ['ID', 'Run Date', 'Run', 'Architecture'];
+  const identityHeaders = [{ label: 'ID', title: 'Sort by ID', sortNumeric: true }, 'Run Date', 'Run', 'Architecture'];
   const detailHeaders = ['Total parameters', ...runFields.map(([label]) => label)];
   const datasetHeader = (name, sortAccuracy = false) => ({
     label: datasetLabels.get(name) ?? name, title: name, sortAccuracy,
@@ -286,7 +288,13 @@ function trainingRows(runs, results, datasets) {
     });
     return [{ runId: run.id, cells: [...identityCells, ...metricCells, ...trainingCells, ...detailCells] }];
   });
-  return {headers, rows: rows.map(({ runId, cells }, index) => ({
+  const orderedRows = rows.sort((left, right) => {
+    const leftRun = runs.find(run => run.id === left.runId);
+    const rightRun = runs.find(run => run.id === right.runId);
+    return Number(leftRun?.startTime ?? 0) - Number(rightRun?.startTime ?? 0)
+      || left.runId.localeCompare(right.runId);
+  });
+  return {headers, rows: orderedRows.map(({ runId, cells }, index) => ({
     runId, cells: [String(index + 1), ...cells],
   })), groups};
 }
@@ -295,9 +303,9 @@ function table(headers, rows, groups = []) {
   const groupHeader = groups.filter(([, count]) => count > 0).map(([label, count]) =>
     '<th scope="colgroup" colspan="' + count + '">' + escape(label) + '</th>').join('');
   const columnHeaders = headers.map(header => {
-    const { label, title, sortAccuracy } = typeof header === 'string' ? { label: header } : header;
-    const content = sortAccuracy
-      ? '<button type="button" data-sort-accuracy title="' + escape(title + ' · Sort by Top-1 accuracy')
+    const { label, title, sortAccuracy, sortNumeric } = typeof header === 'string' ? { label: header } : header;
+    const content = sortAccuracy || sortNumeric
+      ? '<button type="button" data-sort-accuracy title="' + escape(sortNumeric ? title : title + ' · Sort by Top-1 accuracy')
         + '">' + escape(label) + '</button>'
       : withTitle(label, title);
     return '<th scope="col">' + content + '</th>';
@@ -318,25 +326,29 @@ function architectureRows(runs) {
     const architecture = p.architecture_variant || p.model_name || p.architecture_name || p.model_factory;
     if (!architecture) continue;
 
-    const resnet = /^(?:Ludus-)?source[-_]resnet[-_](\d+)x(\d+)$/i.exec(architecture);
+    const resnet = /^(?:Ludus-)?source[-_]resnet[-_](\d+)x(\d+)(?:[-_]dense(\d+))?$/i.exec(architecture);
+    const denseUnits = resnet?.[3];
     const compact = architecture === 'model_testing_mlflow';
     const blocks = resnet?.[1] || (compact ? 1 : p.residual_blocks);
     const filters = resnet?.[2] || p.conv_filters;
     const upsample = p.upsample_factor;
-    const name = resnet ? 'ResNet ' + blocks + '×' + filters
+    const name = resnet ? 'ResNet ' + blocks + '×' + filters + (denseUnits ? ' Dense ' + denseUnits : '')
       : compact && filters && upsample ? 'Compact CNN (' + filters + ' filters, ' + upsample + '× upsampling)'
         : displayModelName(architecture);
-    const key = compact ? JSON.stringify([architecture, filters, upsample]) : name;
+    const key = JSON.stringify([name, p.board_encoding_id, p.board_layout, compact ? upsample : undefined]);
     const total = p.total_parameters ?? p.total_params ?? p.model_parameter_count
-      ?? (resnet ? totals.get('source_resnet_' + blocks + 'x' + filters) : undefined)
+      ?? (resnet && !denseUnits ? totals.get('source_resnet_' + blocks + 'x' + filters) : undefined)
       ?? (compact && Number(filters) === 12 ? 12304 : undefined);
-    const input = resnet || compact ? '15 × 8 × 8 board planes' : p.input_shape;
-    const head = resnet ? '1 × 1 convolution on the 8 × 8 board; 64-way softmax'
+    const shape = p.input_shape ?? (resnet || compact ? '15 × 8 × 8 board planes' : undefined);
+    const input = [shape, p.board_layout, p.board_encoding_id].filter(Boolean).join(' · ') || undefined;
+    const head = denseUnits ? '1 × 1 convolution plus dense correction (' + denseUnits + ' → 64); 64-way softmax'
+      : resnet ? '1 × 1 convolution on the 8 × 8 board; 64-way softmax'
       : compact ? 'Global average pooling, dense layer, 64-way softmax' : p.head_type;
     const backbone = resnet ? '3 × 3 convolution; two 3 × 3 convolutions per residual block; batch normalization and ReLU'
       : compact ? 'Upsampling, 3 × 3 convolution, then one residual block with stride 2' : p.architecture_family;
     const output = resnet || compact ? 'Source square (64 classes)' : p.output_shape;
-    const entry = [name, number(total), blocks, filters, resnet ? 0 : compact ? 2 : undefined, input, backbone, head, output];
+    const entry = [name, number(total), blocks, filters, denseUnits ? 2 : resnet ? 0 : compact ? 2 : undefined,
+      input, backbone, head, output];
     const existing = architectures.get(key);
     architectures.set(key, existing ? existing.map((value, index) =>
       value == null || value === '—' ? entry[index] : value) : entry);
@@ -356,7 +368,9 @@ for (const button of document.querySelectorAll('[data-sort-accuracy]')) {
     header.setAttribute('aria-sort', ascending ? 'ascending' : 'descending');
 
     const body = table.tBodies[0];
-    const score = row => row.cells[column]?.querySelector('[data-top1]')?.dataset.top1;
+    const numeric = button.closest('th').cellIndex === 0;
+    const score = row => numeric ? row.cells[column]?.textContent.trim()
+      : row.cells[column]?.querySelector('[data-top1]')?.dataset.top1;
     const rows = [...body.rows].sort((left, right) => {
       const a = score(left);
       const b = score(right);

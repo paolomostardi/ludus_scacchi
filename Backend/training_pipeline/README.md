@@ -15,7 +15,7 @@ This package owns training and evaluation orchestration. It does not download mo
 The notebook inputs are staged from the repository's root `fit-model.ipynb` and `Backend/kaggle/notebooks/evaluate-model.ipynb`. Kaggle metadata is generated per run so the evaluation kernel depends on the fit kernel output. The default configuration uses these Kaggle datasets:
 
 - `paolomostardi/lichess-bitboards-2013-01` for smoke and training.
-- `paolomostardi/ludus-1500-2017-04-general-eval-v1` for game-held-out evaluation. The former 2013 evaluation dataset remains available only as a legacy diagnostic because 70.57% of its inputs match training inputs.
+- `ludus-heldout-v1` for evaluation. The former unfiltered 2013 evaluation dataset remains a legacy diagnostic because 70.57% of its inputs match training inputs.
 
 The smoke, fit, and evaluation kernels use the same MLflow experiment name, `ludus_cnn`; the full evaluation must log under the fit run ID. MLflow credentials remain Kaggle notebook secrets named `IP_MLFLOW`, `USERNAME_MLFLOW`, and `PASSWORD_MLFLOW`.
 
@@ -64,7 +64,7 @@ Fit also exports `training_manifest.json` and logs it under `configuration` in M
 
 ## Small pipeline validation
 
-Use `--pipeline-mode validation` to exercise the same smoke → fit → evaluation sequence with a bounded workload. Fit uses the first configured chunk, at most 50,000 positions, and one epoch; the configured held-out evaluation dataset is capped at 1,000 positions while the versioned simple-position benchmark remains included. Arrays are memory-mapped and evaluation runs in bounded blocks. This checks execution and logging, not model quality. The existing smoke stage remains a 256-position check in both modes.
+Use `--pipeline-mode validation` to exercise the same smoke → fit → evaluation sequence with a bounded workload. Fit uses the first configured chunk, at most 50,000 positions, and one epoch. Evaluation caps each configured held-out dataset at 1,000 positions and includes the versioned simple-position benchmark. Arrays are memory-mapped and evaluation runs in bounded blocks. The existing smoke stage is a 256-position check in both modes.
 
 From a configured orchestration checkout:
 
@@ -136,6 +136,15 @@ Arrays are checked in bounded-size slices for aligned lengths, expected shapes,
 finite values, and one-hot targets. Fit histories and evaluation metrics must
 be finite. The runner also validates downloaded report metrics and run IDs.
 ## Continue training from a report row
+
+The batch runner and the continuation command share the `ludus-heldout-v1`
+evaluation suite. It includes April general (111,276 positions), April endgame
+v1 (3,107), April endgame v2 (10,000), cleaned January (293,892), and the
+simple-position catalog (201). The suite pins dataset manifest checksums and
+the catalog checksum. Full runs evaluate every position and log the suite ID.
+Batch validation caps each Kaggle dataset and records that scope separately.
+The early April endgame set is a subset of April general, so compare scores
+per dataset. Keep released suite IDs fixed when adding new datasets.
 
 Run the commands from the Ludus repository root. The launcher needs Python 3.11 or later, Node, access to MLflow, and an authenticated Kaggle CLI for submission. Set `MLFLOW_TRACKING_URI` and, if your SSH tunnel requires a Host override, `LUDUS_MLFLOW_HOST`.
 

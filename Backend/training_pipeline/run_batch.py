@@ -123,12 +123,15 @@ def kernel_metadata(
 
 
 def stage_kernels(args: argparse.Namespace, run_dir: Path) -> dict[str, dict[str, Any]]:
+    from Backend.model_evaluation.evaluation_suite import suite_for
+
     runtime_settings = {
         "LUDUS_REPOSITORY_REVISION": args.repository_revision,
         "LUDUS_PIPELINE_MODE": args.pipeline_mode,
         "LUDUS_RUN_CONFIG": json.dumps(args.run_config),
         "LUDUS_VALIDATION_FIT_ROWS": str(args.validation_fit_rows),
         "LUDUS_VALIDATION_EVAL_ROWS": str(args.validation_eval_rows),
+        "LUDUS_EVALUATION_SUITE": json.dumps(suite_for(args.run_config["evaluation_datasets"])),
     }
     owner = args.kaggle_owner
     fit_id = f"{owner}/{args.fit_slug}"
